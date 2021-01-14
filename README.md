@@ -6,7 +6,3 @@
 ```
 make orderer-docker peer-docker
 ```
-
-# Run
-
-
