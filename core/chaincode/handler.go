@@ -592,6 +592,7 @@ func getReadWritePermission(chaincodeName, collection string, txContext *Transac
 
 // Handles query to ledger to get state
 func (h *Handler) HandleGetState(msg *pb.ChaincodeMessage, txContext *TransactionContext) (*pb.ChaincodeMessage, error) {
+	// dd: get state
 	getState := &pb.GetState{}
 	err := proto.Unmarshal(msg.Payload, getState)
 	if err != nil {
@@ -981,6 +982,7 @@ func (h *Handler) getTxContextForInvoke(channelID string, txid string, payload [
 }
 
 func (h *Handler) HandlePutState(msg *pb.ChaincodeMessage, txContext *TransactionContext) (*pb.ChaincodeMessage, error) {
+	// dd: put state
 	putState := &pb.PutState{}
 	err := proto.Unmarshal(msg.Payload, putState)
 	if err != nil {

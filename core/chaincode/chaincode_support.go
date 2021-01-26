@@ -194,7 +194,7 @@ func (cs *ChaincodeSupport) Invoke(txParams *ccprovider.TransactionParams, chain
 		return nil, errors.WithMessage(err, "invalid invocation")
 	}
 
-	h, err := cs.Launch(ccid)
+	h, err := cs.Launch(ccid) // dd: start chaincode container or just get the handler for specify container if aleady started.
 	if err != nil {
 		return nil, err
 	}

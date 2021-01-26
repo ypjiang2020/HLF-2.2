@@ -453,6 +453,8 @@ func (e *Endorser) ProcessProposalSuccessfullyOrError(up *UnpackedProposal) (*pb
 		return nil, errors.WithMessage(err, "endorsing with plugin failed")
 	}
 
+	// dd: return to client
+	// mPrpBytes include read/write sets
 	return &pb.ProposalResponse{
 		Version:     1,
 		Endorsement: endorsement,

@@ -130,6 +130,7 @@ func (b *RWSetBuilder) AddToHashedMetadataWriteSet(ns, coll, key string, metadat
 // GetTxSimulationResults returns the proto bytes of public rwset
 // (public data + hashes of private data) and the private rwset for the transaction
 func (b *RWSetBuilder) GetTxSimulationResults() (*ledger.TxSimulationResults, error) {
+	// dd: get kv set
 	pvtData := b.getTxPvtReadWriteSet()
 	var err error
 
