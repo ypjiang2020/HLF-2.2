@@ -155,7 +155,8 @@ func (up *UnpackedProposal) Validate(idDeserializer msp.IdentityDeserializer) er
 	}
 
 	expectedTxID := protoutil.ComputeTxID(up.SignatureHeader.Nonce, up.SignatureHeader.Creator)
-	if up.TxID() != expectedTxID {
+	// disbale chekcing txid
+	if (false && (up.TxID() != expectedTxID)) {
 		return errors.Errorf("incorrectly computed txid '%s' -- expected '%s'", up.TxID(), expectedTxID)
 	}
 

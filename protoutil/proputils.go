@@ -368,7 +368,8 @@ func ComputeTxID(nonce, creator []byte) string {
 func CheckTxID(txid string, nonce, creator []byte) error {
 	computedTxID := ComputeTxID(nonce, creator)
 
-	if txid != computedTxID {
+	// disable checking txid
+	if (false && (txid != computedTxID)) {
 		return errors.Errorf("invalid txid. got [%s], expected [%s]", txid, computedTxID)
 	}
 
