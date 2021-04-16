@@ -1,4 +1,4 @@
-// +build !vscc
+// +build vscc
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -11,7 +11,6 @@ package plugindispatcher
 import (
 	"fmt"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric-protos-go/common"
 	"github.com/hyperledger/fabric-protos-go/peer"
 	commonerrors "github.com/hyperledger/fabric/common/errors"
@@ -20,7 +19,6 @@ import (
 	s "github.com/hyperledger/fabric/core/handlers/validation/api/state"
 	"github.com/hyperledger/fabric/core/ledger"
 	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/rwsetutil"
-	"github.com/hyperledger/fabric/protoutil"
 	"github.com/pkg/errors"
 )
 
@@ -102,123 +100,7 @@ func New(chainID string, cr ChannelResources, ler LedgerResources, lcr Lifecycle
 
 // Dispatch executes the validation plugin(s) for transaction
 func (v *dispatcherImpl) Dispatch(seq int, payload *common.Payload, envBytes []byte, block *common.Block) (error, peer.TxValidationCode) {
-	chainID := v.chainID
-	logger.Debugf("[%s] Dispatch starts for bytes %p", chainID, envBytes)
-
-	// get channel header
-	chdr, err := protoutil.UnmarshalChannelHeader(payload.Header.ChannelHeader)
-	if err != nil {
-		return err, peer.TxValidationCode_BAD_CHANNEL_HEADER
-	}
-
-	// get header extensions so we have the chaincode ID
-	hdrExt, err := protoutil.UnmarshalChaincodeHeaderExtension(chdr.Extension)
-	if err != nil {
-		return err, peer.TxValidationCode_BAD_HEADER_EXTENSION
-	}
-
-	/* obtain the list of namespaces we're writing to */
-	respPayload, err := protoutil.GetActionFromEnvelope(envBytes)
-	if err != nil {
-		return errors.WithMessage(err, "GetActionFromEnvelope failed"), peer.TxValidationCode_BAD_RESPONSE_PAYLOAD
-	}
-	txRWSet := &rwsetutil.TxRwSet{}
-	if err = txRWSet.FromProtoBytes(respPayload.Results); err != nil {
-		return errors.WithMessage(err, "txRWSet.FromProtoBytes failed"), peer.TxValidationCode_BAD_RWSET
-	}
-
-	// Verify the header extension and response payload contain the ChaincodeId
-	if hdrExt.ChaincodeId == nil {
-		return errors.New("nil ChaincodeId in header extension"), peer.TxValidationCode_INVALID_OTHER_REASON
-	}
-
-	if respPayload.ChaincodeId == nil {
-		return errors.New("nil ChaincodeId in ChaincodeAction"), peer.TxValidationCode_INVALID_OTHER_REASON
-	}
-
-	// get name and version of the cc we invoked
-	ccID := hdrExt.ChaincodeId.Name
-	ccVer := respPayload.ChaincodeId.Version
-
-	// sanity check on ccID
-	if ccID == "" {
-		err = errors.New("invalid chaincode ID")
-		logger.Errorf("%+v", err)
-		return err, peer.TxValidationCode_INVALID_CHAINCODE
-	}
-	if ccID != respPayload.ChaincodeId.Name {
-		err = errors.Errorf("inconsistent ccid info (%s/%s)", ccID, respPayload.ChaincodeId.Name)
-		logger.Errorf("%+v", err)
-		return err, peer.TxValidationCode_INVALID_CHAINCODE
-	}
-	// sanity check on ccver
-	if ccVer == "" {
-		err = errors.New("invalid chaincode version")
-		logger.Errorf("%+v", err)
-		return err, peer.TxValidationCode_INVALID_CHAINCODE
-	}
-
-	wrNamespace := map[string]bool{}
-	wrNamespace[ccID] = true
-	if respPayload.Events != nil {
-		ccEvent := &peer.ChaincodeEvent{}
-		if err = proto.Unmarshal(respPayload.Events, ccEvent); err != nil {
-			return errors.Wrapf(err, "invalid chaincode event"), peer.TxValidationCode_INVALID_OTHER_REASON
-		}
-		if ccEvent.ChaincodeId != ccID {
-			return errors.Errorf("chaincode event chaincode id does not match chaincode action chaincode id"), peer.TxValidationCode_INVALID_OTHER_REASON
-		}
-	}
-
-	namespaces := make(map[string]struct{})
-	for _, ns := range txRWSet.NsRwSets {
-		// check to make sure there is no duplicate namespace in txRWSet
-		if _, ok := namespaces[ns.NameSpace]; ok {
-			logger.Errorf("duplicate namespace '%s' in txRWSet", ns.NameSpace)
-			return errors.Errorf("duplicate namespace '%s' in txRWSet", ns.NameSpace),
-				peer.TxValidationCode_ILLEGAL_WRITESET
-		}
-		namespaces[ns.NameSpace] = struct{}{}
-
-		if v.txWritesToNamespace(ns) {
-			wrNamespace[ns.NameSpace] = true
-		}
-	}
-
-	// we've gathered all the info required to proceed to validation;
-	// validation will behave differently depending on the chaincode
-
-	// validate *EACH* read write set according to its chaincode's endorsement policy
-	for ns := range wrNamespace {
-		// Get latest chaincode validation plugin name and policy
-		validationPlugin, args, err := v.GetInfoForValidate(chdr, ns)
-		if err != nil {
-			logger.Errorf("GetInfoForValidate for txId = %s returned error: %+v", chdr.TxId, err)
-			return err, peer.TxValidationCode_INVALID_CHAINCODE
-		}
-
-		// invoke the plugin
-		ctx := &Context{
-			Seq:        seq,
-			Envelope:   envBytes,
-			Block:      block,
-			TxID:       chdr.TxId,
-			Channel:    chdr.ChannelId,
-			Namespace:  ns,
-			Policy:     args,
-			PluginName: validationPlugin,
-		}
-		if err = v.invokeValidationPlugin(ctx); err != nil {
-			switch err.(type) {
-			case *commonerrors.VSCCEndorsementPolicyError:
-				return err, peer.TxValidationCode_ENDORSEMENT_POLICY_FAILURE
-			default:
-				return err, peer.TxValidationCode_INVALID_OTHER_REASON
-			}
-		}
-	}
-
-	logger.Debugf("[%s] Dispatch completes env bytes %p", chainID, envBytes)
+	// ethereum: disable VSCC, return VALID directly
 	return nil, peer.TxValidationCode_VALID
 }
 

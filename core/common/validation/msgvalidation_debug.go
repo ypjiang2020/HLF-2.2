@@ -1,4 +1,4 @@
-// +build !vscc
+// +build vscc
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -246,6 +246,7 @@ func validateEndorserTransaction(data []byte, hdr *common.Header) error {
 	return nil
 }
 
+// todo: disable VSCC
 // ValidateTransaction checks that the transaction envelope is properly formed
 func ValidateTransaction(e *common.Envelope, cryptoProvider bccsp.BCCSP) (*common.Payload, pb.TxValidationCode) {
 	putilsLogger.Debugf("ValidateTransactionEnvelope starts for envelope %p", e)
@@ -273,11 +274,11 @@ func ValidateTransaction(e *common.Envelope, cryptoProvider bccsp.BCCSP) (*commo
 	}
 
 	// validate the signature in the envelope
-	err = checkSignatureFromCreator(shdr.Creator, e.Signature, e.Payload, chdr.ChannelId, cryptoProvider)
-	if err != nil {
-		putilsLogger.Errorf("checkSignatureFromCreator returns err %s", err)
-		return nil, pb.TxValidationCode_BAD_CREATOR_SIGNATURE
-	}
+	// err = checkSignatureFromCreator(shdr.Creator, e.Signature, e.Payload, chdr.ChannelId, cryptoProvider)
+	// if err != nil {
+	// 	putilsLogger.Errorf("checkSignatureFromCreator returns err %s", err)
+	// 	return nil, pb.TxValidationCode_BAD_CREATOR_SIGNATURE
+	// }
 
 	// TODO: ensure that creator can transact with us (some ACLs?) which set of APIs is supposed to give us this info?
 
