@@ -1,4 +1,4 @@
-// +build !redis
+// +build redis
 
 /*
 Copyright IBM Corp. 2016 All Rights Reserved.
@@ -12,6 +12,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -102,10 +103,12 @@ type Endorser struct {
 	Support                Support
 	PvtRWSetAssembler      PvtRWSetAssembler
 	Metrics                *Metrics
+	lock                   sync.Mutex
 }
 
 // call specified chaincode (system or user)
 func (e *Endorser) callChaincode(txParams *ccprovider.TransactionParams, input *pb.ChaincodeInput, chaincodeName string) (*pb.Response, *pb.ChaincodeEvent, error) {
+	e.lock.Lock() // sequential execute
 	defer func(start time.Time) {
 		logger := endorserLogger.WithOptions(zap.AddCallerSkip(1))
 		logger = decorateLogger(logger, txParams)
@@ -120,9 +123,11 @@ func (e *Endorser) callChaincode(txParams *ccprovider.TransactionParams, input *
 
 	res, ccevent, err := e.Support.Execute(txParams, chaincodeName, input)
 	if err != nil {
+		e.lock.Unlock()
 		e.Metrics.SimulationFailure.With(meterLabels...).Add(1)
 		return nil, nil, err
 	}
+	e.lock.Unlock() // sequential execute
 
 	// per doc anything < 400 can be sent as TX.
 	// fabric errors will always be >= 400 (ie, unambiguous errors )
@@ -294,6 +299,7 @@ func (e *Endorser) preProcess(up *UnpackedProposal, channel *Channel) error {
 	return nil
 }
 
+// ethereum: TODO
 // ProcessProposal process the Proposal
 func (e *Endorser) ProcessProposal(ctx context.Context, signedProp *pb.SignedProposal) (*pb.ProposalResponse, error) {
 	// start time for computing elapsed time metric for successfully endorsed proposals

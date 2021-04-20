@@ -1,4 +1,4 @@
-// +build !vscc
+// +build !vscc,!redis
 
 /*
 Copyright IBM Corp. All Rights Reserved.

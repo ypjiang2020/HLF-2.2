@@ -1,4 +1,4 @@
-// +build vscc
+// +build redis
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -46,7 +46,7 @@ func GetInfo() string {
 		metadata.BaseDockerLabel,
 		metadata.DockerNamespace)
 
-	return fmt.Sprintf("\nethereum: disable VSCC\n%s:\n Version: %s\n Commit SHA: %s\n Go version: %s\n"+
+	return fmt.Sprintf("\nethereum: redis\n%s:\n Version: %s\n Commit SHA: %s\n Go version: %s\n"+
 		" OS/Arch: %s\n"+
 		" Chaincode:\n%s\n",
 		ProgramName, metadata.Version, metadata.CommitSHA, runtime.Version(),

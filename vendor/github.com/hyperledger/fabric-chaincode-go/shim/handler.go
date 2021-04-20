@@ -617,6 +617,7 @@ func (h *Handler) handleReady(msg *pb.ChaincodeMessage, errc chan error) error {
 		return nil
 
 	case pb.ChaincodeMessage_TRANSACTION:
+		// ethereum: start a goroutine to process new transaction
 		go h.handleStubInteraction(h.handleTransaction, msg, errc)
 		return nil
 
