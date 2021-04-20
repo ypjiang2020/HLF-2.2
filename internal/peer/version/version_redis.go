@@ -1,4 +1,4 @@
-// +build redis
+// +build redis,!vscc
 
 /*
 Copyright IBM Corp. All Rights Reserved.
