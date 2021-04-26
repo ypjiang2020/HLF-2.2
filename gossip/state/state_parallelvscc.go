@@ -1,4 +1,6 @@
-// +build !parallelvscc
+// +build parallelvscc
+
+// From Fastfabcir
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -575,13 +577,15 @@ func (s *GossipStateProviderImpl) deliverPayloads() {
 						continue
 					}
 				}
-				if err := s.commitBlock(rawBlock, p); err != nil {
-					if executionErr, isExecutionErr := err.(*vsccErrors.VSCCExecutionFailureError); isExecutionErr {
-						s.logger.Errorf("Failed executing VSCC due to %v. Aborting chain processing", executionErr)
-						return
+				go func(rawblock *common.Block, p util.PvtDataCollections) {
+					if err := s.commitBlock(rawBlock, p); err != nil {
+						if executionErr, isExecutionErr := err.(*vsccErrors.VSCCExecutionFailureError); isExecutionErr {
+							s.logger.Errorf("Failed executing VSCC due to %v. Aborting chain processing", executionErr)
+							return
+						}
+						s.logger.Panicf("Cannot commit block to the ledger due to %+v", errors.WithStack(err))
 					}
-					s.logger.Panicf("Cannot commit block to the ledger due to %+v", errors.WithStack(err))
-				}
+				}(rawBlock, p)
 			}
 		case <-s.stopCh:
 			s.logger.Debug("State provider has been stopped, finishing to push new blocks.")

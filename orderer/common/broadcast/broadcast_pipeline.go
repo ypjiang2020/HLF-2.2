@@ -1,4 +1,6 @@
-// +build !pipeline
+// +build pipeline
+
+// From fastfabirc: https://github.com/cgorenflo/fabric/commit/64c8a340d6d4bf7993741a0a47f70037f43a2e56
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -68,29 +70,46 @@ type Handler struct {
 func (bh *Handler) Handle(srv ab.AtomicBroadcast_BroadcastServer) error {
 	addr := util.ExtractRemoteAddress(srv.Context())
 	logger.Debugf("Starting new broadcast loop for %s", addr)
-	for {
-		msg, err := srv.Recv()
-		if err == io.EOF {
-			logger.Debugf("Received EOF from %s, hangup", addr)
-			return nil
-		}
-		if err != nil {
-			logger.Warningf("Error reading from %s: %s", addr, err)
-			return err
+	msgs := make(chan *cb.Envelope, 1000)
+	var err error
+	go func() {
+		defer close(msgs)
+		for {
+			var msg *cb.Envelope
+			msg, err = srv.Recv()
+			if err == io.EOF {
+				logger.Debugf("Received EOF from %s, hangup", addr)
+				return
+			}
+			if err != nil {
+				logger.Warningf("Error reading from %s: %s", addr, err)
+				return
+			}
+			msgs <- msg
 		}
 
-		resp := bh.ProcessMessage(msg, addr)
-		err = srv.Send(resp)
+	}()
+
+	resps := make(chan *ab.BroadcastResponse, 1000)
+	go func() {
+		for msg := range msgs {
+			resps <- bh.ProcessMessage(msg, addr)
+		}
+		close(resps)
+
+	}()
+	for resp := range resps {
+		e := srv.Send(resp)
 		if resp.Status != cb.Status_SUCCESS {
 			return err
 		}
 
-		if err != nil {
-			logger.Warningf("Error sending to %s: %s", addr, err)
-			return err
+		if e != nil {
+			logger.Warningf("Error sending to %s: %s", addr, e)
+			return e
 		}
 	}
-
+	return err
 }
 
 type MetricsTracker struct {

@@ -17,6 +17,11 @@ GO_TAGS="vscc"
 GO_TAGS="redis"
 # disable vscc & sequential execute
 GO_TAGS="vscc redis"
+
+# block-level parallel VSCC 
+GO_TAGS="parallel"
+# pipeline orderer?
+GO_TAGS="pipeline"
 ```
 
 
