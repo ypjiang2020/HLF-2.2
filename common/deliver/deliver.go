@@ -153,6 +153,7 @@ func NewHandler(cm ChainManager, timeWindow time.Duration, mutualTLS bool, metri
 	}
 }
 
+// ethereum: deliver server handle messages
 // Handle receives incoming deliver requests.
 func (h *Handler) Handle(ctx context.Context, srv *Server) error {
 	addr := util.ExtractRemoteAddress(ctx)

@@ -1,4 +1,4 @@
-// +build !tdb
+// +build tdb
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -35,6 +35,17 @@ func newTxSimulator(txmgr *LockBasedTxMgr, txid string, hashFunc rwsetutil.HashF
 }
 
 // ethereum: update state
+func (s *txSimulator) SetStateWithVersion(ns string, key string, value []byte, version []byte) error {
+	if err := s.checkWritePrecondition(key, value); err != nil {
+		return err
+	}
+	s.rwsetBuilder.AddToWriteSet(ns, key, append(version, value...))
+	// ethereum: TODO: write to DB in batch mode for efficiency
+	s.txmgr.tdb.PutState(ns, key, value, version)
+	return nil
+
+}
+
 // SetState implements method in interface `ledger.TxSimulator`
 func (s *txSimulator) SetState(ns string, key string, value []byte) error {
 	if err := s.checkWritePrecondition(key, value); err != nil {
@@ -162,7 +173,7 @@ func (s *txSimulator) GetTxSimulationResults() (*ledger.TxSimulationResults, err
 		return nil, s.queryExecutor.err
 	}
 	s.queryExecutor.addRangeQueryInfo()
-	return s.rwsetBuilder.GetTxSimulationResults()
+	return s.rwsetBuilder.GetTxSimulationResults() // ethereum
 }
 
 // ExecuteUpdate implements method in interface `ledger.TxSimulator`

@@ -1,4 +1,4 @@
-// +build !tdb
+// +build tdb
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -18,8 +18,8 @@ import (
 func encodeValue(v *statedb.VersionedValue) ([]byte, error) {
 	return proto.Marshal(
 		&DBValue{
-			Version:  v.Version.ToBytes(),
-			Value:    v.Value,
+			Version:  v.Value[:16],
+			Value:    v.Value[16:],
 			Metadata: v.Metadata,
 		},
 	)

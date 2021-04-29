@@ -234,6 +234,7 @@ func retrievePersistedChannelConfig(ledger ledger.PeerLedger) (*common.Config, e
 	return retrieveChannelConfig(qe)
 }
 
+// ethereum: peer create channel
 // createChannel creates a new channel object and insert it into the channels slice.
 func (p *Peer) createChannel(
 	cid string,

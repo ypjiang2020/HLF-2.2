@@ -27,7 +27,7 @@ const (
 )
 
 var (
-	dbNameKeySep     = []byte{0x00}
+	dbNameKeySep     = []byte{0x00} // ethereum
 	lastKeyIndicator = byte(0x01)
 	formatVersionKey = []byte{'f'} // a single key in db whose value indicates the version of the data format
 )

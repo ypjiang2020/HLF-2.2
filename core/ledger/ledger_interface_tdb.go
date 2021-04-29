@@ -1,4 +1,4 @@
-// +build !tdb
+// +build tdb
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -279,6 +279,7 @@ type HistoryQueryExecutor interface {
 // Set* methods are for supporting KV-based data model. ExecuteUpdate method is for supporting a rich datamodel and query support
 type TxSimulator interface {
 	QueryExecutor
+	SetStateWithVersion(namespace string, key string, value []byte, version []byte) error
 	// SetState sets the given value for the given namespace and key. For a chaincode, the namespace corresponds to the chaincodeId
 	SetState(namespace string, key string, value []byte) error
 	// DeleteState deletes the given namespace and key

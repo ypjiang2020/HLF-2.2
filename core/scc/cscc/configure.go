@@ -242,6 +242,7 @@ func (e *PeerConfiger) joinChain(
 	lr plugindispatcher.LifecycleResources,
 	nr plugindispatcher.CollectionAndLifecycleResources,
 ) pb.Response {
+	// ethereum: peer create channel
 	if err := e.peer.CreateChannel(channelID, block, deployedCCInfoProvider, lr, nr); err != nil {
 		return shim.Error(err.Error())
 	}

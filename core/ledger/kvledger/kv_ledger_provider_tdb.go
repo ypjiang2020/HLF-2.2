@@ -1,4 +1,4 @@
-// +build !tdb
+// +build tdb
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -71,6 +71,7 @@ type Provider struct {
 	blkStoreProvider     *blkstorage.BlockStoreProvider
 	pvtdataStoreProvider *pvtdatastorage.Provider
 	dbProvider           *privacyenabledstate.DBProvider
+	tdbProvider          *privacyenabledstate.DBProvider
 	historydbProvider    *history.DBProvider
 	configHistoryMgr     *confighistory.Mgr
 	stateListeners       []ledger.StateListener
@@ -341,6 +342,13 @@ func (p *Provider) open(ledgerID string) (ledger.PeerLedger, error) {
 	if err != nil {
 		return nil, err
 	}
+	tdb := db
+	// channelInfoProvider = &channelInfoProvider{"tEMp" + ledgerID, blockStore, p.collElgNotifier.deployedChaincodeInfoProvider}
+	// tdb, err := p.dbProvider.GetDBHandle("tEMp"+ledgerID, channelInfoProvider)
+	// if err != nil {
+	// 	fmt.Println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa", err)
+	// 	return nil, err
+	// }
 
 	// Get the history database (index for history of values by key) for a chain/ledger
 	var historyDB *history.DB
@@ -356,6 +364,7 @@ func (p *Provider) open(ledgerID string) (ledger.PeerLedger, error) {
 		blockStore:               blockStore,
 		pvtdataStore:             pvtdataStore,
 		stateDB:                  db,
+		tstateDB:                 tdb,
 		historyDB:                historyDB,
 		configHistoryMgr:         p.configHistoryMgr,
 		stateListeners:           p.stateListeners,

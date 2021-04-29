@@ -39,6 +39,7 @@ func NewHeightFromBytes(b []byte) (*Height, int, error) {
 	if err != nil {
 		return nil, -1, err
 	}
+	fmt.Println("ethereum: newHeightFromBytes")
 	txNum, n2, err := util.DecodeOrderPreservingVarUint64(b[n1:])
 	if err != nil {
 		return nil, -1, err

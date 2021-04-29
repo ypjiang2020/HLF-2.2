@@ -1,4 +1,4 @@
-// +build !tdb
+// +build tdb
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -38,6 +38,7 @@ var logger = flogging.MustGetLogger("lockbasedtxmgr")
 type LockBasedTxMgr struct {
 	ledgerid            string
 	db                  *privacyenabledstate.DB
+	tdb                 *privacyenabledstate.DB
 	pvtdataPurgeMgr     *pvtdataPurgeMgr
 	commitBatchPreparer *validation.CommitBatchPreparer
 	stateListeners      []ledger.StateListener
@@ -93,6 +94,7 @@ func (c *current) maxTxNumber() uint64 {
 type Initializer struct {
 	LedgerID            string
 	DB                  *privacyenabledstate.DB
+	TDB                 *privacyenabledstate.DB
 	StateListeners      []ledger.StateListener
 	BtlPolicy           pvtdatapolicy.BTLPolicy
 	BookkeepingProvider bookkeeping.Provider
@@ -111,9 +113,13 @@ func NewLockBasedTxMgr(initializer *Initializer) (*LockBasedTxMgr, error) {
 	if err := initializer.DB.Open(); err != nil {
 		return nil, err
 	}
+	if err := initializer.TDB.Open(); err != nil {
+		return nil, err
+	}
 	txmgr := &LockBasedTxMgr{
 		ledgerid:       initializer.LedgerID,
 		db:             initializer.DB,
+		tdb:            initializer.TDB,
 		stateListeners: initializer.StateListeners,
 		ccInfoProvider: initializer.CCInfoProvider,
 		hashFunc:       initializer.HashFunc,

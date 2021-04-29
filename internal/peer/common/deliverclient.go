@@ -42,6 +42,7 @@ type DeliverClient struct {
 	BestEffort  bool
 }
 
+// ethereum: deliver client send messages
 func (d *DeliverClient) seekSpecified(blockNumber uint64) error {
 	seekPosition := &ab.SeekPosition{
 		Type: &ab.SeekPosition_Specified{

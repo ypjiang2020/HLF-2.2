@@ -1,4 +1,4 @@
-// +build !tdb
+// +build tdb
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -984,7 +984,7 @@ func (h *Handler) getTxContextForInvoke(channelID string, txid string, payload [
 }
 
 func (h *Handler) HandlePutState(msg *pb.ChaincodeMessage, txContext *TransactionContext) (*pb.ChaincodeMessage, error) {
-	// dd: put state
+	fmt.Println("ethereum: handlePutState")
 	putState := &pb.PutState{}
 	err := proto.Unmarshal(msg.Payload, putState)
 	if err != nil {
@@ -1002,7 +1002,12 @@ func (h *Handler) HandlePutState(msg *pb.ChaincodeMessage, txContext *Transactio
 		}
 		err = txContext.TXSimulator.SetPrivateData(namespaceID, collection, putState.Key, putState.Value)
 	} else {
-		err = txContext.TXSimulator.SetState(namespaceID, putState.Key, putState.Value)
+		// ethereum: put version
+		// assume len(txContext.SignedProp.Signature) >= 16
+		fmt.Println("ethereum: put into tDB")
+		fmt.Println(string(putState.Key))
+		version := txContext.SignedProp.Signature[len(txContext.SignedProp.Signature)-16:]
+		err = txContext.TXSimulator.SetStateWithVersion(namespaceID, putState.Key, putState.Value, version)
 	}
 	if err != nil {
 		return nil, errors.WithStack(err)

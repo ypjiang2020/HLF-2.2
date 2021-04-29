@@ -1,4 +1,4 @@
-// +build !tdb
+// +build tdb
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -72,7 +72,7 @@ func (q *queryExecutor) getState(ns, key string) ([]byte, []byte, error) {
 	if err := q.checkDone(); err != nil {
 		return nil, nil, err
 	}
-	versionedValue, err := q.txmgr.db.GetState(ns, key)
+	versionedValue, err := q.txmgr.tdb.GetState(ns, key) // ethereum: version is not right now, TODO
 	if err != nil {
 		return nil, nil, err
 	}
@@ -91,7 +91,7 @@ func (q *queryExecutor) GetStateMetadata(ns, key string) (map[string][]byte, err
 	var metadata []byte
 	var err error
 	if !q.collectReadset {
-		if metadata, err = q.txmgr.db.GetStateMetadata(ns, key); err != nil {
+		if metadata, err = q.txmgr.tdb.GetStateMetadata(ns, key); err != nil {
 			return nil, err
 		}
 	} else {
@@ -107,7 +107,7 @@ func (q *queryExecutor) GetStateMultipleKeys(ns string, keys []string) ([][]byte
 	if err := q.checkDone(); err != nil {
 		return nil, err
 	}
-	versionedValues, err := q.txmgr.db.GetStateMultipleKeys(ns, keys)
+	versionedValues, err := q.txmgr.tdb.GetStateMultipleKeys(ns, keys)
 	if err != nil {
 		return nil, nil
 	}
@@ -135,7 +135,7 @@ func (q *queryExecutor) GetStateRangeScanIterator(namespace string, startKey str
 		startKey,
 		endKey,
 		0,
-		q.txmgr.db,
+		q.txmgr.tdb,
 		q.rwsetBuilder,
 		queryReadsHashingEnabled,
 		maxDegreeQueryReadsHashing,
@@ -157,7 +157,7 @@ func (q *queryExecutor) GetStateRangeScanIteratorWithPagination(namespace string
 		startKey,
 		endKey,
 		pageSize,
-		q.txmgr.db,
+		q.txmgr.tdb,
 		q.rwsetBuilder,
 		queryReadsHashingEnabled,
 		maxDegreeQueryReadsHashing,
@@ -175,7 +175,7 @@ func (q *queryExecutor) ExecuteQuery(namespace, query string) (commonledger.Resu
 	if err := q.checkDone(); err != nil {
 		return nil, err
 	}
-	dbItr, err := q.txmgr.db.ExecuteQuery(namespace, query)
+	dbItr, err := q.txmgr.tdb.ExecuteQuery(namespace, query)
 	if err != nil {
 		return nil, err
 	}
@@ -186,7 +186,7 @@ func (q *queryExecutor) ExecuteQueryWithPagination(namespace, query, bookmark st
 	if err := q.checkDone(); err != nil {
 		return nil, err
 	}
-	dbItr, err := q.txmgr.db.ExecuteQueryWithPagination(namespace, query, bookmark, pageSize)
+	dbItr, err := q.txmgr.tdb.ExecuteQueryWithPagination(namespace, query, bookmark, pageSize)
 	if err != nil {
 		return nil, err
 	}
@@ -206,7 +206,7 @@ func (q *queryExecutor) GetPrivateData(ns, coll, key string) ([]byte, error) {
 	var hashVersion *version.Height
 	var versionedValue *statedb.VersionedValue
 
-	if versionedValue, err = q.txmgr.db.GetPrivateData(ns, coll, key); err != nil {
+	if versionedValue, err = q.txmgr.tdb.GetPrivateData(ns, coll, key); err != nil {
 		return nil, err
 	}
 
@@ -214,7 +214,7 @@ func (q *queryExecutor) GetPrivateData(ns, coll, key string) ([]byte, error) {
 	val, _, ver := decomposeVersionedValue(versionedValue)
 
 	keyHash := util.ComputeStringHash(key)
-	if hashVersion, err = q.txmgr.db.GetKeyHashVersion(ns, coll, keyHash); err != nil {
+	if hashVersion, err = q.txmgr.tdb.GetKeyHashVersion(ns, coll, keyHash); err != nil {
 		return nil, err
 	}
 	if !version.AreSame(hashVersion, ver) {
@@ -237,7 +237,7 @@ func (q *queryExecutor) GetPrivateDataHash(ns, coll, key string) ([]byte, error)
 	}
 	var versionedValue *statedb.VersionedValue
 	var err error
-	if versionedValue, err = q.txmgr.db.GetPrivateDataHash(ns, coll, key); err != nil {
+	if versionedValue, err = q.txmgr.tdb.GetPrivateDataHash(ns, coll, key); err != nil {
 		return nil, err
 	}
 	valHash, _, ver := decomposeVersionedValue(versionedValue)
@@ -274,7 +274,7 @@ func (q *queryExecutor) getPrivateDataValueHash(ns, coll, key string) (valueHash
 		return nil, nil, err
 	}
 	var versionedValue *statedb.VersionedValue
-	if versionedValue, err = q.txmgr.db.GetPrivateDataHash(ns, coll, key); err != nil {
+	if versionedValue, err = q.txmgr.tdb.GetPrivateDataHash(ns, coll, key); err != nil {
 		return nil, nil, err
 	}
 	valHash, metadata, ver := decomposeVersionedValue(versionedValue)
@@ -300,7 +300,7 @@ func (q *queryExecutor) getPrivateDataMetadataByHash(ns, coll string, keyhash []
 		// this requires to improve rwset builder to accept a keyhash
 		return nil, errors.New("retrieving private data metadata by keyhash is not supported in simulation. This function is only available for query as yet")
 	}
-	metadataBytes, err := q.txmgr.db.GetPrivateDataMetadataByHash(ns, coll, keyhash)
+	metadataBytes, err := q.txmgr.tdb.GetPrivateDataMetadataByHash(ns, coll, keyhash)
 	if err != nil {
 		return nil, err
 	}
@@ -315,7 +315,7 @@ func (q *queryExecutor) GetPrivateDataMultipleKeys(ns, coll string, keys []strin
 	if err := q.checkDone(); err != nil {
 		return nil, err
 	}
-	versionedValues, err := q.txmgr.db.GetPrivateDataMultipleKeys(ns, coll, keys)
+	versionedValues, err := q.txmgr.tdb.GetPrivateDataMultipleKeys(ns, coll, keys)
 	if err != nil {
 		return nil, nil
 	}
@@ -338,7 +338,7 @@ func (q *queryExecutor) GetPrivateDataRangeScanIterator(ns, coll, startKey, endK
 	if err := q.checkDone(); err != nil {
 		return nil, err
 	}
-	dbItr, err := q.txmgr.db.GetPrivateDataRangeScanIterator(ns, coll, startKey, endKey)
+	dbItr, err := q.txmgr.tdb.GetPrivateDataRangeScanIterator(ns, coll, startKey, endKey)
 	if err != nil {
 		return nil, err
 	}
@@ -353,7 +353,7 @@ func (q *queryExecutor) ExecuteQueryOnPrivateData(ns, coll, query string) (commo
 	if err := q.checkDone(); err != nil {
 		return nil, err
 	}
-	dbItr, err := q.txmgr.db.ExecuteQueryOnPrivateData(ns, coll, query)
+	dbItr, err := q.txmgr.tdb.ExecuteQueryOnPrivateData(ns, coll, query)
 	if err != nil {
 		return nil, err
 	}

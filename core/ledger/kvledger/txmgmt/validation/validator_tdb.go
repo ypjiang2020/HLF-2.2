@@ -1,4 +1,4 @@
-// +build !tdb
+// +build tdb
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -103,7 +103,10 @@ func (v *validator) validateAndPrepareBatch(blk *block, doMVCCValidation bool) (
 		tx.validationCode = validationCode
 		if validationCode == peer.TxValidationCode_VALID {
 			logger.Debugf("Block [%d] Transaction index [%d] TxId [%s] marked as valid by state validator. ContainsPostOrderWrites [%t]", blk.num, tx.indexInBlock, tx.id, tx.containsPostOrderWrites)
-			committingTxHeight := version.NewHeight(blk.num, uint64(tx.indexInBlock)) // ethereum: fill key version until now
+			// ethereum: fill key version until now
+			// blockid := binary.BigEndian.Uint64(sig[len(sig)-16 : len(sig)-8])
+			// txid := binary.BigEndian.Uint64(sig[len(sig)-8:])
+			committingTxHeight := version.NewHeight(0, 0)
 			if err := updates.applyWriteSet(tx.rwset, committingTxHeight, v.db, tx.containsPostOrderWrites); err != nil {
 				return nil, err
 			}

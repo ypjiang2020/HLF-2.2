@@ -1,4 +1,4 @@
-// +build !tdb
+// +build tdb
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -69,6 +69,7 @@ type lgrInitializer struct {
 	blockStore               *blkstorage.BlockStore
 	pvtdataStore             *pvtdatastorage.Store
 	stateDB                  *privacyenabledstate.DB
+	tstateDB                 *privacyenabledstate.DB
 	historyDB                *history.DB
 	configHistoryMgr         *confighistory.Mgr
 	stateListeners           []ledger.StateListener
@@ -110,6 +111,7 @@ func newKVLedger(initializer *lgrInitializer) (*kvLedger, error) {
 	txmgrInitializer := &txmgr.Initializer{
 		LedgerID:            ledgerID,
 		DB:                  initializer.stateDB,
+		TDB:                 initializer.tstateDB,
 		StateListeners:      initializer.stateListeners,
 		BtlPolicy:           btlPolicy,
 		BookkeepingProvider: initializer.bookkeeperProvider,

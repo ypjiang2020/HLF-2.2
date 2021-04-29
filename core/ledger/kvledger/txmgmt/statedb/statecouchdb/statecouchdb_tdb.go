@@ -1,4 +1,4 @@
-// +build !tdb
+// +build tdb
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -395,6 +395,10 @@ func (vdb *VersionedDB) ValidateKeyValue(key string, value []byte) error {
 // BytesKeySupported implements method in VersionvdbedDB interface
 func (vdb *VersionedDB) BytesKeySupported() bool {
 	return false
+}
+
+func (vdb *VersionedDB) PutState(namespace string, key string, value []byte, version []byte) error {
+	return nil
 }
 
 // GetState implements method in VersionedDB interface

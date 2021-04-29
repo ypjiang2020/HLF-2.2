@@ -1,4 +1,4 @@
-// +build !tdb
+// +build tdb
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -10,7 +10,9 @@ package stateleveldb
 
 import (
 	"bytes"
+	"encoding/binary"
 
+	proto "github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric/common/flogging"
 	"github.com/hyperledger/fabric/common/ledger/dataformat"
 	"github.com/hyperledger/fabric/common/ledger/util/leveldbhelper"
@@ -90,6 +92,21 @@ func (vdb *versionedDB) ValidateKeyValue(key string, value []byte) error {
 // BytesKeySupported implements method in VersionedDB interface
 func (vdb *versionedDB) BytesKeySupported() bool {
 	return true
+}
+
+// PutState implements method in VersionedDB interface
+func (vdb *versionedDB) PutState(namespace string, key string, value []byte, ver []byte) error {
+	logger.Debugf("PutState(). ns=%s, key=%s", namespace, key)
+
+	ve := version.NewHeight(binary.BigEndian.Uint64(ver[:8]), binary.BigEndian.Uint64(ver[8:]))
+	v, _ := proto.Marshal(
+		&DBValue{
+			Version:  ve.ToBytes(),
+			Value:    value,
+			Metadata: nil,
+		},
+	)
+	return vdb.db.Put(encodeDataKey(namespace, key), v, false) // ethereum: sync=true?
 }
 
 // GetState implements method in VersionedDB interface

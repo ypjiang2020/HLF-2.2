@@ -1,4 +1,4 @@
-// +build !tdb
+// +build tdb
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -31,6 +31,8 @@ type VersionedDBProvider interface {
 type VersionedDB interface {
 	// GetState gets the value for given namespace and key. For a chaincode, the namespace corresponds to the chaincodeId
 	GetState(namespace string, key string) (*VersionedValue, error)
+	// PutState puts the value for given namespace and key. For a chaincode, the namespace corresponds to the chaincodeId
+	PutState(namespace string, key string, value []byte, version []byte) error
 	// GetVersion gets the version for given namespace and key. For a chaincode, the namespace corresponds to the chaincodeId
 	GetVersion(namespace string, key string) (*version.Height, error)
 	// GetStateMultipleKeys gets the values for multiple keys in a single call

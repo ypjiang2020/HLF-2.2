@@ -56,10 +56,29 @@ func CreateDB(conf *Conf) *DB {
 		writeOptsSync:   writeOptsSync}
 }
 
+func (dbInst *DB) Print(op string) {
+	fmt.Printf("ethereum %s\n", op)
+	iter := dbInst.db.NewIterator(nil, nil)
+	cnt := 0
+	for iter.Next() {
+		key := iter.Key()
+		value := iter.Value()
+		if string(key) == "lmychannel" {
+			continue
+		}
+		fmt.Printf("\t%d %s %s\n", cnt, string(key), string(value))
+		cnt += 1
+	}
+	iter.Release()
+}
+
 // Open opens the underlying db
 func (dbInst *DB) Open() {
 	dbInst.mutex.Lock()
-	defer dbInst.mutex.Unlock()
+	defer func() {
+		dbInst.Print("open")
+		dbInst.mutex.Unlock()
+	}()
 	if dbInst.dbState == opened {
 		return
 	}
@@ -80,7 +99,10 @@ func (dbInst *DB) Open() {
 // IsEmpty returns whether or not a database is empty
 func (dbInst *DB) IsEmpty() (bool, error) {
 	dbInst.mutex.RLock()
-	defer dbInst.mutex.RUnlock()
+	defer func() {
+		dbInst.Print("IsEmpty")
+		dbInst.mutex.RUnlock()
+	}()
 	itr := dbInst.db.NewIterator(&goleveldbutil.Range{}, dbInst.readOpts)
 	defer itr.Release()
 	hasItems := itr.Next()
@@ -91,7 +113,10 @@ func (dbInst *DB) IsEmpty() (bool, error) {
 // Close closes the underlying db
 func (dbInst *DB) Close() {
 	dbInst.mutex.Lock()
-	defer dbInst.mutex.Unlock()
+	defer func() {
+		dbInst.Print("Close")
+		dbInst.mutex.RUnlock()
+	}()
 	if dbInst.dbState == closed {
 		return
 	}
@@ -104,7 +129,10 @@ func (dbInst *DB) Close() {
 // Get returns the value for the given key
 func (dbInst *DB) Get(key []byte) ([]byte, error) {
 	dbInst.mutex.RLock()
-	defer dbInst.mutex.RUnlock()
+	defer func() {
+		dbInst.Print("get")
+		dbInst.mutex.RUnlock()
+	}()
 	value, err := dbInst.db.Get(key, dbInst.readOpts)
 	if err == leveldb.ErrNotFound {
 		value = nil
@@ -120,7 +148,10 @@ func (dbInst *DB) Get(key []byte) ([]byte, error) {
 // Put saves the key/value
 func (dbInst *DB) Put(key []byte, value []byte, sync bool) error {
 	dbInst.mutex.RLock()
-	defer dbInst.mutex.RUnlock()
+	defer func() {
+		dbInst.Print("put")
+		dbInst.mutex.RUnlock()
+	}()
 	wo := dbInst.writeOptsNoSync
 	if sync {
 		wo = dbInst.writeOptsSync
@@ -136,7 +167,10 @@ func (dbInst *DB) Put(key []byte, value []byte, sync bool) error {
 // Delete deletes the given key
 func (dbInst *DB) Delete(key []byte, sync bool) error {
 	dbInst.mutex.RLock()
-	defer dbInst.mutex.RUnlock()
+	defer func() {
+		dbInst.Print("delete")
+		dbInst.mutex.RUnlock()
+	}()
 	wo := dbInst.writeOptsNoSync
 	if sync {
 		wo = dbInst.writeOptsSync
@@ -161,7 +195,10 @@ func (dbInst *DB) GetIterator(startKey []byte, endKey []byte) iterator.Iterator 
 // WriteBatch writes a batch
 func (dbInst *DB) WriteBatch(batch *leveldb.Batch, sync bool) error {
 	dbInst.mutex.RLock()
-	defer dbInst.mutex.RUnlock()
+	defer func() {
+		dbInst.Print("writeBatch")
+		dbInst.mutex.RUnlock()
+	}()
 	wo := dbInst.writeOptsNoSync
 	if sync {
 		wo = dbInst.writeOptsSync
