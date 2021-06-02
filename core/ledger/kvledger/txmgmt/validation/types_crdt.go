@@ -97,6 +97,7 @@ type AccountWrapper struct {
 	txHeight *version.Height
 	ns       string
 	metadata []byte
+	dirty    bool
 }
 
 func (u *publicAndHashUpdates) UpdateCache() {
@@ -142,17 +143,22 @@ func (u *publicAndHashUpdates) applyWriteSet(
 				if account.Type == "crdt" {
 					if ori, ok := u.cache[key]; ok {
 						ori.account.CheckingBalance += account.CheckingBalance
+						data, err := json.Marshal(ori.account)
+						if err != nil {
+							fmt.Println("ethereum: marshal erorr", err)
+						}
+						u.publicUpdates.PutValAndMetadata(ns, key, data, keyops.metadata, txHeight)
 					} else {
 						val, err := db.VersionedDB.GetState(ns, key)
 						if err != nil {
-							fmt.Println("ethereum: versionedDB.GetState", ns, key)
+							fmt.Println("ethereum: versionedDB.GetState", ns, key, err)
 						}
 						ori = &AccountWrapper{
 							account: &Account{},
 						}
 						err = json.Unmarshal(val.Value, ori.account)
 						if err != nil {
-							fmt.Println("ethereum: unmarshal ori error")
+							fmt.Println("ethereum: unmarshal ori error", err)
 						}
 						// fmt.Println("ethereum: from db", ori.account.Type, ori.account.CustomName, ori.account.CheckingBalance)
 						ori.account.CheckingBalance += account.CheckingBalance
@@ -160,6 +166,11 @@ func (u *publicAndHashUpdates) applyWriteSet(
 						ori.metadata = keyops.metadata
 						ori.ns = ns
 						u.cache[key] = ori
+						data, err := json.Marshal(ori.account)
+						if err != nil {
+							fmt.Println("ethereum: marshal erorr", err)
+						}
+						u.publicUpdates.PutValAndMetadata(ns, key, data, keyops.metadata, txHeight)
 					}
 				} else if account.Type == "account" {
 					wrapper := &AccountWrapper{
@@ -169,6 +180,7 @@ func (u *publicAndHashUpdates) applyWriteSet(
 						txHeight: txHeight,
 					}
 					u.cache[key] = wrapper
+					u.publicUpdates.PutValAndMetadata(ns, key, keyops.value, keyops.metadata, txHeight)
 				} else {
 					// other normal transactions
 					u.publicUpdates.PutValAndMetadata(ns, key, keyops.value, keyops.metadata, txHeight)
