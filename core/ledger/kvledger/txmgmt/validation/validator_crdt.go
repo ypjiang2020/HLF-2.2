@@ -1,4 +1,4 @@
-// +build !crdt
+// +build crdt
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -9,6 +9,8 @@ SPDX-License-Identifier: Apache-2.0
 package validation
 
 import (
+	"fmt"
+
 	"github.com/hyperledger/fabric-protos-go/ledger/rwset/kvrwset"
 	"github.com/hyperledger/fabric-protos-go/peer"
 	"github.com/hyperledger/fabric/core/ledger/internal/version"
@@ -104,6 +106,7 @@ func (v *validator) validateAndPrepareBatch(blk *block, doMVCCValidation bool) (
 		if validationCode == peer.TxValidationCode_VALID {
 			logger.Debugf("Block [%d] Transaction index [%d] TxId [%s] marked as valid by state validator. ContainsPostOrderWrites [%t]", blk.num, tx.indexInBlock, tx.id, tx.containsPostOrderWrites)
 			committingTxHeight := version.NewHeight(blk.num, uint64(tx.indexInBlock))
+			fmt.Println("ethereum mvcc ", committingTxHeight, tx.id)
 			if err := updates.applyWriteSet(tx.rwset, committingTxHeight, v.db, tx.containsPostOrderWrites); err != nil {
 				return nil, err
 			}
@@ -111,6 +114,7 @@ func (v *validator) validateAndPrepareBatch(blk *block, doMVCCValidation bool) (
 			logger.Warningf("Block [%d] Transaction index [%d] TxId [%s] marked as invalid by state validator. Reason code [%s]",
 				blk.num, tx.indexInBlock, tx.id, validationCode.String())
 		}
+		updates.UpdateCache()
 	}
 	return updates, nil
 }
