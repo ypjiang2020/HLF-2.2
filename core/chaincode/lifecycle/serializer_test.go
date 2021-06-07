@@ -13,7 +13,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/golang/protobuf/proto"
-	lb "github.com/hyperledger/fabric-protos-go/peer/lifecycle"
+	lb "github.com/Yunpeng-J/fabric-protos-go/peer/lifecycle"
 	"github.com/hyperledger/fabric/common/util"
 	"github.com/hyperledger/fabric/core/chaincode/lifecycle"
 	"github.com/hyperledger/fabric/core/chaincode/lifecycle/mock"

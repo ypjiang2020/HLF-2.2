@@ -15,8 +15,8 @@ import (
 
 	"github.com/Knetic/govaluate"
 	"github.com/golang/protobuf/proto"
-	cb "github.com/hyperledger/fabric-protos-go/common"
-	mb "github.com/hyperledger/fabric-protos-go/msp"
+	cb "github.com/Yunpeng-J/fabric-protos-go/common"
+	mb "github.com/Yunpeng-J/fabric-protos-go/msp"
 )
 
 // Gate values

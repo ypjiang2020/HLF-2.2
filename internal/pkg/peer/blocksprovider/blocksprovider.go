@@ -12,9 +12,9 @@ import (
 	"math"
 	"time"
 
-	"github.com/hyperledger/fabric-protos-go/common"
-	"github.com/hyperledger/fabric-protos-go/gossip"
-	"github.com/hyperledger/fabric-protos-go/orderer"
+	"github.com/Yunpeng-J/fabric-protos-go/common"
+	"github.com/Yunpeng-J/fabric-protos-go/gossip"
+	"github.com/Yunpeng-J/fabric-protos-go/orderer"
 	"github.com/hyperledger/fabric/common/flogging"
 	gossipcommon "github.com/hyperledger/fabric/gossip/common"
 	"github.com/hyperledger/fabric/internal/pkg/identity"

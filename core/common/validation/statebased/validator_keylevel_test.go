@@ -10,8 +10,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hyperledger/fabric-protos-go/common"
-	pb "github.com/hyperledger/fabric-protos-go/peer"
+	"github.com/Yunpeng-J/fabric-protos-go/common"
+	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
 	"github.com/hyperledger/fabric/common/errors"
 	"github.com/hyperledger/fabric/core/ledger"
 	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/rwsetutil"

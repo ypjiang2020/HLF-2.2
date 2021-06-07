@@ -10,8 +10,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hyperledger/fabric-protos-go/common"
-	protopeer "github.com/hyperledger/fabric-protos-go/peer"
+	"github.com/Yunpeng-J/fabric-protos-go/common"
+	protopeer "github.com/Yunpeng-J/fabric-protos-go/peer"
 	"github.com/hyperledger/fabric/bccsp/sw"
 	"github.com/hyperledger/fabric/core/ledger"
 	"github.com/hyperledger/fabric/core/ledger/ledgermgmt"

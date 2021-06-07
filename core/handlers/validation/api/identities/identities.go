@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 package validation
 
 import (
-	"github.com/hyperledger/fabric-protos-go/msp"
+	"github.com/Yunpeng-J/fabric-protos-go/msp"
 	validation "github.com/hyperledger/fabric/core/handlers/validation/api"
 )
 

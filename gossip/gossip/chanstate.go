@@ -11,7 +11,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	proto "github.com/hyperledger/fabric-protos-go/gossip"
+	proto "github.com/Yunpeng-J/fabric-protos-go/gossip"
 	"github.com/hyperledger/fabric/gossip/api"
 	"github.com/hyperledger/fabric/gossip/comm"
 	"github.com/hyperledger/fabric/gossip/common"

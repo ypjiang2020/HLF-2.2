@@ -13,8 +13,8 @@ import (
 	"fmt"
 	"sync"
 
-	cb "github.com/hyperledger/fabric-protos-go/common"
-	ab "github.com/hyperledger/fabric-protos-go/orderer"
+	cb "github.com/Yunpeng-J/fabric-protos-go/common"
+	ab "github.com/Yunpeng-J/fabric-protos-go/orderer"
 	"github.com/hyperledger/fabric/bccsp"
 	"github.com/hyperledger/fabric/common/channelconfig"
 	"github.com/hyperledger/fabric/common/configtx"

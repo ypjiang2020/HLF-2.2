@@ -7,8 +7,8 @@ SPDX-License-Identifier: Apache-2.0
 package privdata
 
 import (
-	protosgossip "github.com/hyperledger/fabric-protos-go/gossip"
-	"github.com/hyperledger/fabric-protos-go/ledger/rwset"
+	protosgossip "github.com/Yunpeng-J/fabric-protos-go/gossip"
+	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset"
 	"github.com/hyperledger/fabric/core/committer"
 	"github.com/hyperledger/fabric/core/ledger"
 	"github.com/hyperledger/fabric/core/transientstore"

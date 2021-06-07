@@ -12,7 +12,7 @@ import (
 	"os"
 	"testing"
 
-	pb "github.com/hyperledger/fabric-protos-go/peer"
+	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
 	"github.com/hyperledger/fabric/bccsp/sw"
 	"github.com/hyperledger/fabric/protoutil"
 	"github.com/stretchr/testify/assert"

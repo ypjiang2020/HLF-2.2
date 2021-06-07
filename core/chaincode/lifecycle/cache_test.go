@@ -9,10 +9,10 @@ package lifecycle_test
 import (
 	"fmt"
 
-	"github.com/hyperledger/fabric-protos-go/ledger/queryresult"
-	"github.com/hyperledger/fabric-protos-go/ledger/rwset/kvrwset"
-	pb "github.com/hyperledger/fabric-protos-go/peer"
-	lb "github.com/hyperledger/fabric-protos-go/peer/lifecycle"
+	"github.com/Yunpeng-J/fabric-protos-go/ledger/queryresult"
+	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
+	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
+	lb "github.com/Yunpeng-J/fabric-protos-go/peer/lifecycle"
 	"github.com/hyperledger/fabric/common/chaincode"
 	commonledger "github.com/hyperledger/fabric/common/ledger"
 	"github.com/hyperledger/fabric/common/util"

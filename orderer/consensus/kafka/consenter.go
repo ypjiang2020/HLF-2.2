@@ -9,7 +9,7 @@ package kafka
 import (
 	"github.com/Shopify/sarama"
 	"github.com/hyperledger/fabric-lib-go/healthz"
-	cb "github.com/hyperledger/fabric-protos-go/common"
+	cb "github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/hyperledger/fabric/common/flogging"
 	"github.com/hyperledger/fabric/common/metrics"
 	"github.com/hyperledger/fabric/orderer/common/localconfig"

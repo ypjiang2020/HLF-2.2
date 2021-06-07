@@ -9,8 +9,8 @@ package statebased
 import (
 	"sync"
 
-	"github.com/hyperledger/fabric-protos-go/common"
-	"github.com/hyperledger/fabric-protos-go/peer"
+	"github.com/Yunpeng-J/fabric-protos-go/common"
+	"github.com/Yunpeng-J/fabric-protos-go/peer"
 	commonerrors "github.com/hyperledger/fabric/common/errors"
 	validation "github.com/hyperledger/fabric/core/handlers/validation/api/policies"
 	"github.com/hyperledger/fabric/core/ledger"

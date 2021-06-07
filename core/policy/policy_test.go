@@ -9,7 +9,7 @@ package policy
 import (
 	"testing"
 
-	"github.com/hyperledger/fabric-protos-go/peer"
+	"github.com/Yunpeng-J/fabric-protos-go/peer"
 	"github.com/hyperledger/fabric/common/policies"
 	"github.com/hyperledger/fabric/core/policy/mocks"
 	"github.com/hyperledger/fabric/msp/mgmt"

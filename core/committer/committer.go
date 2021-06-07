@@ -17,7 +17,7 @@ limitations under the License.
 package committer
 
 import (
-	"github.com/hyperledger/fabric-protos-go/common"
+	"github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/hyperledger/fabric/core/ledger"
 )
 

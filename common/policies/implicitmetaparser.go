@@ -9,7 +9,7 @@ package policies
 import (
 	"strings"
 
-	cb "github.com/hyperledger/fabric-protos-go/common"
+	cb "github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/pkg/errors"
 )
 

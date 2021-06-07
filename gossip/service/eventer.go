@@ -9,7 +9,7 @@ package service
 import (
 	"reflect"
 
-	"github.com/hyperledger/fabric-protos-go/peer"
+	"github.com/Yunpeng-J/fabric-protos-go/peer"
 	"github.com/hyperledger/fabric/common/channelconfig"
 	"github.com/hyperledger/fabric/msp"
 )

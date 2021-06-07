@@ -15,9 +15,9 @@ import (
 
 	docker "github.com/fsouza/go-dockerclient"
 	"github.com/golang/protobuf/proto"
-	"github.com/hyperledger/fabric-config/protolator"
-	"github.com/hyperledger/fabric-config/protolator/protoext/ordererext"
-	"github.com/hyperledger/fabric-protos-go/common"
+	"github.com/Yunpeng-J/fabric-config/protolator"
+	"github.com/Yunpeng-J/fabric-config/protolator/protoext/ordererext"
+	"github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/hyperledger/fabric/integration/nwo"
 	"github.com/hyperledger/fabric/integration/nwo/commands"
 	"github.com/hyperledger/fabric/integration/nwo/fabricconfig"

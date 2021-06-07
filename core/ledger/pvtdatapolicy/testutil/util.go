@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 package testutil
 
 import (
-	"github.com/hyperledger/fabric-protos-go/peer"
+	"github.com/Yunpeng-J/fabric-protos-go/peer"
 	"github.com/hyperledger/fabric/core/ledger/pvtdatapolicy"
 	"github.com/hyperledger/fabric/core/ledger/pvtdatapolicy/mock"
 )

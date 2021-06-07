@@ -7,9 +7,9 @@ SPDX-License-Identifier: Apache-2.0
 package common
 
 import (
-	cb "github.com/hyperledger/fabric-protos-go/common"
-	ab "github.com/hyperledger/fabric-protos-go/orderer"
-	pb "github.com/hyperledger/fabric-protos-go/peer"
+	cb "github.com/Yunpeng-J/fabric-protos-go/common"
+	ab "github.com/Yunpeng-J/fabric-protos-go/orderer"
+	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
 	"github.com/hyperledger/fabric/common/flogging"
 	"github.com/hyperledger/fabric/common/util"
 	"github.com/hyperledger/fabric/internal/pkg/identity"

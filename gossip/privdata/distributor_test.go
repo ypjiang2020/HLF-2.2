@@ -11,9 +11,9 @@ import (
 	"fmt"
 	"testing"
 
-	proto "github.com/hyperledger/fabric-protos-go/gossip"
-	"github.com/hyperledger/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric-protos-go/transientstore"
+	proto "github.com/Yunpeng-J/fabric-protos-go/gossip"
+	"github.com/Yunpeng-J/fabric-protos-go/peer"
+	"github.com/Yunpeng-J/fabric-protos-go/transientstore"
 	"github.com/hyperledger/fabric/core/common/privdata"
 	"github.com/hyperledger/fabric/gossip/api"
 	gcommon "github.com/hyperledger/fabric/gossip/common"

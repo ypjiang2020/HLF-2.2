@@ -15,7 +15,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/gorilla/mux"
-	"github.com/hyperledger/fabric-config/protolator"
+	"github.com/Yunpeng-J/fabric-config/protolator"
 )
 
 func getMsgType(r *http.Request) (proto.Message, error) {

@@ -9,8 +9,8 @@ package endorsertx_test
 import (
 	"encoding/hex"
 
-	"github.com/hyperledger/fabric-protos-go/common"
-	"github.com/hyperledger/fabric-protos-go/peer"
+	"github.com/Yunpeng-J/fabric-protos-go/common"
+	"github.com/Yunpeng-J/fabric-protos-go/peer"
 	"github.com/hyperledger/fabric/common/configtx"
 	endorsertx "github.com/hyperledger/fabric/core/tx/endorser"
 	"github.com/hyperledger/fabric/pkg/tx"

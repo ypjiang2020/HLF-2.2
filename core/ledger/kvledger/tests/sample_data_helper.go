@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"testing"
 
-	protopeer "github.com/hyperledger/fabric-protos-go/peer"
+	protopeer "github.com/Yunpeng-J/fabric-protos-go/peer"
 	"github.com/hyperledger/fabric/core/ledger"
 	"github.com/stretchr/testify/assert"
 )

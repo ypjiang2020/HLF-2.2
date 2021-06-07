@@ -10,7 +10,7 @@ import (
 	"fmt"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/hyperledger/fabric-protos-go/ledger/queryresult"
+	"github.com/Yunpeng-J/fabric-protos-go/ledger/queryresult"
 	"github.com/hyperledger/fabric/core/chaincode"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

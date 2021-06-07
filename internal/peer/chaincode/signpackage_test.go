@@ -13,7 +13,7 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
-	pcommon "github.com/hyperledger/fabric-protos-go/common"
+	pcommon "github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/hyperledger/fabric/bccsp"
 	"github.com/hyperledger/fabric/bccsp/sw"
 	"github.com/hyperledger/fabric/internal/peer/common"

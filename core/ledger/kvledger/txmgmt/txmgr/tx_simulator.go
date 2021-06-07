@@ -32,7 +32,7 @@ func newTxSimulator(txmgr *LockBasedTxMgr, txid string, hashFunc rwsetutil.HashF
 	return &txSimulator{qe, rwsetBuilder, false, false, false, false}, nil
 }
 
-// dd: update state
+// ethereum: update state
 // SetState implements method in interface `ledger.TxSimulator`
 func (s *txSimulator) SetState(ns string, key string, value []byte) error {
 	if err := s.checkWritePrecondition(key, value); err != nil {

@@ -17,6 +17,14 @@ GO_TAGS="vscc"
 GO_TAGS="redis"
 # disable vscc & sequential execute
 GO_TAGS="vscc redis"
+
+# CRDT
+## find . -name "*crdt*"
+GO_TAGS="crdt"
+
+# pre-read
+## find . -name "*prepread*"
+GO_TAGS="prepread"
 ```
 
 

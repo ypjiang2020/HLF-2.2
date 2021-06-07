@@ -9,7 +9,7 @@ package mocks
 import (
 	"time"
 
-	mspprotos "github.com/hyperledger/fabric-protos-go/msp"
+	mspprotos "github.com/Yunpeng-J/fabric-protos-go/msp"
 	"github.com/hyperledger/fabric/msp"
 )
 

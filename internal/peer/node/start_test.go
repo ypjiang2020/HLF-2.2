@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hyperledger/fabric-protos-go/common"
+	"github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/hyperledger/fabric/core/handlers/library"
 	"github.com/hyperledger/fabric/core/testutil"
 	"github.com/hyperledger/fabric/internal/peer/node/mock"

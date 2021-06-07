@@ -17,8 +17,8 @@ import (
 	"testing"
 	"time"
 
-	pcommon "github.com/hyperledger/fabric-protos-go/common"
-	pb "github.com/hyperledger/fabric-protos-go/peer"
+	pcommon "github.com/Yunpeng-J/fabric-protos-go/common"
+	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
 	"github.com/hyperledger/fabric/bccsp/sw"
 	"github.com/hyperledger/fabric/common/flogging"
 	"github.com/hyperledger/fabric/integration"

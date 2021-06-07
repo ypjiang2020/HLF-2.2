@@ -10,9 +10,9 @@ import (
 	"math"
 	"os"
 
-	"github.com/hyperledger/fabric-config/protolator"
-	cb "github.com/hyperledger/fabric-protos-go/common"
-	ab "github.com/hyperledger/fabric-protos-go/orderer"
+	"github.com/Yunpeng-J/fabric-config/protolator"
+	cb "github.com/Yunpeng-J/fabric-protos-go/common"
+	ab "github.com/Yunpeng-J/fabric-protos-go/orderer"
 	"github.com/hyperledger/fabric/bccsp/factory"
 	"github.com/hyperledger/fabric/internal/pkg/identity"
 	mspmgmt "github.com/hyperledger/fabric/msp/mgmt"

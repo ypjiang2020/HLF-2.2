@@ -9,7 +9,7 @@ package builtin
 import (
 	"testing"
 
-	"github.com/hyperledger/fabric-protos-go/common"
+	"github.com/Yunpeng-J/fabric-protos-go/common"
 	commonerrors "github.com/hyperledger/fabric/common/errors"
 	"github.com/hyperledger/fabric/core/committer/txvalidator/plugin"
 	. "github.com/hyperledger/fabric/core/handlers/validation/api"

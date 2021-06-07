@@ -9,7 +9,7 @@ package etcdraft_test
 import (
 	"testing"
 
-	etcdraftproto "github.com/hyperledger/fabric-protos-go/orderer/etcdraft"
+	etcdraftproto "github.com/Yunpeng-J/fabric-protos-go/orderer/etcdraft"
 	"github.com/hyperledger/fabric/common/channelconfig"
 	"github.com/hyperledger/fabric/common/crypto/tlsgen"
 	"github.com/hyperledger/fabric/orderer/consensus/etcdraft"

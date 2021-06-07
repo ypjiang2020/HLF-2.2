@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	pb "github.com/hyperledger/fabric-protos-go/peer"
+	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
 )
 
 //MockResponseSet is used for processing CC to Peer comm

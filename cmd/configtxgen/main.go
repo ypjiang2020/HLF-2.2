@@ -14,10 +14,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	cb "github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/golang/protobuf/proto"
-	"github.com/hyperledger/fabric-config/protolator"
-	"github.com/hyperledger/fabric-config/protolator/protoext/ordererext"
-	cb "github.com/hyperledger/fabric-protos-go/common"
+	"github.com/Yunpeng-J/fabric-config/protolator"
+	"github.com/Yunpeng-J/fabric-config/protolator/protoext/ordererext"
 	"github.com/hyperledger/fabric/bccsp/factory"
 	"github.com/hyperledger/fabric/common/channelconfig"
 	"github.com/hyperledger/fabric/common/flogging"

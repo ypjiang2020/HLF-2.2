@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/hyperledger/fabric-chaincode-go/shim"
+	"github.com/Yunpeng-J/fabric-chaincode-go/shim"
 	"github.com/hyperledger/fabric/integration/chaincode/kvexecutor"
 )
 

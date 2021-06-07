@@ -11,7 +11,7 @@ import (
 	"math"
 	"testing"
 
-	cb "github.com/hyperledger/fabric-protos-go/common"
+	cb "github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/hyperledger/fabric/bccsp"
 	"github.com/hyperledger/fabric/orderer/common/channelparticipation"
 	"github.com/hyperledger/fabric/protoutil"

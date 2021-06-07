@@ -12,8 +12,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hyperledger/fabric-chaincode-go/shim"
-	pb "github.com/hyperledger/fabric-protos-go/peer"
+	"github.com/Yunpeng-J/fabric-chaincode-go/shim"
+	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
 )
 
 // This chaincode implements a simple map that is stored in the state.

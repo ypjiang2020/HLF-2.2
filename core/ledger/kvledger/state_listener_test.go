@@ -9,8 +9,8 @@ package kvledger
 import (
 	"testing"
 
-	"github.com/hyperledger/fabric-protos-go/ledger/queryresult"
-	"github.com/hyperledger/fabric-protos-go/ledger/rwset/kvrwset"
+	"github.com/Yunpeng-J/fabric-protos-go/ledger/queryresult"
+	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
 	"github.com/hyperledger/fabric/bccsp/sw"
 	"github.com/hyperledger/fabric/common/ledger/testutil"
 	"github.com/hyperledger/fabric/common/metrics/disabled"

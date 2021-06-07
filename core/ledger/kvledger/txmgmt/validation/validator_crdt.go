@@ -9,8 +9,8 @@ SPDX-License-Identifier: Apache-2.0
 package validation
 
 import (
-	"github.com/hyperledger/fabric-protos-go/ledger/rwset/kvrwset"
-	"github.com/hyperledger/fabric-protos-go/peer"
+	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
+	"github.com/Yunpeng-J/fabric-protos-go/peer"
 	"github.com/hyperledger/fabric/core/ledger/internal/version"
 	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/privacyenabledstate"
 	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/rwsetutil"
@@ -112,6 +112,8 @@ func (v *validator) validateAndPrepareBatch(blk *block, doMVCCValidation bool) (
 			logger.Warningf("Block [%d] Transaction index [%d] TxId [%s] marked as invalid by state validator. Reason code [%s]",
 				blk.num, tx.indexInBlock, tx.id, validationCode.String())
 		}
+		// TODO: (optimization) merge multiple writes into once
+		// when do MVCC, also check updates.cache
 		// updates.UpdateCache()
 	}
 	return updates, nil

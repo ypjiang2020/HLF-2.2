@@ -9,7 +9,7 @@ package txflags
 import (
 	"testing"
 
-	"github.com/hyperledger/fabric-protos-go/peer"
+	"github.com/Yunpeng-J/fabric-protos-go/peer"
 	"github.com/stretchr/testify/assert"
 )
 

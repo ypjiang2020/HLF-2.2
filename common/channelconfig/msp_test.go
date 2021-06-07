@@ -9,7 +9,7 @@ package channelconfig
 import (
 	"testing"
 
-	mspprotos "github.com/hyperledger/fabric-protos-go/msp"
+	mspprotos "github.com/Yunpeng-J/fabric-protos-go/msp"
 	"github.com/hyperledger/fabric/bccsp/factory"
 	"github.com/hyperledger/fabric/bccsp/sw"
 	"github.com/hyperledger/fabric/core/config/configtest"

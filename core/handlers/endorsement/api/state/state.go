@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 package endorsement
 
 import (
-	"github.com/hyperledger/fabric-protos-go/ledger/rwset"
+	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset"
 	endorsement "github.com/hyperledger/fabric/core/handlers/endorsement/api"
 )
 

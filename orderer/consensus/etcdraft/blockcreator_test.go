@@ -9,7 +9,7 @@ package etcdraft
 import (
 	"testing"
 
-	cb "github.com/hyperledger/fabric-protos-go/common"
+	cb "github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/hyperledger/fabric/common/flogging"
 	"github.com/hyperledger/fabric/protoutil"
 	"github.com/stretchr/testify/assert"

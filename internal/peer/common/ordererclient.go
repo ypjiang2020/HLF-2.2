@@ -9,7 +9,7 @@ import (
 	"context"
 	"crypto/tls"
 
-	ab "github.com/hyperledger/fabric-protos-go/orderer"
+	ab "github.com/Yunpeng-J/fabric-protos-go/orderer"
 	"github.com/hyperledger/fabric/internal/pkg/comm"
 	"github.com/pkg/errors"
 )

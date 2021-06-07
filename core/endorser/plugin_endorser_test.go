@@ -12,9 +12,9 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/hyperledger/fabric-protos-go/ledger/rwset"
-	"github.com/hyperledger/fabric-protos-go/peer"
-	tspb "github.com/hyperledger/fabric-protos-go/transientstore"
+	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset"
+	"github.com/Yunpeng-J/fabric-protos-go/peer"
+	tspb "github.com/Yunpeng-J/fabric-protos-go/transientstore"
 	"github.com/hyperledger/fabric/core/endorser"
 	"github.com/hyperledger/fabric/core/endorser/fake"
 	"github.com/hyperledger/fabric/core/endorser/mocks"

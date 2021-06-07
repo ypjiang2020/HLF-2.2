@@ -1,3 +1,5 @@
+// +build !preread
+
 /*
 Copyright IBM Corp. All Rights Reserved.
 
@@ -9,8 +11,8 @@ package txmgr
 import (
 	"fmt"
 
-	"github.com/hyperledger/fabric-protos-go/ledger/queryresult"
-	"github.com/hyperledger/fabric-protos-go/ledger/rwset/kvrwset"
+	"github.com/Yunpeng-J/fabric-protos-go/ledger/queryresult"
+	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
 	commonledger "github.com/hyperledger/fabric/common/ledger"
 	"github.com/hyperledger/fabric/core/ledger"
 	"github.com/hyperledger/fabric/core/ledger/internal/version"
@@ -63,8 +65,9 @@ func (q *queryExecutor) GetState(ns, key string) ([]byte, error) {
 	val, _, err := q.getState(ns, key)
 	return val, err
 }
-// dd: read state
-// todo: first try to read from T-state optimistically.
+
+// ethereum: read state
+// TODO: first try to read from T-state optimistically.
 func (q *queryExecutor) getState(ns, key string) ([]byte, []byte, error) {
 	if err := q.checkDone(); err != nil {
 		return nil, nil, err

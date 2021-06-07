@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	cb "github.com/hyperledger/fabric-protos-go/common"
+	cb "github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/hyperledger/fabric/protoutil"
 	"github.com/pkg/errors"
 )

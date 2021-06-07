@@ -9,7 +9,7 @@ package statemetadata
 import (
 	"testing"
 
-	"github.com/hyperledger/fabric-protos-go/ledger/rwset/kvrwset"
+	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
 	"github.com/stretchr/testify/require"
 )
 
