@@ -84,16 +84,8 @@ func (t *transaction) retrieveHash(ns string, coll string) []byte {
 	return nil
 }
 
-type Account struct {
-	Type            string
-	CustomId        string
-	CustomName      string
-	SavingsBalance  int
-	CheckingBalance int
-}
-
 type AccountWrapper struct {
-	account  *Account
+	account  map[string]interface{}
 	txHeight *version.Height
 	ns       string
 	metadata []byte
@@ -134,34 +126,56 @@ func (u *publicAndHashUpdates) applyWriteSet(
 				u.publicUpdates.Delete(ns, key, txHeight)
 			} else {
 				// how to merge updates using CRDT
-				account := &Account{}
-				err := json.Unmarshal(keyops.value, account)
+				var t_account interface{}
+				err := json.Unmarshal(keyops.value, &t_account)
 				if err != nil {
 					fmt.Println("ethereum: unmarshal Account error")
 				}
+				account, _ := t_account.(map[string]interface{})
 				// fmt.Println("ethereum: account", account.Type, account.CustomName, account.CheckingBalance)
-				if account.Type == "crdt" {
+				if account["Type"] == "crdt" {
 					if ori, ok := u.cache[key]; ok {
-						ori.account.CheckingBalance += account.CheckingBalance
+						for k, v := range account {
+							switch vv := v.(type) {
+							case int:
+								ori.account[k] = vv + ori.account[k].(int)
+							case float64:
+								ori.account[k] = vv + ori.account[k].(float64)
+							case string:
+								ori.account[k] = vv
+							}
+						}
 						data, err := json.Marshal(ori.account)
 						if err != nil {
 							fmt.Println("ethereum: marshal erorr", err)
 						}
 						u.publicUpdates.PutValAndMetadata(ns, key, data, keyops.metadata, txHeight)
+						//TODO: update cache
 					} else {
 						val, err := db.VersionedDB.GetState(ns, key)
 						if err != nil {
 							fmt.Println("ethereum: versionedDB.GetState", ns, key, err)
 						}
 						ori = &AccountWrapper{
-							account: &Account{},
+							// account: make(map[string]interface{})
 						}
-						err = json.Unmarshal(val.Value, ori.account)
+						var t_account interface{}
+						err = json.Unmarshal(val.Value, &t_account)
 						if err != nil {
 							fmt.Println("ethereum: unmarshal ori error", err)
 						}
+						ori.account = t_account.(map[string]interface{})
 						// fmt.Println("ethereum: from db", ori.account.Type, ori.account.CustomName, ori.account.CheckingBalance)
-						ori.account.CheckingBalance += account.CheckingBalance
+						for k, v := range ori.account {
+							switch vv := v.(type) {
+							case int:
+								ori.account[k] = vv + account[k].(int)
+							case float64:
+								ori.account[k] = vv + account[k].(float64)
+							case string:
+								ori.account[k] = account[k]
+							}
+						}
 						ori.txHeight = txHeight
 						ori.metadata = keyops.metadata
 						ori.ns = ns
@@ -172,7 +186,7 @@ func (u *publicAndHashUpdates) applyWriteSet(
 						}
 						u.publicUpdates.PutValAndMetadata(ns, key, data, keyops.metadata, txHeight)
 					}
-				} else if account.Type == "account" {
+				} else if account["Type"] == "account" {
 					wrapper := &AccountWrapper{
 						account:  account,
 						ns:       ns,
