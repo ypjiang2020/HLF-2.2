@@ -1,4 +1,4 @@
-// +build !preread
+// +build preread
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -60,12 +60,12 @@ func (s *SupportImpl) SigningIdentityForRequest(*pb.SignedProposal) (endorsement
 // GetTxSimulator returns the transaction simulator for the specified ledger
 // a client may obtain more than one such simulator; they are made unique
 // by way of the supplied txid
-func (s *SupportImpl) GetTxSimulator(ledgername string, txid string) (ledger.TxSimulator, error) {
+func (s *SupportImpl) GetTxSimulator(ledgername string, txid string, clientId []byte) (ledger.TxSimulator, error) {
 	lgr := s.Peer.GetLedger(ledgername)
 	if lgr == nil {
 		return nil, errors.Errorf("Channel does not exist: %s", ledgername)
 	}
-	return lgr.NewTxSimulator(txid)
+	return lgr.NewTxSimulatorWithClientId(txid, clientId)
 }
 
 // GetHistoryQueryExecutor gives handle to a history query executor for the

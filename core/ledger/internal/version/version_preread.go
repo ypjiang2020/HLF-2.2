@@ -1,4 +1,4 @@
-// +build !preread
+// +build preread
 
 /*
 Copyright IBM Corp. 2016 All Rights Reserved.
@@ -19,7 +19,9 @@ limitations under the License.
 package version
 
 import (
+	"encoding/hex"
 	"fmt"
+	"log"
 
 	"github.com/hyperledger/fabric/common/ledger/util"
 )
@@ -28,11 +30,27 @@ import (
 type Height struct {
 	BlockNum uint64
 	TxNum    uint64
+	Txid     [32]byte
 }
 
 // NewHeight constructs a new instance of Height
 func NewHeight(blockNum, txNum uint64) *Height {
-	return &Height{blockNum, txNum}
+	return &Height{BlockNum: blockNum, TxNum: txNum}
+}
+
+func NewHeightWithTxid(blockNum, txNum uint64, txid string) *Height {
+	temp := &Height{BlockNum: blockNum, TxNum: txNum}
+	txidbytes, err := hex.DecodeString(txid)
+	if err != nil {
+		log.Printf("ethereum: DecodeString %s Error = %v\n", txid, err)
+		return temp
+	}
+	copy(temp.Txid[:], txidbytes)
+	return temp
+}
+
+func NewHeightWithTxidbytes(blockNum, txNum uint64, txid [32]byte) *Height {
+	return &Height{BlockNum: blockNum, TxNum: txNum, Txid: txid}
 }
 
 // NewHeightFromBytes constructs a new instance of Height from serialized bytes
@@ -45,14 +63,30 @@ func NewHeightFromBytes(b []byte) (*Height, int, error) {
 	if err != nil {
 		return nil, -1, err
 	}
-	return NewHeight(blockNum, txNum), n1 + n2, nil
+	height := NewHeight(blockNum, txNum)
+	n3 := len(b) - n1 - n2
+	if n3 == 32 {
+		copy(height.Txid[:], b[n1+n2:])
+	} else if n3 != 0 {
+		return height, n1 + n2, fmt.Errorf("ethereum: Unexpected length of Version/Height")
+	}
+	return height, n1 + n2, nil
+}
+
+func (h *Height) SetTxid(txid string) {
+	temp, err := hex.DecodeString(txid)
+	if err != nil {
+		fmt.Printf("ethereum: SetTxid(%s) Error = %v\n", txid, err)
+	}
+	copy(h.Txid[:], temp)
 }
 
 // ToBytes serializes the Height
 func (h *Height) ToBytes() []byte {
 	blockNumBytes := util.EncodeOrderPreservingVarUint64(h.BlockNum)
 	txNumBytes := util.EncodeOrderPreservingVarUint64(h.TxNum)
-	return append(blockNumBytes, txNumBytes...)
+	temp := append(blockNumBytes, txNumBytes...)
+	return append(temp, h.Txid[:]...)
 }
 
 // Compare return a -1, zero, or +1 based on whether this height is
@@ -64,6 +98,8 @@ func (h *Height) Compare(h1 *Height) int {
 		res = int(h.BlockNum - h1.BlockNum)
 	case h.TxNum != h1.TxNum:
 		res = int(h.TxNum - h1.TxNum)
+	case h.Txid != h1.Txid:
+		res = 1 // just mean txid is not equal.
 	default:
 		return 0
 	}
@@ -75,7 +111,7 @@ func (h *Height) Compare(h1 *Height) int {
 
 // String returns string for printing
 func (h *Height) String() string {
-	return fmt.Sprintf("{BlockNum: %d, TxNum: %d}", h.BlockNum, h.TxNum)
+	return fmt.Sprintf("{BlockNum: %d, TxNum: %d, Txid: %s}", h.BlockNum, h.TxNum, hex.EncodeToString(h.Txid[:]))
 }
 
 // AreSame returns true if both the heights are either nil or equal

@@ -39,6 +39,7 @@ type queryExecutor struct {
 	doneInvoked       bool
 	hasher            rwsetutil.HashFunc
 	txid              string
+	clientId          [16]byte
 }
 
 func newQueryExecutor(txmgr *LockBasedTxMgr,
@@ -49,6 +50,27 @@ func newQueryExecutor(txmgr *LockBasedTxMgr,
 	logger.Debugf("constructing new query executor txid = [%s]", txid)
 	qe := &queryExecutor{}
 	qe.txid = txid
+	qe.txmgr = txmgr
+	if rwsetBuilder != nil {
+		qe.collectReadset = true
+		qe.rwsetBuilder = rwsetBuilder
+	}
+	qe.hasher = hashFunc
+	validator := newCollNameValidator(txmgr.ledgerid, txmgr.ccInfoProvider, qe, !performCollCheck)
+	qe.collNameValidator = validator
+	return qe
+}
+
+func newQueryExecutorWithClientId(txmgr *LockBasedTxMgr,
+	txid string,
+	clientId [16]byte,
+	rwsetBuilder *rwsetutil.RWSetBuilder,
+	performCollCheck bool,
+	hashFunc rwsetutil.HashFunc) *queryExecutor {
+	logger.Debugf("constructing new query executor txid = [%s]", txid)
+	qe := &queryExecutor{}
+	qe.txid = txid
+	qe.clientId = clientId
 	qe.txmgr = txmgr
 	if rwsetBuilder != nil {
 		qe.collectReadset = true
@@ -77,6 +99,17 @@ func (q *queryExecutor) getState(ns, key string) ([]byte, []byte, error) {
 		return nil, nil, err
 	}
 	val, metadata, ver := decomposeVersionedValue(versionedValue)
+	// TODO
+	// get state from temp DB
+	// which to choose?
+	tempVal := q.txmgr.tempState.PreRead(q.clientId, key)
+
+	if tempVal.version.BlockNum == ver.BlockNum && tempVal.version.TxNum == ver.TxNum {
+		// use preread
+		ver = tempVal.version
+		val = tempVal.val
+	}
+
 	if q.collectReadset {
 		q.rwsetBuilder.AddToReadSet(ns, key, ver)
 	}

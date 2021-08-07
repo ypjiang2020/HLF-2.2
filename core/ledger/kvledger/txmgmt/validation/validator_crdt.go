@@ -1,4 +1,4 @@
-// +build crdt
+// +build crdt,!preread
 
 /*
 Copyright IBM Corp. All Rights Reserved.

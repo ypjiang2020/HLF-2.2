@@ -150,7 +150,6 @@ func (u *publicAndHashUpdates) applyWriteSet(
 							fmt.Println("ethereum: marshal erorr", err)
 						}
 						u.publicUpdates.PutValAndMetadata(ns, key, data, keyops.metadata, txHeight)
-						//TODO: update cache
 					} else {
 						val, err := db.VersionedDB.GetState(ns, key)
 						if err != nil {

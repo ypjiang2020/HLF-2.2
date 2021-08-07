@@ -1,4 +1,4 @@
-// +build !preread
+// +build preread
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -163,6 +163,7 @@ type PeerLedger interface {
 	// A client can obtain more than one 'TxSimulator's for parallel execution.
 	// Any snapshoting/synchronization should be performed at the implementation level if required
 	NewTxSimulator(txid string) (TxSimulator, error)
+	NewTxSimulatorWithClientId(txid string, clientId []byte) (TxSimulator, error)
 	// NewQueryExecutor gives handle to a query executor.
 	// A client can obtain more than one 'QueryExecutor's for parallel execution.
 	// Any synchronization should be performed at the implementation level if required

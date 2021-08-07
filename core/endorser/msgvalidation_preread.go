@@ -1,4 +1,4 @@
-// +build !preread
+// +build preread
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -38,6 +38,10 @@ func (up *UnpackedProposal) ChannelID() string {
 
 func (up *UnpackedProposal) TxID() string {
 	return up.ChannelHeader.TxId
+}
+
+func (up *UnpackedProposal) Client() []byte {
+	return up.SignatureHeader.GetCreator()
 }
 
 // UnpackProposal creates an an *UnpackedProposal which is guaranteed to have

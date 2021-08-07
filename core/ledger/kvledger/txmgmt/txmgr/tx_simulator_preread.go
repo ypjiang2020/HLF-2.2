@@ -1,4 +1,4 @@
-// +build !preread
+// +build preread
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -9,10 +9,12 @@ SPDX-License-Identifier: Apache-2.0
 package txmgr
 
 import (
+	"encoding/json"
 	"fmt"
 
 	commonledger "github.com/hyperledger/fabric/common/ledger"
 	"github.com/hyperledger/fabric/core/ledger"
+	"github.com/hyperledger/fabric/core/ledger/internal/version"
 	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/rwsetutil"
 	"github.com/pkg/errors"
 )
@@ -25,13 +27,16 @@ type txSimulator struct {
 	pvtdataQueriesPerformed   bool
 	simulationResultsComputed bool
 	paginatedQueriesPerformed bool
+	clientId                  [16]byte
 }
 
-func newTxSimulator(txmgr *LockBasedTxMgr, txid string, hashFunc rwsetutil.HashFunc) (*txSimulator, error) {
+func newTxSimulator(txmgr *LockBasedTxMgr, txid string, clientId_ []byte, hashFunc rwsetutil.HashFunc) (*txSimulator, error) {
+	var clientId [16]byte
+	copy(clientId[:], clientId_)
 	rwsetBuilder := rwsetutil.NewRWSetBuilder()
-	qe := newQueryExecutor(txmgr, txid, rwsetBuilder, true, hashFunc)
-	logger.Debugf("constructing new tx simulator txid = [%s]", txid)
-	return &txSimulator{qe, rwsetBuilder, false, false, false, false}, nil
+	qe := newQueryExecutorWithClientId(txmgr, txid, clientId, rwsetBuilder, true, hashFunc)
+	logger.Debugf("constructing new tx simulator txid = [%s] clientId = [%v]", txid, clientId)
+	return &txSimulator{qe, rwsetBuilder, false, false, false, false, clientId}, nil
 }
 
 // ethereum: update state
@@ -41,6 +46,25 @@ func (s *txSimulator) SetState(ns string, key string, value []byte) error {
 		return err
 	}
 	s.rwsetBuilder.AddToWriteSet(ns, key, value)
+
+	// TODO: update tempState
+	// if value is not CRDT type, then what?; else what?.
+	// version encoding: {block number + tx number + txid}
+
+	// get Version{BlockNumber, txNumber} from readset
+
+	var temp interface{}
+	json.Unmarshal(value, &temp)
+	ms, _ := temp.(map[string]interface{})
+	if ms["Type"] == "crdt" {
+		// merge?
+	} else {
+		old_version := s.queryExecutor.rwsetBuilder.GetKey(ns, key).GetVersion()
+		// version.SetTxid(s.queryExecutor.txid)
+		new_version := version.NewHeightWithTxid(old_version.BlockNum, old_version.TxNum, s.queryExecutor.txid)
+		s.queryExecutor.txmgr.tempState.SetState(s.clientId, key, &TempVersionedValue{value, new_version})
+	}
+
 	return nil
 }
 

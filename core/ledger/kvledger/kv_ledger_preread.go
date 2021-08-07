@@ -1,4 +1,4 @@
-// +build !preread
+// +build preread
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -423,6 +423,9 @@ func (l *kvLedger) GetTxValidationCodeByTxID(txID string) (peer.TxValidationCode
 // NewTxSimulator returns new `ledger.TxSimulator`
 func (l *kvLedger) NewTxSimulator(txid string) (ledger.TxSimulator, error) {
 	return l.txmgr.NewTxSimulator(txid)
+}
+func (l *kvLedger) NewTxSimulatorWithClientId(txid string, clientId []byte) (ledger.TxSimulator, error) {
+	return l.txmgr.NewTxSimulatorWithClientId(txid, clientId)
 }
 
 // NewQueryExecutor gives handle to a query executor.

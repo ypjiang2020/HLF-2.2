@@ -12,10 +12,10 @@ import (
 	"bytes"
 	"sync"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset"
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
+	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric/common/flogging"
 	"github.com/hyperledger/fabric/common/ledger/snapshot"
 	"github.com/hyperledger/fabric/core/ledger"
@@ -33,12 +33,44 @@ import (
 
 var logger = flogging.MustGetLogger("lockbasedtxmgr")
 
+type TempVersionedValue struct {
+	val     []byte
+	version *version.Height
+}
+
+type TempState struct {
+	cache map[[16]byte]map[string]*TempVersionedValue // key:value
+}
+
+func newTempState() *TempState {
+	return &TempState{
+		cache: make(map[[16]byte]map[string]*TempVersionedValue),
+	}
+}
+
+func (tempState *TempState) PreRead(clientId [16]byte, key string) *TempVersionedValue {
+	if db, ok := tempState.cache[clientId]; ok {
+		if val, ok := db[key]; ok {
+			return val
+		}
+	}
+	return nil
+}
+func (tempState *TempState) SetState(clientId [16]byte, key string, state *TempVersionedValue) {
+	if temp, ok := tempState.cache[clientId]; ok {
+		temp[key] = state
+	} else {
+		tempState.cache[clientId] = make(map[string]*TempVersionedValue)
+		tempState.cache[clientId][key] = state
+	}
+}
+
 // LockBasedTxMgr a simple implementation of interface `txmgmt.TxMgr`.
 // This implementation uses a read-write lock to prevent conflicts between transaction simulation and committing
 type LockBasedTxMgr struct {
 	ledgerid            string
 	db                  *privacyenabledstate.DB
-	tempState           map[string][]byte
+	tempState           *TempState
 	pvtdataPurgeMgr     *pvtdataPurgeMgr
 	commitBatchPreparer *validation.CommitBatchPreparer
 	stateListeners      []ledger.StateListener
@@ -115,6 +147,7 @@ func NewLockBasedTxMgr(initializer *Initializer) (*LockBasedTxMgr, error) {
 	txmgr := &LockBasedTxMgr{
 		ledgerid:       initializer.LedgerID,
 		db:             initializer.DB,
+		tempState:      newTempState(),
 		stateListeners: initializer.StateListeners,
 		ccInfoProvider: initializer.CCInfoProvider,
 		hashFunc:       initializer.HashFunc,
@@ -168,7 +201,17 @@ func (txmgr *LockBasedTxMgr) NewQueryExecutorNoCollChecks() (ledger.QueryExecuto
 // NewTxSimulator implements method in interface `txmgmt.TxMgr`
 func (txmgr *LockBasedTxMgr) NewTxSimulator(txid string) (ledger.TxSimulator, error) {
 	logger.Debugf("constructing new tx simulator")
-	s, err := newTxSimulator(txmgr, txid, txmgr.hashFunc)
+	s, err := newTxSimulator(txmgr, txid, nil, txmgr.hashFunc)
+	if err != nil {
+		return nil, err
+	}
+	txmgr.commitRWLock.RLock()
+	return s, nil
+}
+
+func (txmgr *LockBasedTxMgr) NewTxSimulatorWithClientId(txid string, clientId []byte) (ledger.TxSimulator, error) {
+	logger.Debugf("constructing new tx simulator")
+	s, err := newTxSimulator(txmgr, txid, clientId, txmgr.hashFunc)
 	if err != nil {
 		return nil, err
 	}

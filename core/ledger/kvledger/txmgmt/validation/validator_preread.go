@@ -1,4 +1,4 @@
-// +build !crdt,!preread
+// +build !crdt,preread
 
 /*
 Copyright IBM Corp. All Rights Reserved.
@@ -103,7 +103,7 @@ func (v *validator) validateAndPrepareBatch(blk *block, doMVCCValidation bool) (
 		tx.validationCode = validationCode
 		if validationCode == peer.TxValidationCode_VALID {
 			logger.Debugf("Block [%d] Transaction index [%d] TxId [%s] marked as valid by state validator. ContainsPostOrderWrites [%t]", blk.num, tx.indexInBlock, tx.id, tx.containsPostOrderWrites)
-			committingTxHeight := version.NewHeight(blk.num, uint64(tx.indexInBlock))
+			committingTxHeight := version.NewHeightWithTxid(blk.num, uint64(tx.indexInBlock), tx.id)
 			if err := updates.applyWriteSet(tx.rwset, committingTxHeight, v.db, tx.containsPostOrderWrites); err != nil {
 				return nil, err
 			}

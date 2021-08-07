@@ -1,4 +1,4 @@
-// +build redis
+// +build redis,!preread
 
 /*
 Copyright IBM Corp. 2016 All Rights Reserved.
@@ -15,10 +15,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/Yunpeng-J/fabric-chaincode-go/shim"
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
 	"github.com/Yunpeng-J/fabric-protos-go/transientstore"
+	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric/common/flogging"
 	"github.com/hyperledger/fabric/common/util"
 	"github.com/hyperledger/fabric/core/chaincode/lifecycle"

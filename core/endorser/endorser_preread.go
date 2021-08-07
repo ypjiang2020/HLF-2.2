@@ -1,4 +1,4 @@
-// +build !redis,!preread
+// +build preread,!redis
 
 /*
 Copyright IBM Corp. 2016 All Rights Reserved.
@@ -47,7 +47,7 @@ type Support interface {
 	// GetTxSimulator returns the transaction simulator for the specified ledger
 	// a client may obtain more than one such simulator; they are made unique
 	// by way of the supplied txid
-	GetTxSimulator(ledgername string, txid string) (ledger.TxSimulator, error)
+	GetTxSimulator(ledgername string, txid string, clientId []byte) (ledger.TxSimulator, error)
 
 	// GetHistoryQueryExecutor gives handle to a history query executor for the
 	// specified ledger
@@ -367,7 +367,7 @@ func (e *Endorser) ProcessProposalSuccessfullyOrError(up *UnpackedProposal) (*pb
 	logger := decorateLogger(endorserLogger, txParams)
 
 	if acquireTxSimulator(up.ChannelHeader.ChannelId, up.ChaincodeName) {
-		txSim, err := e.Support.GetTxSimulator(up.ChannelID(), up.TxID())
+		txSim, err := e.Support.GetTxSimulator(up.ChannelID(), up.TxID(), up.Client())
 		if err != nil {
 			return nil, err
 		}

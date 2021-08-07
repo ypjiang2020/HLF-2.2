@@ -1,4 +1,4 @@
-// +build !preread
+// +build preread
 
 /*
 Copyright IBM Corp. 2016 All Rights Reserved.
@@ -79,6 +79,11 @@ func NewRWSetBuilder() *RWSetBuilder {
 func (b *RWSetBuilder) AddToReadSet(ns string, key string, version *version.Height) {
 	nsPubRwBuilder := b.getOrCreateNsPubRwBuilder(ns)
 	nsPubRwBuilder.readMap[key] = NewKVRead(key, version)
+}
+
+func (b *RWSetBuilder) GetKey(ns string, key string) *kvrwset.KVRead {
+	nsPubRwBuilder := b.getOrCreateNsPubRwBuilder(ns)
+	return nsPubRwBuilder.readMap[key]
 }
 
 // AddToWriteSet adds a key and value to the write-set
