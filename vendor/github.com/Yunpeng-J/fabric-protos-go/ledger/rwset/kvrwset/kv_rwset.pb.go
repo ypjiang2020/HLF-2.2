@@ -146,6 +146,8 @@ func (m *HashedRWSet) GetMetadataWrites() []*KVMetadataWriteHash {
 type KVRead struct {
 	Key                  string   `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
 	Version              *Version `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
+	Value                []byte   `protobuf:"bytes,3,opt,name=value,proto3" json:"value,omitempty"`
+	Txid                 string   `protobuf:"bytes,4,opt,name=txid,proto3" json:"txid,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
