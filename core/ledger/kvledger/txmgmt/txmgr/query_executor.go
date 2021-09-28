@@ -114,7 +114,8 @@ func (q *queryExecutor) GetStateMultipleKeys(ns string, keys []string) ([][]byte
 	for i, versionedValue := range versionedValues {
 		val, _, ver := decomposeVersionedValue(versionedValue)
 		if q.collectReadset {
-			q.rwsetBuilder.AddToReadSet(ns, keys[i], ver)
+			// optimistic code TODO
+			q.rwsetBuilder.AddToReadSet(ns, keys[i], ver, nil)
 		}
 		values[i] = val
 	}
@@ -505,7 +506,8 @@ func (itr *queryResultsItr) Next() (commonledger.QueryResult, error) {
 	logger.Debugf("queryResultsItr.Next() returned a record:%s", string(versionedQueryRecord.Value))
 
 	if itr.RWSetBuilder != nil {
-		itr.RWSetBuilder.AddToReadSet(versionedQueryRecord.Namespace, versionedQueryRecord.Key, versionedQueryRecord.Version)
+		// optimistic code TODO
+		itr.RWSetBuilder.AddToReadSet(versionedQueryRecord.Namespace, versionedQueryRecord.Key, versionedQueryRecord.Version, nil)
 	}
 	return &queryresult.KV{Namespace: versionedQueryRecord.Namespace, Key: versionedQueryRecord.Key, Value: versionedQueryRecord.Value}, nil
 }

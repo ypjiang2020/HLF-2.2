@@ -108,8 +108,8 @@ type Endorser struct {
 	Metrics                *Metrics
 
 	// optimistic code begin
-	Txpool *TxPool
-	contextManager     ContextManager
+	// Txpool *TxPool
+	// contextManager     ContextManager
 
 	// optimistic code end
 }
@@ -117,13 +117,13 @@ type Endorser struct {
 func NewEndorser(pdd PrivateDataDistributor, cf ChannelFetcher, lmsp msp.IdentityDeserializer, sp Support, mt *Metrics) *Endorser {
 	endorser := &Endorser{
 		PrivateDataDistributor: pdd,
-		ChannelFetcher: cf,
-		LocalMSP: lmsp,
-		Support: sp,
-		Metrics: mt,
+		ChannelFetcher:         cf,
+		LocalMSP:               lmsp,
+		Support:                sp,
+		Metrics:                mt,
 	}
 	// optimistic code begin
-	endorser.Txpool = NewTxPool(endorser)
+	// endorser.Txpool = NewTxPool(endorser)
 	// optimistic code end
 	return endorser
 }
@@ -348,19 +348,20 @@ func (e *Endorser) ProcessProposal_new(ctx context.Context, signedProp *pb.Signe
 	if err != nil {
 		return &pb.ProposalResponse{Response: &pb.Response{Status: 500, Message: err.Error()}}, err
 	}
+	return nil, nil
 
 	// save
-	txctx := e.contextManager.Create(up)
-	e.Txpool.Put(up)
+	// txctx := e.contextManager.Create(up)
+	// e.Txpool.Put(up)
 
-	for {
-		select {
-		case res := <- txctx.ResponseNotifier:
-			return res, nil
-		case <-time.After(10 * time.Second):
-			return nil, fmt.Errorf("timeout at simulation")
-		}
-	}
+	// for {
+	// 	select {
+	// 	case res := <-txctx.ResponseNotifier:
+	// 		return res, nil
+	// 	case <-time.After(10 * time.Second):
+	// 		return nil, fmt.Errorf("timeout at simulation")
+	// 	}
+	// }
 }
 
 // ProcessProposal process the Proposal

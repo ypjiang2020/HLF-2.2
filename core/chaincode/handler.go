@@ -511,7 +511,7 @@ func (h *Handler) Notify(msg *pb.ChaincodeMessage) {
 
 	// optimistic code begin
 	var res pb.Response
-	err := json.Unmarshal(msg.Payload, &res)
+	err := proto.Unmarshal(msg.Payload, &res)
 	if err != nil {
 		log.Fatalln("transaction finished, notify, unmarshal response payload error", err)
 	}
