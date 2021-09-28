@@ -312,6 +312,11 @@ type TxSimulator interface {
 	// The public data simulation results are expected to be used as in V1 while the private data simulation results are expected
 	// to be used by the gossip to disseminate this to the other endorsers (in phase-2 of sidedb)
 	GetTxSimulationResults() (*TxSimulationResults, error)
+
+	// optimistic code begin
+	UpdateReadSet(namespace, key, txid string)
+
+	// optimistic code end
 }
 
 // QueryResultsIterator - an iterator for query result set

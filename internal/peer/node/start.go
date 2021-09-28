@@ -20,12 +20,12 @@ import (
 	"syscall"
 	"time"
 
-	docker "github.com/fsouza/go-dockerclient"
-	"github.com/golang/protobuf/proto"
 	"github.com/Yunpeng-J/fabric-protos-go/common"
 	cb "github.com/Yunpeng-J/fabric-protos-go/common"
 	discprotos "github.com/Yunpeng-J/fabric-protos-go/discovery"
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
+	docker "github.com/fsouza/go-dockerclient"
+	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric/bccsp/factory"
 	"github.com/hyperledger/fabric/common/cauthdsl"
 	ccdef "github.com/hyperledger/fabric/common/chaincode"
@@ -737,13 +737,8 @@ func serve(args []string) error {
 	channelFetcher := endorserChannelAdapter{
 		peer: peerInstance,
 	}
-	serverEndorser := &endorser.Endorser{
-		PrivateDataDistributor: gossipService,
-		ChannelFetcher:         channelFetcher,
-		LocalMSP:               localMSP,
-		Support:                endorserSupport,
-		Metrics:                endorser.NewMetrics(metricsProvider),
-	}
+	serverEndorser := endorser.NewEndorser(gossipService, channelFetcher, localMSP, endorserSupport,
+		endorser.NewMetrics(metricsProvider))
 
 	// deploy system chaincodes
 	for _, cc := range []scc.SelfDescribingSysCC{lsccInst, csccInst, qsccInst, lifecycleSCC} {

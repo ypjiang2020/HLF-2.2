@@ -9,13 +9,23 @@ SPDX-License-Identifier: Apache-2.0
 package validation
 
 import (
+	"encoding/json"
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
 	"github.com/hyperledger/fabric/core/ledger/internal/version"
 	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/privacyenabledstate"
 	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/rwsetutil"
 	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/statedb"
+	"log"
 )
+
+// optimistic code begin
+type VerVal struct {
+	txid string
+	val  []byte
+}
+
+// optimistic code end
 
 // validator validates a tx against the latest committed state
 // and preceding valid transactions with in the same block
@@ -177,19 +187,50 @@ func (v *validator) validateReadSet(ns string, kvReads []*kvrwset.KVRead, update
 // or in the updates (by a preceding valid transaction in the current block)
 func (v *validator) validateKVRead(ns string, kvRead *kvrwset.KVRead, updates *privacyenabledstate.PubUpdateBatch) (bool, error) {
 	if updates.Exists(ns, kvRead.Key) {
-		return false, nil
+		// optimistic code begin
+		vv := updates.Get(ns, kvRead.Key)
+		var verval VerVal
+		err := json.Unmarshal(vv.Value, &verval)
+		if err != nil {
+			log.Fatalln("please check VersionedValue if value=txid+value", err)
+		}
+		if kvRead.Txid == verval.txid {
+			log.Println("same with previous uncommitted key")
+			return true, nil
+		} else {
+			log.Println("not same with previous uncommitted key")
+			return false, nil
+		}
+		// return false, nil
+		// optimistic code end
 	}
-	committedVersion, err := v.db.GetVersion(ns, kvRead.Key)
+	versionedValue, err := v.db.GetState(ns, kvRead.Key)
 	if err != nil {
 		return false, err
 	}
+	committedVersion := versionedValue.Version
 
 	logger.Debugf("Comparing versions for key [%s]: committed version=%#v and read version=%#v",
 		kvRead.Key, committedVersion, rwsetutil.NewVersion(kvRead.Version))
 	if !version.AreSame(committedVersion, rwsetutil.NewVersion(kvRead.Version)) {
-		logger.Debugf("Version mismatch for key [%s:%s]. Committed version = [%#v], Version in readSet [%#v]",
-			ns, kvRead.Key, committedVersion, kvRead.Version)
-		return false, nil
+		// optimistic code begin
+		var version VerVal
+		err := json.Unmarshal(versionedValue.Value, &version)
+		if err != nil {
+			log.Fatalln("please check versionedValue in validataeKVRead", err)
+		}
+		if version.txid == kvRead.Txid {
+			return true, nil
+		} else {
+			logger.Debugf("Version mismatch for key [%s:%s]. Committed version = [%#v], Version in readSet [%#v]",
+				ns, kvRead.Key, committedVersion, kvRead.Version)
+			return false, nil
+		}
+		// logger.Debugf("Version mismatch for key [%s:%s]. Committed version = [%#v], Version in readSet [%#v]",
+		// 	ns, kvRead.Key, committedVersion, kvRead.Version)
+		// return false, nil
+
+		// optimistic code end
 	}
 	return true, nil
 }

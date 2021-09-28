@@ -7,15 +7,18 @@ SPDX-License-Identifier: Apache-2.0
 package chaincode
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+	"log"
 
-	"github.com/golang/protobuf/proto"
+	"github.com/Yunpeng-J/fabric-chaincode-go/shim"
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
+	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric/common/channelconfig"
 	"github.com/hyperledger/fabric/common/flogging"
 	commonledger "github.com/hyperledger/fabric/common/ledger"
@@ -141,6 +144,8 @@ type Handler struct {
 	mutex sync.Mutex
 	// streamDoneChan is closed when the chaincode stream terminates.
 	streamDoneChan chan struct{}
+
+	tempState *TempDB
 }
 
 // handleMessage is called by ProcessStream to dispatch messages.
@@ -504,6 +509,23 @@ func (h *Handler) Notify(msg *pb.ChaincodeMessage) {
 		return
 	}
 
+	// optimistic code begin
+	var res pb.Response
+	err := json.Unmarshal(msg.Payload, &res)
+	if err != nil {
+		log.Fatalln("transaction finished, notify, unmarshal response payload error", err)
+	}
+	if res.Status >= shim.ERRORTHRESHOLD {
+		// error happened, rollback
+		h.tempState.Rollback(msg.Txid)
+	} else {
+		// TODO: how do we deal with nondeterminism?
+		// After we commit, clients may receive different endorsement results because of nondeterminism.
+
+		h.tempState.Commit(msg.Txid)
+	}
+	// optimistic code end
+
 	chaincodeLogger.Debugf("[%s] notifying Txid:%s, channelID:%s", shorttxid(msg.Txid), msg.Txid, msg.ChannelId)
 	tctx.ResponseNotifier <- msg
 	tctx.CloseQueryIterators()
@@ -599,7 +621,9 @@ func (h *Handler) HandleGetState(msg *pb.ChaincodeMessage, txContext *Transactio
 		return nil, errors.Wrap(err, "unmarshal failed")
 	}
 
-	var res []byte
+	var resv []byte
+	var dbVal VersionedValue
+	var resp []byte
 	namespaceID := txContext.NamespaceID
 	collection := getState.Collection
 	chaincodeLogger.Debugf("[%s] getting state for chaincode %s, key %s, channel %s", shorttxid(msg.Txid), namespaceID, getState.Key, txContext.ChannelID)
@@ -611,19 +635,48 @@ func (h *Handler) HandleGetState(msg *pb.ChaincodeMessage, txContext *Transactio
 		if err := errorIfCreatorHasNoReadPermission(namespaceID, collection, txContext); err != nil {
 			return nil, err
 		}
-		res, err = txContext.TXSimulator.GetPrivateData(namespaceID, collection, getState.Key)
+		resv, err = txContext.TXSimulator.GetPrivateData(namespaceID, collection, getState.Key)
 	} else {
-		res, err = txContext.TXSimulator.GetState(namespaceID, getState.Key)
+		resv, err = txContext.TXSimulator.GetState(namespaceID, getState.Key)
 	}
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	if res == nil {
+	if resv == nil {
 		chaincodeLogger.Debugf("[%s] No state associated with key: %s. Sending %s with an empty payload", shorttxid(msg.Txid), getState.Key, pb.ChaincodeMessage_RESPONSE)
+	} else {
+		err := json.Unmarshal(resv, &dbVal)
+		if err != nil {
+			log.Fatalln("please check db value, unmarshal error", err)
+		}
+		resp = dbVal.val
 	}
 
+	// optimistic code begin
+	session := GetSessionFromTxid(msg.Txid)
+	tempVal := h.tempState.Get(getState.Key, session)
+	var payload []byte
+	if tempVal == nil {
+		payload = resp
+		txContext.TXSimulator.UpdateReadSet(namespaceID, getState.Key, dbVal.txid)
+	} else {
+		tempSession := GetSessionFromTxid(tempVal.txid)
+		dbSession := GetSessionFromTxid(dbVal.txid)
+		if tempSession == dbSession {
+			// choose tempVal
+			payload = tempVal.val
+			txContext.TXSimulator.UpdateReadSet(namespaceID, getState.Key, tempVal.txid)
+		} else {
+			// some transaction commit during session `lastTxid[1]`
+			// we choose dbVal
+			payload = dbVal.val
+			// txContext.TXSimulator.UpdateReadSet(namespaceID, getState.Key, dbVal.txid)
+		}
+	}
+	// optimistic code end
+
 	// Send response msg back to chaincode. GetState will not trigger event
-	return &pb.ChaincodeMessage{Type: pb.ChaincodeMessage_RESPONSE, Payload: res, Txid: msg.Txid, ChannelId: msg.ChannelId}, nil
+	return &pb.ChaincodeMessage{Type: pb.ChaincodeMessage_RESPONSE, Payload: payload, Txid: msg.Txid, ChannelId: msg.ChannelId}, nil
 }
 
 func (h *Handler) HandleGetPrivateDataHash(msg *pb.ChaincodeMessage, txContext *TransactionContext) (*pb.ChaincodeMessage, error) {
@@ -988,6 +1041,17 @@ func (h *Handler) HandlePutState(msg *pb.ChaincodeMessage, txContext *Transactio
 	if err != nil {
 		return nil, errors.Wrap(err, "unmarshal failed")
 	}
+	// optimistic code begin
+	var vval VersionedValue
+	vval.val = putState.Value
+	vval.txid = msg.Txid
+	putState.Value, err = json.Marshal(vval)
+	if err != nil {
+		log.Fatalln("please check versionedValue, putState error", err)
+	}
+	// put into tempdb
+	h.tempState.Put(putState.Key, msg.Txid, putState.Value)
+	// optimistic code end
 
 	namespaceID := txContext.NamespaceID
 	collection := putState.Collection
@@ -1171,7 +1235,8 @@ func (h *Handler) Execute(txParams *ccprovider.TransactionParams, namespace stri
 	if err := h.setChaincodeProposal(txParams.SignedProp, txParams.Proposal, msg); err != nil {
 		return nil, err
 	}
-
+	// optimistic code begin
+	// optimistic code end
 	h.serialSendAsync(msg)
 
 	var ccresp *pb.ChaincodeMessage

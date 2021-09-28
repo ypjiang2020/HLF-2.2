@@ -67,7 +67,6 @@ func (q *queryExecutor) GetState(ns, key string) ([]byte, error) {
 }
 
 // ethereum: read state
-// TODO: first try to read from T-state optimistically.
 func (q *queryExecutor) getState(ns, key string) ([]byte, []byte, error) {
 	if err := q.checkDone(); err != nil {
 		return nil, nil, err
@@ -78,7 +77,7 @@ func (q *queryExecutor) getState(ns, key string) ([]byte, []byte, error) {
 	}
 	val, metadata, ver := decomposeVersionedValue(versionedValue)
 	if q.collectReadset {
-		q.rwsetBuilder.AddToReadSet(ns, key, ver)
+		q.rwsetBuilder.AddToReadSet(ns, key, ver, val)
 	}
 	return val, metadata, nil
 }

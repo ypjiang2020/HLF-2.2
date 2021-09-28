@@ -11,8 +11,8 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/golang/protobuf/proto"
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
+	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric/common/util"
 	"github.com/hyperledger/fabric/core/chaincode/extcc"
 	"github.com/hyperledger/fabric/core/chaincode/lifecycle"
@@ -120,6 +120,7 @@ func (cs *ChaincodeSupport) HandleChaincodeStream(stream ccintf.ChaincodeStream)
 		AppConfig:              cs.AppConfig,
 		Metrics:                cs.HandlerMetrics,
 		TotalQueryLimit:        cs.TotalQueryLimit,
+		tempState:              newTempDB(),
 	}
 
 	return handler.ProcessStream(stream)
@@ -194,7 +195,7 @@ func (cs *ChaincodeSupport) Invoke(txParams *ccprovider.TransactionParams, chain
 		return nil, errors.WithMessage(err, "invalid invocation")
 	}
 
-	h, err := cs.Launch(ccid) // dd: start chaincode container or just get the handler for specify container if aleady started.
+	h, err := cs.Launch(ccid) // dd: start chaincode container or just get the handler for the specified container if already started.
 	if err != nil {
 		return nil, err
 	}

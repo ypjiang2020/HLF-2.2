@@ -75,11 +75,23 @@ func NewRWSetBuilder() *RWSetBuilder {
 	return &RWSetBuilder{make(map[string]*nsPubRwBuilder), make(map[string]*nsPvtRwBuilder)}
 }
 
+// optimistic code begin
 // AddToReadSet adds a key and corresponding version to the read-set
-func (b *RWSetBuilder) AddToReadSet(ns string, key string, version *version.Height) {
+// func (b *RWSetBuilder) AddToReadSet(ns string, key string, version *version.Height) {
+// 	nsPubRwBuilder := b.getOrCreateNsPubRwBuilder(ns)
+// 	nsPubRwBuilder.readMap[key] = NewKVRead(key, version)
+// }
+func (b *RWSetBuilder) AddToReadSet(ns string, key string, version *version.Height, val []byte) {
 	nsPubRwBuilder := b.getOrCreateNsPubRwBuilder(ns)
-	nsPubRwBuilder.readMap[key] = NewKVRead(key, version)
+	// nsPubRwBuilder.readMap[key] = NewKVRead(key, version)
+	nsPubRwBuilder.readMap[key] = NewKVReadWithValue(key, version, val)
 }
+
+func (b *RWSetBuilder) UpdateReadSet(ns string, key string, txid string) {
+	nsPubRwBuilder := b.getOrCreateNsPubRwBuilder(ns)
+	nsPubRwBuilder.readMap[key].Txid = txid
+}
+// optimistic code end
 
 // AddToWriteSet adds a key and value to the write-set
 func (b *RWSetBuilder) AddToWriteSet(ns string, key string, value []byte) {

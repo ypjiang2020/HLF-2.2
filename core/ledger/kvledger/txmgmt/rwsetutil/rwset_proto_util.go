@@ -17,9 +17,9 @@ limitations under the License.
 package rwsetutil
 
 import (
-	"github.com/golang/protobuf/proto"
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset"
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
+	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric/core/ledger/internal/version"
 	"github.com/hyperledger/fabric/core/ledger/util"
 )
@@ -317,6 +317,12 @@ func collPvtRwSetFromProtoMsg(protoMsg *rwset.CollectionPvtReadWriteSet) (*CollP
 	}
 	return collPvtRwSet, nil
 }
+
+// optimistic code begin
+func NewKVReadWithValue(key string, version *version.Height, val []byte) *kvrwset.KVRead {
+	return &kvrwset.KVRead{Key: key, Version: newProtoVersion(version), Value: val}
+}
+// optimistic code end
 
 // NewKVRead helps constructing proto message kvrwset.KVRead
 func NewKVRead(key string, version *version.Height) *kvrwset.KVRead {

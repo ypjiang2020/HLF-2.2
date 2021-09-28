@@ -44,6 +44,10 @@ func (s *txSimulator) SetState(ns string, key string, value []byte) error {
 	return nil
 }
 
+func (s *txSimulator) UpdateReadSet(ns string, key string, txid string) {
+	s.rwsetBuilder.UpdateReadSet(ns, key, txid)
+}
+
 // DeleteState implements method in interface `ledger.TxSimulator`
 func (s *txSimulator) DeleteState(ns string, key string) error {
 	return s.SetState(ns, key, nil)

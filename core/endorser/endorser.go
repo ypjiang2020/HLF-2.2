@@ -94,6 +94,10 @@ type Channel struct {
 	IdentityDeserializer msp.IdentityDeserializer
 }
 
+type Response struct {
+	*pb.ProposalResponse
+}
+
 // Endorser provides the Endorser service ProcessProposal
 type Endorser struct {
 	ChannelFetcher         ChannelFetcher
@@ -102,6 +106,26 @@ type Endorser struct {
 	Support                Support
 	PvtRWSetAssembler      PvtRWSetAssembler
 	Metrics                *Metrics
+
+	// optimistic code begin
+	Txpool *TxPool
+	contextManager     ContextManager
+
+	// optimistic code end
+}
+
+func NewEndorser(pdd PrivateDataDistributor, cf ChannelFetcher, lmsp msp.IdentityDeserializer, sp Support, mt *Metrics) *Endorser {
+	endorser := &Endorser{
+		PrivateDataDistributor: pdd,
+		ChannelFetcher: cf,
+		LocalMSP: lmsp,
+		Support: sp,
+		Metrics: mt,
+	}
+	// optimistic code begin
+	endorser.Txpool = NewTxPool(endorser)
+	// optimistic code end
+	return endorser
 }
 
 // call specified chaincode (system or user)
@@ -294,8 +318,89 @@ func (e *Endorser) preProcess(up *UnpackedProposal, channel *Channel) error {
 	return nil
 }
 
-// ProcessProposal process the Proposal
+// optimistic code begin
 func (e *Endorser) ProcessProposal(ctx context.Context, signedProp *pb.SignedProposal) (*pb.ProposalResponse, error) {
+	return e.ProcessProposal_ori(ctx, signedProp)
+
+}
+func (e *Endorser) ProcessProposal_new(ctx context.Context, signedProp *pb.SignedProposal) (*pb.ProposalResponse, error) {
+	addr := util.ExtractRemoteAddress(ctx)
+	endorserLogger.Debug("request from", addr)
+
+	up, err := UnpackProposal(signedProp)
+	if err != nil {
+		e.Metrics.ProposalValidationFailed.Add(1)
+		return &pb.ProposalResponse{Response: &pb.Response{Status: 500, Message: err.Error()}}, err
+	}
+	var channel *Channel
+	if up.ChannelID() != "" {
+		channel = e.ChannelFetcher.Channel(up.ChannelID())
+		if channel == nil {
+			return &pb.ProposalResponse{Response: &pb.Response{Status: 500, Message: fmt.Sprintf("channel '%s' not found", up.ChannelHeader.ChannelId)}}, nil
+		}
+	} else {
+		channel = &Channel{
+			IdentityDeserializer: e.LocalMSP,
+		}
+	}
+	// 0 -- check and validate
+	err = e.preProcess(up, channel)
+	if err != nil {
+		return &pb.ProposalResponse{Response: &pb.Response{Status: 500, Message: err.Error()}}, err
+	}
+
+	// save
+	txctx := e.contextManager.Create(up)
+	e.Txpool.Put(up)
+
+	for {
+		select {
+		case res := <- txctx.ResponseNotifier:
+			return res, nil
+		case <-time.After(10 * time.Second):
+			return nil, fmt.Errorf("timeout at simulation")
+		}
+	}
+}
+
+// ProcessProposal process the Proposal
+func (e *Endorser) doProcessProposal(ctx context.Context, up *UnpackedProposal) (*pb.ProposalResponse, error) {
+	// start time for computing elapsed time metric for successfully endorsed proposals
+	startTime := time.Now()
+	e.Metrics.ProposalsReceived.Add(1)
+
+	// variables to capture proposal duration metric
+	success := false
+	defer func() {
+		meterLabels := []string{
+			"channel", up.ChannelHeader.ChannelId,
+			"chaincode", up.ChaincodeName,
+			"success", strconv.FormatBool(success),
+		}
+		e.Metrics.ProposalDuration.With(meterLabels...).Observe(time.Since(startTime).Seconds())
+	}()
+
+	pResp, err := e.ProcessProposalSuccessfullyOrError(up)
+	if err != nil {
+		return &pb.ProposalResponse{Response: &pb.Response{Status: 500, Message: err.Error()}}, nil
+	}
+
+	if pResp.Endorsement != nil || up.ChannelHeader.ChannelId == "" {
+		// We mark the tx as successful only if it was successfully endorsed, or
+		// if it was a system chaincode on a channel-less channel and therefore
+		// cannot be endorsed.
+		success = true
+
+		// total failed proposals = ProposalsReceived-SuccessfulProposals
+		e.Metrics.SuccessfulProposals.Add(1)
+	}
+	return pResp, nil
+}
+
+// optimistic code end
+
+// ProcessProposal process the Proposal
+func (e *Endorser) ProcessProposal_ori(ctx context.Context, signedProp *pb.SignedProposal) (*pb.ProposalResponse, error) {
 	// start time for computing elapsed time metric for successfully endorsed proposals
 	startTime := time.Now()
 	e.Metrics.ProposalsReceived.Add(1)
@@ -355,7 +460,6 @@ func (e *Endorser) ProcessProposal(ctx context.Context, signedProp *pb.SignedPro
 	}
 	return pResp, nil
 }
-
 func (e *Endorser) ProcessProposalSuccessfullyOrError(up *UnpackedProposal) (*pb.ProposalResponse, error) {
 	txParams := &ccprovider.TransactionParams{
 		ChannelID:  up.ChannelHeader.ChannelId,
