@@ -50,7 +50,6 @@ func (c *QECombiner) GetState(namespace string, key string) ([]byte, error) {
 		}
 		if vv != nil {
 			if !vv.IsDelete() {
-				log.Println("jyp queryexecuters 3", i)
 				var verval VersionedValue
 				err := json.Unmarshal(vv.Value, &verval)
 				if err != nil {
