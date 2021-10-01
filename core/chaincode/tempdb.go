@@ -82,6 +82,9 @@ func newTempDB() *TempDB {
 }
 
 func (tdb *TempDB) Get(key, session string) *VersionedValue {
+	if session == "" {
+		return nil
+	}
 	if sdb, ok := tdb.Sessions[session]; ok {
 		return sdb.Get(key)
 	} else {
@@ -91,6 +94,9 @@ func (tdb *TempDB) Get(key, session string) *VersionedValue {
 
 func (tdb *TempDB) Put(key, txid string, val []byte) {
 	session := GetSessionFromTxid(txid)
+	if session == "" {
+		return
+	}
 	if sdb, ok := tdb.Sessions[session]; ok {
 		sdb.Put(txid, key, val)
 	} else {
@@ -102,6 +108,9 @@ func (tdb *TempDB) Put(key, txid string, val []byte) {
 
 func (tdb *TempDB) Rollback(txid string) {
 	session := GetSessionFromTxid(txid)
+	if session == "" {
+		return
+	}
 	if sdb, ok := tdb.Sessions[session]; ok {
 		sdb.Rollback(txid)
 	} else {
@@ -110,6 +119,9 @@ func (tdb *TempDB) Rollback(txid string) {
 }
 func (tdb *TempDB) Commit(txid string) {
 	session := GetSessionFromTxid(txid)
+	if session == "" {
+		return
+	}
 	if sdb, ok := tdb.Sessions[session]; ok {
 		sdb.Commit(txid)
 	} else {
@@ -117,16 +129,27 @@ func (tdb *TempDB) Commit(txid string) {
 	}
 }
 
-func (tdb *TempDB) Prune(txid string){
+func (tdb *TempDB) Prune(txid string) {
 	session := GetSessionFromTxid(txid)
 	delete(tdb.Sessions, session)
 }
 
-
 // txid format: seqNumber_Session_oriTxid
 func GetSessionFromTxid(txid string) string {
-	return strings.Split(txid, "_")[1]
+	temp := strings.Split(txid, "_+=+_")
+	if len(temp) == 1 {
+		return ""
+	} else if len(temp) == 3 {
+		return temp[1]
+	}
+	return ""
 }
 func GetSeqFromTxid(txid string) string {
-	return strings.Split(txid, "_")[0]
+	temp := strings.Split(txid, "_+=+_")
+	if len(temp) == 1 {
+		return ""
+	} else if len(temp) == 3 {
+		return temp[0]
+	}
+	return ""
 }

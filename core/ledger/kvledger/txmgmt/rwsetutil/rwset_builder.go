@@ -89,8 +89,12 @@ func (b *RWSetBuilder) AddToReadSet(ns string, key string, version *version.Heig
 
 func (b *RWSetBuilder) UpdateReadSet(ns string, key string, txid string) {
 	nsPubRwBuilder := b.getOrCreateNsPubRwBuilder(ns)
+	if _, ok := nsPubRwBuilder.readMap[key]; !ok {
+		return
+	}
 	nsPubRwBuilder.readMap[key].Txid = txid
 }
+
 // optimistic code end
 
 // AddToWriteSet adds a key and value to the write-set

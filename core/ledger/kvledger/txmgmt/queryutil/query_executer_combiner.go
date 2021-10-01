@@ -7,6 +7,8 @@ SPDX-License-Identifier: Apache-2.0
 package queryutil
 
 import (
+	"encoding/json"
+
 	"github.com/hyperledger/fabric/common/flogging"
 	commonledger "github.com/hyperledger/fabric/common/ledger"
 	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/privacyenabledstate"
@@ -32,6 +34,11 @@ type QECombiner struct {
 	QueryExecuters []QueryExecuter // actual executers in decending order of priority
 }
 
+type VersionedValue struct {
+	txid string
+	val  []byte
+}
+
 // GetState implements function in the interface ledger.SimpleQueryExecutor
 func (c *QECombiner) GetState(namespace string, key string) ([]byte, error) {
 	var vv *statedb.VersionedValue
@@ -43,7 +50,15 @@ func (c *QECombiner) GetState(namespace string, key string) ([]byte, error) {
 		}
 		if vv != nil {
 			if !vv.IsDelete() {
-				val = vv.Value
+				log.Println("jyp queryexecuters 3", i)
+				var verval VersionedValue
+				err := json.Unmarshal(vv.Value, &verval)
+				if err != nil {
+					log.Printf("jyp debug qecombinner getstate, unmarshal %v\n", err)
+					val = vv.Value
+				} else {
+					val = verval.val
+				}
 			}
 			break
 		}

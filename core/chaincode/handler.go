@@ -645,36 +645,44 @@ func (h *Handler) HandleGetState(msg *pb.ChaincodeMessage, txContext *Transactio
 	if resv == nil {
 		chaincodeLogger.Debugf("[%s] No state associated with key: %s. Sending %s with an empty payload", shorttxid(msg.Txid), getState.Key, pb.ChaincodeMessage_RESPONSE)
 	} else {
-		err := json.Unmarshal(resv, &dbVal)
-		if err != nil {
-			log.Fatalln("please check db value, unmarshal error", err)
-		}
-		resp = dbVal.val
-	}
-
-	// optimistic code begin
-	session := GetSessionFromTxid(msg.Txid)
-	tempVal := h.tempState.Get(getState.Key, session)
-	var payload []byte
-	if tempVal == nil {
-		payload = resp
-		txContext.TXSimulator.UpdateReadSet(namespaceID, getState.Key, dbVal.txid)
-	} else {
-		tempSession := GetSessionFromTxid(tempVal.txid)
-		dbSession := GetSessionFromTxid(dbVal.txid)
-		if tempSession == dbSession {
-			// choose tempVal
-			payload = tempVal.val
-			txContext.TXSimulator.UpdateReadSet(namespaceID, getState.Key, tempVal.txid)
+		if isCollectionSet(collection) {
+			resp = resv
 		} else {
-			// some transaction commit during session `lastTxid[1]`
-			// we choose dbVal
-			payload = dbVal.val
-			// txContext.TXSimulator.UpdateReadSet(namespaceID, getState.Key, dbVal.txid)
+			err := json.Unmarshal(resv, &dbVal)
+			if err != nil {
+				log.Fatalln("please check db value, unmarshal error", err)
+			}
+			resp = dbVal.val
+
 		}
 	}
-	// optimistic code end
 
+	var payload []byte
+	if isCollectionSet(collection) {
+		payload = resp
+	} else {
+		// optimistic code begin
+		session := GetSessionFromTxid(msg.Txid)
+		tempVal := h.tempState.Get(getState.Key, session)
+		if tempVal == nil {
+			payload = resp
+			txContext.TXSimulator.UpdateReadSet(namespaceID, getState.Key, dbVal.txid)
+		} else {
+			tempSession := GetSessionFromTxid(tempVal.txid)
+			dbSession := GetSessionFromTxid(dbVal.txid)
+			if tempSession == dbSession {
+				// choose tempVal
+				payload = tempVal.val
+				txContext.TXSimulator.UpdateReadSet(namespaceID, getState.Key, tempVal.txid)
+			} else {
+				// some transaction commit during session `lastTxid[1]`
+				// we choose dbVal
+				payload = dbVal.val
+				// txContext.TXSimulator.UpdateReadSet(namespaceID, getState.Key, dbVal.txid)
+			}
+		}
+		// optimistic code end
+	}
 	// Send response msg back to chaincode. GetState will not trigger event
 	return &pb.ChaincodeMessage{Type: pb.ChaincodeMessage_RESPONSE, Payload: payload, Txid: msg.Txid, ChannelId: msg.ChannelId}, nil
 }
@@ -1041,17 +1049,6 @@ func (h *Handler) HandlePutState(msg *pb.ChaincodeMessage, txContext *Transactio
 	if err != nil {
 		return nil, errors.Wrap(err, "unmarshal failed")
 	}
-	// optimistic code begin
-	var vval VersionedValue
-	vval.val = putState.Value
-	vval.txid = msg.Txid
-	putState.Value, err = json.Marshal(vval)
-	if err != nil {
-		log.Fatalln("please check versionedValue, putState error", err)
-	}
-	// put into tempdb
-	h.tempState.Put(putState.Key, msg.Txid, putState.Value)
-	// optimistic code end
 
 	namespaceID := txContext.NamespaceID
 	collection := putState.Collection
@@ -1064,6 +1061,17 @@ func (h *Handler) HandlePutState(msg *pb.ChaincodeMessage, txContext *Transactio
 		}
 		err = txContext.TXSimulator.SetPrivateData(namespaceID, collection, putState.Key, putState.Value)
 	} else {
+		// optimistic code begin
+		var vval VersionedValue
+		vval.val = putState.Value
+		vval.txid = msg.Txid
+		putState.Value, err = json.Marshal(vval)
+		if err != nil {
+			log.Fatalln("please check versionedValue, putState error", err)
+		}
+		// put into tempdb
+		h.tempState.Put(putState.Key, msg.Txid, putState.Value)
+		// optimistic code end
 		err = txContext.TXSimulator.SetState(namespaceID, putState.Key, putState.Value)
 	}
 	if err != nil {
