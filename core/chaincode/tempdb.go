@@ -9,8 +9,8 @@ import (
 )
 
 type VersionedValue struct {
-	txid string
-	val  []byte
+	Txid string
+	Val  []byte
 }
 
 type TempDB struct {
@@ -47,7 +47,7 @@ func (sdb *SessionDB) Get(key string) *VersionedValue {
 	versionedValue := &VersionedValue{}
 	err := json.Unmarshal(val, versionedValue)
 	if err != nil {
-		log.Fatalln("get from session db,", key, versionedValue.txid, err)
+		log.Fatalln("get from session db,", key, versionedValue.Txid, err)
 	}
 	return versionedValue
 }

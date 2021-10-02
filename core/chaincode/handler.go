@@ -10,11 +10,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
-	"log"
 
 	"github.com/Yunpeng-J/fabric-chaincode-go/shim"
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
@@ -652,7 +652,7 @@ func (h *Handler) HandleGetState(msg *pb.ChaincodeMessage, txContext *Transactio
 			if err != nil {
 				log.Fatalln("please check db value, unmarshal error", err)
 			}
-			resp = dbVal.val
+			resp = dbVal.Val
 
 		}
 	}
@@ -666,18 +666,18 @@ func (h *Handler) HandleGetState(msg *pb.ChaincodeMessage, txContext *Transactio
 		tempVal := h.tempState.Get(getState.Key, session)
 		if tempVal == nil {
 			payload = resp
-			txContext.TXSimulator.UpdateReadSet(namespaceID, getState.Key, dbVal.txid)
+			txContext.TXSimulator.UpdateReadSet(namespaceID, getState.Key, dbVal.Txid)
 		} else {
-			tempSession := GetSessionFromTxid(tempVal.txid)
-			dbSession := GetSessionFromTxid(dbVal.txid)
+			tempSession := GetSessionFromTxid(tempVal.Txid)
+			dbSession := GetSessionFromTxid(dbVal.Txid)
 			if tempSession == dbSession {
 				// choose tempVal
-				payload = tempVal.val
-				txContext.TXSimulator.UpdateReadSet(namespaceID, getState.Key, tempVal.txid)
+				payload = tempVal.Val
+				txContext.TXSimulator.UpdateReadSet(namespaceID, getState.Key, tempVal.Txid)
 			} else {
 				// some transaction commit during session `lastTxid[1]`
 				// we choose dbVal
-				payload = dbVal.val
+				payload = dbVal.Val
 				// txContext.TXSimulator.UpdateReadSet(namespaceID, getState.Key, dbVal.txid)
 			}
 		}
@@ -1063,8 +1063,8 @@ func (h *Handler) HandlePutState(msg *pb.ChaincodeMessage, txContext *Transactio
 	} else {
 		// optimistic code begin
 		var vval VersionedValue
-		vval.val = putState.Value
-		vval.txid = msg.Txid
+		vval.Val = putState.Value
+		vval.Txid = msg.Txid
 		putState.Value, err = json.Marshal(vval)
 		if err != nil {
 			log.Fatalln("please check versionedValue, putState error", err)

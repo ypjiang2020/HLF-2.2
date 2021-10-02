@@ -8,6 +8,7 @@ package queryutil
 
 import (
 	"encoding/json"
+	"log"
 
 	"github.com/hyperledger/fabric/common/flogging"
 	commonledger "github.com/hyperledger/fabric/common/ledger"
@@ -35,8 +36,8 @@ type QECombiner struct {
 }
 
 type VersionedValue struct {
-	txid string
-	val  []byte
+	Txid string
+	Val  []byte
 }
 
 // GetState implements function in the interface ledger.SimpleQueryExecutor
@@ -56,7 +57,8 @@ func (c *QECombiner) GetState(namespace string, key string) ([]byte, error) {
 					log.Printf("jyp debug qecombinner getstate, unmarshal %v\n", err)
 					val = vv.Value
 				} else {
-					val = verval.val
+					log.Printf("jyp get state check %v %v", key, verval.Val)
+					val = verval.Val
 				}
 			}
 			break
@@ -112,7 +114,8 @@ type UpdateBatchBackedQueryExecuter struct {
 
 // GetState implements function in interface 'queryExecuter'
 func (qe *UpdateBatchBackedQueryExecuter) GetState(ns, key string) (*statedb.VersionedValue, error) {
-	return qe.UpdateBatch.Get(ns, key), nil
+	val := qe.UpdateBatch.Get(ns, key)
+	return val, nil
 }
 
 // GetStateRangeScanIterator implements function in interface 'queryExecuter'
