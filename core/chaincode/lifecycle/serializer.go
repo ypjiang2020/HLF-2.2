@@ -8,6 +8,7 @@ package lifecycle
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"reflect"
 
@@ -22,6 +23,11 @@ const (
 	MetadataInfix = "metadata"
 	FieldsInfix   = "fields"
 )
+
+type VersionedValue struct {
+	Txid string
+	Val  []byte
+}
 
 type ReadWritableState interface {
 	ReadableState
@@ -365,6 +371,11 @@ func (s *Serializer) DeserializeMetadata(namespace, name string, state ReadableS
 	if metadataBin == nil {
 		return nil, false, nil
 	}
+	var verval VersionedValue
+	err = json.Unmarshal(metadataBin, &verval)
+	if err == nil {
+		metadataBin = verval.Val
+	}
 
 	metadata := &lb.StateMetadata{}
 	err = proto.Unmarshal(metadataBin, metadata)
@@ -380,6 +391,12 @@ func (s *Serializer) DeserializeField(namespace, name, field string, state Reada
 	value, err := state.GetState(keyName)
 	if err != nil {
 		return nil, errors.WithMessagef(err, "could not get state for key %s", keyName)
+	}
+
+	var verval VersionedValue
+	err = json.Unmarshal(value, &verval)
+	if err == nil {
+		value = verval.Val
 	}
 
 	stateData := &lb.StateData{}
@@ -458,6 +475,11 @@ func (s *Serializer) DeserializeAllMetadata(namespace string, state RangeableSta
 	for key, value := range kvs {
 		name := key[len(prefix):]
 		metadata := &lb.StateMetadata{}
+		var verval VersionedValue
+		err = json.Unmarshal(value, &verval)
+		if err == nil {
+			value = verval.Val
+		}
 		err = proto.Unmarshal(value, metadata)
 		if err != nil {
 			return nil, errors.Wrapf(err, "error unmarshaling metadata for key %s", key)
