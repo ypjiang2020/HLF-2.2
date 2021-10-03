@@ -1062,6 +1062,7 @@ func (h *Handler) HandlePutState(msg *pb.ChaincodeMessage, txContext *Transactio
 		err = txContext.TXSimulator.SetPrivateData(namespaceID, collection, putState.Key, putState.Value)
 	} else {
 		// optimistic code begin
+		// TODO: move encoding and decoding to the below layer
 		var vval VersionedValue
 		vval.Val = putState.Value
 		vval.Txid = msg.Txid

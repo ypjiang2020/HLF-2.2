@@ -2,10 +2,10 @@ package chaincode
 
 import (
 	"encoding/json"
+	"fmt"
+	"log"
 	"strings"
 	"sync"
-	"log"
-
 )
 
 type VersionedValue struct {
@@ -20,30 +20,39 @@ type TempDB struct {
 
 type WriteSet struct {
 	keys []string
-	val  [][]byte
+	vals [][]byte
 }
 
 func (ws *WriteSet) append(key string, val []byte) {
 	ws.keys = append(ws.keys, key)
-	ws.val = append(ws.val, val)
+	ws.vals = append(ws.vals, val)
 }
 
 type SessionDB struct {
 	session   string
-	db        map[string][]byte
-	writeSets map[string]*WriteSet
+	db        map[string][]byte    // key is key
+	writeSets map[string]*WriteSet // key is txid
+}
+
+func NewTempDB() *TempDB {
+	return newTempDB()
 }
 
 func newSessionDB(session string) *SessionDB {
 	return &SessionDB{
-		session: session,
-		db:      map[string][]byte{},
+		session:   session,
+		db:        map[string][]byte{},
+		writeSets: map[string]*WriteSet{},
 	}
 }
 
 func (sdb *SessionDB) Get(key string) *VersionedValue {
 	// TODO: do we need to read from writeSets?
-	val := sdb.db[key]
+	val, ok := sdb.db[key]
+	if !ok {
+		return nil
+	}
+
 	versionedValue := &VersionedValue{}
 	err := json.Unmarshal(val, versionedValue)
 	if err != nil {
@@ -53,7 +62,6 @@ func (sdb *SessionDB) Get(key string) *VersionedValue {
 }
 
 func (sdb *SessionDB) Put(txid, key string, val []byte) {
-	// sdb.db[key] = val
 	if _, ok := sdb.writeSets[txid]; !ok {
 		sdb.writeSets[txid] = &WriteSet{}
 	}
@@ -63,6 +71,7 @@ func (sdb *SessionDB) Put(txid, key string, val []byte) {
 func (sdb *SessionDB) Rollback(txid string) {
 	delete(sdb.writeSets, txid)
 }
+
 func (sdb *SessionDB) Commit(txid string) {
 	if _, ok := sdb.writeSets[txid]; !ok {
 		log.Fatalln("write set not found", txid)
@@ -70,8 +79,19 @@ func (sdb *SessionDB) Commit(txid string) {
 	writeset := sdb.writeSets[txid]
 	cnt := len(writeset.keys)
 	for i := 0; i < cnt; i++ {
-		sdb.db[writeset.keys[i]] = writeset.val[i]
+		var val = writeset.vals[i]
+		// verval := &VersionedValue{
+		// 	Txid: txid,
+		// 	Val:  writeset.vals[i],
+		// }
+		// val, err := json.Marshal(verval)
+		// if err != nil {
+		// 	log.Fatalf("commit to session db, marshal %v", err)
+
+		// }
+		sdb.db[writeset.keys[i]] = val
 	}
+	delete(sdb.writeSets, txid)
 }
 
 func newTempDB() *TempDB {
@@ -93,6 +113,7 @@ func (tdb *TempDB) Get(key, session string) *VersionedValue {
 }
 
 func (tdb *TempDB) Put(key, txid string, val []byte) {
+	// val has already been encoded by marshaling (txid, ori_val)
 	session := GetSessionFromTxid(txid)
 	if session == "" {
 		return
@@ -129,9 +150,36 @@ func (tdb *TempDB) Commit(txid string) {
 	}
 }
 
+// Prune: delete the session that txid belongs to.
 func (tdb *TempDB) Prune(txid string) {
 	session := GetSessionFromTxid(txid)
 	delete(tdb.Sessions, session)
+}
+
+func (tdb *TempDB) String() string {
+	var res string
+	for session, sessiondb := range tdb.Sessions {
+		res += fmt.Sprintf("session:%s\n", session)
+		res += fmt.Sprintf("\tcommitdb:\n")
+		for key, val := range sessiondb.db {
+			var verval VersionedValue
+			err := json.Unmarshal(val, &verval)
+			if err != nil {
+				log.Fatalf("stringfy tempdb, unmarshal error: %v", err)
+
+			}
+			res += fmt.Sprintf("\t\tkey=%s; txid=%s, val=%s\n", key, verval.Txid, verval.Val)
+		}
+		res += fmt.Sprintf("\tuncommitdb:\n")
+		for txid, rws := range sessiondb.writeSets {
+			res += fmt.Sprintf("\t\ttxid=%s:\n", txid)
+			for i := 0; i < len(rws.keys); i++ {
+				res += fmt.Sprintf("\t\t\tkey=%s; val=%s\n", rws.keys[i], string(rws.vals[i]))
+			}
+		}
+	}
+	res += fmt.Sprintf("\n")
+	return res
 }
 
 // txid format: seqNumber_Session_oriTxid
@@ -144,6 +192,7 @@ func GetSessionFromTxid(txid string) string {
 	}
 	return ""
 }
+
 func GetSeqFromTxid(txid string) string {
 	temp := strings.Split(txid, "_+=+_")
 	if len(temp) == 1 {
