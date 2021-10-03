@@ -10,9 +10,9 @@ import (
 	"testing"
 
 	"github.com/Yunpeng-J/fabric-protos-go/orderer"
-	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric/orderer/consensus/etcdraft"
-	"github.com/hyperledger/fabric/orderer/consensus/etcdraft/mocks"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/consensus/etcdraft"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/consensus/etcdraft/mocks"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )

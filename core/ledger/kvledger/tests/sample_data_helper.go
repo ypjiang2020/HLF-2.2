@@ -11,7 +11,7 @@ import (
 	"testing"
 
 	protopeer "github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/core/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
 	"github.com/stretchr/testify/assert"
 )
 

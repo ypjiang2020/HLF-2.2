@@ -12,13 +12,13 @@ import (
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset"
 	"github.com/Yunpeng-J/fabric-protos-go/msp"
 	protopeer "github.com/Yunpeng-J/fabric-protos-go/peer"
-	configtxtest "github.com/hyperledger/fabric/common/configtx/test"
-	"github.com/hyperledger/fabric/common/crypto"
-	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric/common/policydsl"
-	"github.com/hyperledger/fabric/core/ledger/kvledger/tests/fakes"
-	"github.com/hyperledger/fabric/internal/pkg/txflags"
-	"github.com/hyperledger/fabric/protoutil"
+	configtxtest "github.com/Yunpeng-J/HLF-2.2/common/configtx/test"
+	"github.com/Yunpeng-J/HLF-2.2/common/crypto"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
+	"github.com/Yunpeng-J/HLF-2.2/common/policydsl"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/tests/fakes"
+	"github.com/Yunpeng-J/HLF-2.2/internal/pkg/txflags"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 )
 
 var logger = flogging.MustGetLogger("test2")

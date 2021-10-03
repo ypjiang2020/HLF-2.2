@@ -6,7 +6,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/core/common/ccprovider"
+	"github.com/Yunpeng-J/HLF-2.2/core/common/ccprovider"
 )
 
 type CCPackage struct {

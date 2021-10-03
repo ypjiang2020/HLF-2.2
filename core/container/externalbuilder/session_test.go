@@ -11,8 +11,8 @@ import (
 	"os/exec"
 	"syscall"
 
-	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric/core/container/externalbuilder"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
+	"github.com/Yunpeng-J/HLF-2.2/core/container/externalbuilder"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"

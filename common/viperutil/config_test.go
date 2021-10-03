@@ -16,8 +16,8 @@ import (
 	"testing"
 
 	"github.com/Shopify/sarama"
-	"github.com/hyperledger/fabric/bccsp/factory"
-	"github.com/hyperledger/fabric/orderer/mocks/util"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp/factory"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/mocks/util"
 	"github.com/spf13/viper"
 )
 

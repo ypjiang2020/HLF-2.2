@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"runtime"
 
-	"github.com/hyperledger/fabric/common/metadata"
+	"github.com/Yunpeng-J/HLF-2.2/common/metadata"
 	"github.com/spf13/cobra"
 )
 

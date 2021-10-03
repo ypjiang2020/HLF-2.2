@@ -8,7 +8,7 @@ package decorator
 
 import (
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/core/handlers/decoration"
+	"github.com/Yunpeng-J/HLF-2.2/core/handlers/decoration"
 )
 
 // NewDecorator creates a new decorator

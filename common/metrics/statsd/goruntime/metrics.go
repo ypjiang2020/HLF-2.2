@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 package goruntime
 
 import (
-	"github.com/hyperledger/fabric/common/metrics"
+	"github.com/Yunpeng-J/HLF-2.2/common/metrics"
 )
 
 //gendoc:ignore

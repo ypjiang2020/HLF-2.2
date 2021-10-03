@@ -9,9 +9,9 @@ package fileledger
 import (
 	cb "github.com/Yunpeng-J/fabric-protos-go/common"
 	ab "github.com/Yunpeng-J/fabric-protos-go/orderer"
-	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric/common/ledger"
-	"github.com/hyperledger/fabric/common/ledger/blockledger"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
+	"github.com/Yunpeng-J/HLF-2.2/common/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/common/ledger/blockledger"
 )
 
 var logger = flogging.MustGetLogger("common.ledger.blockledger.file")

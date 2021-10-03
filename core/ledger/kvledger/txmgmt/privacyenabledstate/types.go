@@ -9,8 +9,8 @@ package privacyenabledstate
 import (
 	"fmt"
 
-	"github.com/hyperledger/fabric/core/ledger/internal/version"
-	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/statedb"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/internal/version"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/statedb"
 )
 
 // PvtdataCompositeKey encloses Namespace, CollectionName and Key components

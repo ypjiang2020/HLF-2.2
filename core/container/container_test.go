@@ -13,10 +13,10 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/hyperledger/fabric/core/chaincode/persistence"
-	"github.com/hyperledger/fabric/core/container"
-	"github.com/hyperledger/fabric/core/container/ccintf"
-	"github.com/hyperledger/fabric/core/container/mock"
+	"github.com/Yunpeng-J/HLF-2.2/core/chaincode/persistence"
+	"github.com/Yunpeng-J/HLF-2.2/core/container"
+	"github.com/Yunpeng-J/HLF-2.2/core/container/ccintf"
+	"github.com/Yunpeng-J/HLF-2.2/core/container/mock"
 	"github.com/pkg/errors"
 )
 

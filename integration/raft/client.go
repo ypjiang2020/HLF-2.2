@@ -9,9 +9,9 @@ package raft
 import (
 	"github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/Yunpeng-J/fabric-protos-go/orderer"
-	"github.com/hyperledger/fabric/cmd/common/signer"
-	"github.com/hyperledger/fabric/integration/nwo"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/cmd/common/signer"
+	"github.com/Yunpeng-J/HLF-2.2/integration/nwo"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	. "github.com/onsi/gomega"
 )
 

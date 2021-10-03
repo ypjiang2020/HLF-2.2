@@ -11,7 +11,7 @@ import (
 	"testing"
 
 	"github.com/Yunpeng-J/fabric-protos-go/orderer/etcdraft"
-	"github.com/hyperledger/fabric/core/config/configtest"
+	"github.com/Yunpeng-J/HLF-2.2/core/config/configtest"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )

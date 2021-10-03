@@ -14,9 +14,9 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/Yunpeng-J/fabric-protos-go/msp"
-	"github.com/hyperledger/fabric/common/channelconfig"
-	"github.com/hyperledger/fabric/orderer/common/msgprocessor/mocks"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/common/channelconfig"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/common/msgprocessor/mocks"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	"github.com/stretchr/testify/assert"
 )
 

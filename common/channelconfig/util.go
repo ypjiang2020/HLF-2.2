@@ -17,9 +17,9 @@ import (
 	ab "github.com/Yunpeng-J/fabric-protos-go/orderer"
 	"github.com/Yunpeng-J/fabric-protos-go/orderer/etcdraft"
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/bccsp"
-	"github.com/hyperledger/fabric/bccsp/factory"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp/factory"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	"github.com/pkg/errors"
 )
 

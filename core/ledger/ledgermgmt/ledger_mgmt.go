@@ -12,12 +12,12 @@ import (
 	"sync"
 
 	"github.com/Yunpeng-J/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric/common/metrics"
-	"github.com/hyperledger/fabric/core/common/ccprovider"
-	"github.com/hyperledger/fabric/core/ledger"
-	"github.com/hyperledger/fabric/core/ledger/cceventmgmt"
-	"github.com/hyperledger/fabric/core/ledger/kvledger"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
+	"github.com/Yunpeng-J/HLF-2.2/common/metrics"
+	"github.com/Yunpeng-J/HLF-2.2/core/common/ccprovider"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/cceventmgmt"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger"
 	"github.com/pkg/errors"
 )
 

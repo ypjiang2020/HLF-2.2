@@ -18,8 +18,8 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/Yunpeng-J/fabric-protos-go/msp"
-	"github.com/hyperledger/fabric/bccsp"
-	"github.com/hyperledger/fabric/common/flogging"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
 	"github.com/pkg/errors"
 	"go.uber.org/zap/zapcore"
 )

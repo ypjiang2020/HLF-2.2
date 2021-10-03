@@ -9,9 +9,9 @@ package extcc
 import (
 	"context"
 
-	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric/core/container/ccintf"
-	"github.com/hyperledger/fabric/internal/pkg/comm"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
+	"github.com/Yunpeng-J/HLF-2.2/core/container/ccintf"
+	"github.com/Yunpeng-J/HLF-2.2/internal/pkg/comm"
 	"github.com/pkg/errors"
 
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"

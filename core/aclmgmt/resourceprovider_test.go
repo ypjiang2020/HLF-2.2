@@ -14,10 +14,10 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/core/aclmgmt/mocks"
-	"github.com/hyperledger/fabric/internal/pkg/identity"
-	msptesttools "github.com/hyperledger/fabric/msp/mgmt/testtools"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/core/aclmgmt/mocks"
+	"github.com/Yunpeng-J/HLF-2.2/internal/pkg/identity"
+	msptesttools "github.com/Yunpeng-J/HLF-2.2/msp/mgmt/testtools"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	"github.com/stretchr/testify/assert"
 )
 

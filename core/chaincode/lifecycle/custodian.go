@@ -9,7 +9,7 @@ package lifecycle
 import (
 	"sync"
 
-	"github.com/hyperledger/fabric/core/container"
+	"github.com/Yunpeng-J/HLF-2.2/core/container"
 )
 
 //go:generate counterfeiter -o mock/chaincode_launcher.go --fake-name ChaincodeLauncher . ChaincodeLauncher

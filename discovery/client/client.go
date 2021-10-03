@@ -16,8 +16,8 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/Yunpeng-J/fabric-protos-go/discovery"
 	"github.com/Yunpeng-J/fabric-protos-go/msp"
-	"github.com/hyperledger/fabric/discovery/protoext"
-	gprotoext "github.com/hyperledger/fabric/gossip/protoext"
+	"github.com/Yunpeng-J/HLF-2.2/discovery/protoext"
+	gprotoext "github.com/Yunpeng-J/HLF-2.2/gossip/protoext"
 	"github.com/pkg/errors"
 )
 

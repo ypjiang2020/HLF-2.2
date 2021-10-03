@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/hyperledger/fabric/common/flogging"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
 )
 
 //go:generate counterfeiter -o fakes/logging.go -fake-name Logging . Logging

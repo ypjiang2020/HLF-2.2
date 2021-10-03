@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hyperledger/fabric/gossip/comm"
+	"github.com/Yunpeng-J/HLF-2.2/gossip/comm"
 )
 
 var matchAnything = func(_ interface{}) bool { return true }

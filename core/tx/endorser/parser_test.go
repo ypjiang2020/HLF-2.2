@@ -11,10 +11,10 @@ import (
 
 	"github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/common/configtx"
-	endorsertx "github.com/hyperledger/fabric/core/tx/endorser"
-	"github.com/hyperledger/fabric/pkg/tx"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/common/configtx"
+	endorsertx "github.com/Yunpeng-J/HLF-2.2/core/tx/endorser"
+	"github.com/Yunpeng-J/HLF-2.2/pkg/tx"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

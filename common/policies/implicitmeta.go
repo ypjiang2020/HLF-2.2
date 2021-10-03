@@ -12,8 +12,8 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	cb "github.com/Yunpeng-J/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/msp"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/msp"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	"go.uber.org/zap/zapcore"
 )
 

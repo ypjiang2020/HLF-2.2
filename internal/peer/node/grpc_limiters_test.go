@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 
-	"github.com/hyperledger/fabric/core/peer"
+	"github.com/Yunpeng-J/HLF-2.2/core/peer"
 )
 
 func TestInitGrpcSemaphores(t *testing.T) {

@@ -9,7 +9,7 @@ package testdata
 import (
 	"time"
 
-	"github.com/hyperledger/fabric/common/metrics"
+	"github.com/Yunpeng-J/HLF-2.2/common/metrics"
 )
 
 // These variables should be discovered as valid metric options.

@@ -14,10 +14,10 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	lb "github.com/Yunpeng-J/fabric-protos-go/peer/lifecycle"
-	"github.com/hyperledger/fabric/common/util"
-	"github.com/hyperledger/fabric/core/chaincode/lifecycle"
-	"github.com/hyperledger/fabric/core/chaincode/lifecycle/mock"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/common/util"
+	"github.com/Yunpeng-J/HLF-2.2/core/chaincode/lifecycle"
+	"github.com/Yunpeng-J/HLF-2.2/core/chaincode/lifecycle/mock"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 )
 
 var _ = Describe("Serializer", func() {

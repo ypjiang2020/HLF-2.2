@@ -8,7 +8,7 @@ package endorsement
 
 import (
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
-	endorsement "github.com/hyperledger/fabric/core/handlers/endorsement/api"
+	endorsement "github.com/Yunpeng-J/HLF-2.2/core/handlers/endorsement/api"
 )
 
 // SigningIdentity signs messages and serializes its public identity to bytes

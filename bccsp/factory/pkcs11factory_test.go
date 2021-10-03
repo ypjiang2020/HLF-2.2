@@ -11,7 +11,7 @@ package factory
 import (
 	"testing"
 
-	"github.com/hyperledger/fabric/bccsp/pkcs11"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp/pkcs11"
 	"github.com/stretchr/testify/assert"
 )
 

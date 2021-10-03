@@ -8,10 +8,10 @@ package acl
 
 import (
 	"github.com/Yunpeng-J/fabric-protos-go/msp"
-	"github.com/hyperledger/fabric/common/channelconfig"
-	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric/common/policies"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/common/channelconfig"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
+	"github.com/Yunpeng-J/HLF-2.2/common/policies"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	"github.com/pkg/errors"
 )
 

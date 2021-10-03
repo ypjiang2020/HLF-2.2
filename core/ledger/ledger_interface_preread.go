@@ -19,9 +19,9 @@ import (
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
 	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric-lib-go/healthz"
-	"github.com/hyperledger/fabric/bccsp"
-	commonledger "github.com/hyperledger/fabric/common/ledger"
-	"github.com/hyperledger/fabric/common/metrics"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp"
+	commonledger "github.com/Yunpeng-J/HLF-2.2/common/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/common/metrics"
 )
 
 // Initializer encapsulates dependencies for PeerLedgerProvider

@@ -9,9 +9,9 @@ package blkstorage
 import (
 	"os"
 
-	"github.com/hyperledger/fabric/common/ledger/util"
-	"github.com/hyperledger/fabric/common/ledger/util/leveldbhelper"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/common/ledger/util"
+	"github.com/Yunpeng-J/HLF-2.2/common/ledger/util/leveldbhelper"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	"github.com/pkg/errors"
 )
 

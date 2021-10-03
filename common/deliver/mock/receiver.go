@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/Yunpeng-J/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/common/deliver"
+	"github.com/Yunpeng-J/HLF-2.2/common/deliver"
 )
 
 type Receiver struct {

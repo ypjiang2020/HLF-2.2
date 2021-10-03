@@ -9,8 +9,8 @@ package mgmt
 import (
 	"testing"
 
-	"github.com/hyperledger/fabric/bccsp/sw"
-	"github.com/hyperledger/fabric/core/config/configtest"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp/sw"
+	"github.com/Yunpeng-J/HLF-2.2/core/config/configtest"
 	"github.com/stretchr/testify/assert"
 )
 

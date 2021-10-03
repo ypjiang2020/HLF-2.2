@@ -20,9 +20,9 @@ import (
 	ab "github.com/Yunpeng-J/fabric-protos-go/orderer"
 	"github.com/Yunpeng-J/fabric-protos-go/orderer/etcdraft"
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/bccsp/sw"
-	"github.com/hyperledger/fabric/common/capabilities"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp/sw"
+	"github.com/Yunpeng-J/HLF-2.2/common/capabilities"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

@@ -11,13 +11,13 @@ import (
 	"github.com/Yunpeng-J/fabric-protos-go/msp"
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
 	lb "github.com/Yunpeng-J/fabric-protos-go/peer/lifecycle"
-	"github.com/hyperledger/fabric/common/chaincode"
-	"github.com/hyperledger/fabric/common/policydsl"
-	"github.com/hyperledger/fabric/core/chaincode/lifecycle"
-	"github.com/hyperledger/fabric/core/chaincode/lifecycle/mock"
+	"github.com/Yunpeng-J/HLF-2.2/common/chaincode"
+	"github.com/Yunpeng-J/HLF-2.2/common/policydsl"
+	"github.com/Yunpeng-J/HLF-2.2/core/chaincode/lifecycle"
+	"github.com/Yunpeng-J/HLF-2.2/core/chaincode/lifecycle/mock"
 	"github.com/pkg/errors"
 
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

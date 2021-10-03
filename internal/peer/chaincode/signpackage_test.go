@@ -14,9 +14,9 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	pcommon "github.com/Yunpeng-J/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/bccsp"
-	"github.com/hyperledger/fabric/bccsp/sw"
-	"github.com/hyperledger/fabric/internal/peer/common"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp/sw"
+	"github.com/Yunpeng-J/HLF-2.2/internal/peer/common"
 	"github.com/stretchr/testify/assert"
 )
 

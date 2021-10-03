@@ -10,9 +10,9 @@ import (
 	"sync/atomic"
 
 	"github.com/Yunpeng-J/fabric-protos-go/orderer/etcdraft"
-	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric/common/metrics"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
+	"github.com/Yunpeng-J/HLF-2.2/common/metrics"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	"go.etcd.io/etcd/raft"
 )
 

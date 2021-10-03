@@ -10,11 +10,11 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/hyperledger/fabric/bccsp/sw"
-	"github.com/hyperledger/fabric/common/metrics/disabled"
-	"github.com/hyperledger/fabric/core/ledger"
-	"github.com/hyperledger/fabric/core/ledger/ledgermgmt"
-	"github.com/hyperledger/fabric/core/ledger/mock"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp/sw"
+	"github.com/Yunpeng-J/HLF-2.2/common/metrics/disabled"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/ledgermgmt"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/mock"
 )
 
 // NewInitializer returns an instance of ledgermgmt Initializer

@@ -16,12 +16,12 @@ import (
 	cb "github.com/Yunpeng-J/fabric-protos-go/common"
 	ab "github.com/Yunpeng-J/fabric-protos-go/orderer"
 	"github.com/Yunpeng-J/fabric-protos-go/orderer/etcdraft"
-	"github.com/hyperledger/fabric/common/util"
-	"github.com/hyperledger/fabric/internal/configtxgen/encoder"
-	"github.com/hyperledger/fabric/internal/configtxgen/encoder/fakes"
-	"github.com/hyperledger/fabric/internal/configtxgen/genesisconfig"
-	"github.com/hyperledger/fabric/internal/pkg/identity"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/common/util"
+	"github.com/Yunpeng-J/HLF-2.2/internal/configtxgen/encoder"
+	"github.com/Yunpeng-J/HLF-2.2/internal/configtxgen/encoder/fakes"
+	"github.com/Yunpeng-J/HLF-2.2/internal/configtxgen/genesisconfig"
+	"github.com/Yunpeng-J/HLF-2.2/internal/pkg/identity"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 )
 
 //go:generate counterfeiter -o fakes/signer_serializer.go --fake-name SignerSerializer . signerSerializer

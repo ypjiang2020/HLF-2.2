@@ -12,10 +12,10 @@ import (
 
 	"github.com/Yunpeng-J/fabric-protos-go/common"
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/common/errors"
-	"github.com/hyperledger/fabric/core/ledger"
-	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/rwsetutil"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/common/errors"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/rwsetutil"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	"github.com/stretchr/testify/assert"
 )
 

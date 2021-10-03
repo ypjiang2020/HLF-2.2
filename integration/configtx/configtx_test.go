@@ -19,8 +19,8 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/Yunpeng-J/fabric-config/configtx"
 	"github.com/Yunpeng-J/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/integration/nwo"
-	"github.com/hyperledger/fabric/integration/nwo/commands"
+	"github.com/Yunpeng-J/HLF-2.2/integration/nwo"
+	"github.com/Yunpeng-J/HLF-2.2/integration/nwo/commands"
 	"github.com/tedsuo/ifrit"
 
 	. "github.com/onsi/ginkgo"

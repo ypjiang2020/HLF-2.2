@@ -4,8 +4,8 @@ package mocks
 import (
 	"sync"
 
-	"github.com/hyperledger/fabric/msp"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/msp"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 )
 
 type Policy struct {

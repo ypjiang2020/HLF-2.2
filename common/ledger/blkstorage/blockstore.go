@@ -11,9 +11,9 @@ import (
 
 	"github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/common/ledger"
-	"github.com/hyperledger/fabric/common/ledger/snapshot"
-	"github.com/hyperledger/fabric/common/ledger/util/leveldbhelper"
+	"github.com/Yunpeng-J/HLF-2.2/common/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/common/ledger/snapshot"
+	"github.com/Yunpeng-J/HLF-2.2/common/ledger/util/leveldbhelper"
 )
 
 // BlockStore - filesystem based implementation for `BlockStore`

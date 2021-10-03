@@ -10,11 +10,11 @@ import (
 	"github.com/Shopify/sarama"
 	"github.com/hyperledger/fabric-lib-go/healthz"
 	cb "github.com/Yunpeng-J/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric/common/metrics"
-	"github.com/hyperledger/fabric/orderer/common/localconfig"
-	"github.com/hyperledger/fabric/orderer/consensus"
-	"github.com/hyperledger/fabric/orderer/consensus/inactive"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
+	"github.com/Yunpeng-J/HLF-2.2/common/metrics"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/common/localconfig"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/consensus"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/consensus/inactive"
 	"github.com/pkg/errors"
 )
 

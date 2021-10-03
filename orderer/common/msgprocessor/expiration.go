@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/Yunpeng-J/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/common/channelconfig"
-	"github.com/hyperledger/fabric/common/crypto"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/common/channelconfig"
+	"github.com/Yunpeng-J/HLF-2.2/common/crypto"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	"github.com/pkg/errors"
 )
 

@@ -6,8 +6,8 @@ import (
 
 	"github.com/Yunpeng-J/fabric-protos-go/common"
 	peera "github.com/Yunpeng-J/fabric-protos-go/peer"
-	ledgera "github.com/hyperledger/fabric/common/ledger"
-	"github.com/hyperledger/fabric/core/ledger"
+	ledgera "github.com/Yunpeng-J/HLF-2.2/common/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
 )
 
 type PeerLedger struct {

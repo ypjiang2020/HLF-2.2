@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/Yunpeng-J/fabric-protos-go/orderer"
-	"github.com/hyperledger/fabric/common/channelconfig"
+	"github.com/Yunpeng-J/HLF-2.2/common/channelconfig"
 )
 
 type OrdererConfig struct {

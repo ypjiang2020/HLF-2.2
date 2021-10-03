@@ -9,14 +9,14 @@ package etcdraft_test
 import (
 	"testing"
 
-	"github.com/hyperledger/fabric/bccsp/sw"
-	"github.com/hyperledger/fabric/common/metrics/disabled"
-	"github.com/hyperledger/fabric/internal/pkg/comm"
-	"github.com/hyperledger/fabric/orderer/common/cluster"
-	"github.com/hyperledger/fabric/orderer/common/localconfig"
-	"github.com/hyperledger/fabric/orderer/common/multichannel"
-	"github.com/hyperledger/fabric/orderer/consensus/etcdraft"
-	"github.com/hyperledger/fabric/orderer/consensus/etcdraft/mocks"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp/sw"
+	"github.com/Yunpeng-J/HLF-2.2/common/metrics/disabled"
+	"github.com/Yunpeng-J/HLF-2.2/internal/pkg/comm"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/common/cluster"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/common/localconfig"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/common/multichannel"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/consensus/etcdraft"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/consensus/etcdraft/mocks"
 	"github.com/stretchr/testify/assert"
 )
 

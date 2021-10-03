@@ -9,7 +9,7 @@ package channelconfig
 import (
 	cb "github.com/Yunpeng-J/fabric-protos-go/common"
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/common/capabilities"
+	"github.com/Yunpeng-J/HLF-2.2/common/capabilities"
 	"github.com/pkg/errors"
 )
 

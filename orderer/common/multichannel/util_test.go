@@ -11,17 +11,17 @@ import (
 	"fmt"
 
 	cb "github.com/Yunpeng-J/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/common/capabilities"
-	"github.com/hyperledger/fabric/common/channelconfig"
-	"github.com/hyperledger/fabric/common/configtx"
-	"github.com/hyperledger/fabric/core/config/configtest"
-	"github.com/hyperledger/fabric/internal/configtxgen/encoder"
-	"github.com/hyperledger/fabric/internal/configtxgen/genesisconfig"
-	"github.com/hyperledger/fabric/orderer/common/blockcutter"
-	"github.com/hyperledger/fabric/orderer/common/msgprocessor"
-	"github.com/hyperledger/fabric/orderer/common/types"
-	"github.com/hyperledger/fabric/orderer/consensus"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/common/capabilities"
+	"github.com/Yunpeng-J/HLF-2.2/common/channelconfig"
+	"github.com/Yunpeng-J/HLF-2.2/common/configtx"
+	"github.com/Yunpeng-J/HLF-2.2/core/config/configtest"
+	"github.com/Yunpeng-J/HLF-2.2/internal/configtxgen/encoder"
+	"github.com/Yunpeng-J/HLF-2.2/internal/configtxgen/genesisconfig"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/common/blockcutter"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/common/msgprocessor"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/common/types"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/consensus"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 )
 
 type mockConsenter struct {

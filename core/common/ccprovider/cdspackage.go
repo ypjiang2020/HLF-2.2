@@ -25,7 +25,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/bccsp"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp"
 )
 
 //----- CDSData ------

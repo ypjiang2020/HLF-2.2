@@ -13,7 +13,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/hyperledger/fabric/core/operations"
+	"github.com/Yunpeng-J/HLF-2.2/core/operations"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

@@ -12,9 +12,9 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	cb "github.com/Yunpeng-J/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/common/policies"
-	"github.com/hyperledger/fabric/common/policydsl"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/common/policies"
+	"github.com/Yunpeng-J/HLF-2.2/common/policydsl"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -11,10 +11,10 @@ import (
 
 	"github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 
-	"github.com/hyperledger/fabric/core/committer/txvalidator/v20/valinforetriever"
-	"github.com/hyperledger/fabric/core/committer/txvalidator/v20/valinforetriever/mocks"
+	"github.com/Yunpeng-J/HLF-2.2/core/committer/txvalidator/v20/valinforetriever"
+	"github.com/Yunpeng-J/HLF-2.2/core/committer/txvalidator/v20/valinforetriever/mocks"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )

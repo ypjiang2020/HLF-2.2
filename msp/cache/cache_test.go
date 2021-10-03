@@ -11,8 +11,8 @@ import (
 	"testing"
 
 	msp2 "github.com/Yunpeng-J/fabric-protos-go/msp"
-	"github.com/hyperledger/fabric/msp"
-	"github.com/hyperledger/fabric/msp/mocks"
+	"github.com/Yunpeng-J/HLF-2.2/msp"
+	"github.com/Yunpeng-J/HLF-2.2/msp/mocks"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

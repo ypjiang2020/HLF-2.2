@@ -10,9 +10,9 @@ import (
 	"testing"
 
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/core/endorser/mocks"
-	"github.com/hyperledger/fabric/core/handlers/endorsement/builtin"
-	mocks2 "github.com/hyperledger/fabric/core/handlers/endorsement/builtin/mocks"
+	"github.com/Yunpeng-J/HLF-2.2/core/endorser/mocks"
+	"github.com/Yunpeng-J/HLF-2.2/core/handlers/endorsement/builtin"
+	mocks2 "github.com/Yunpeng-J/HLF-2.2/core/handlers/endorsement/builtin/mocks"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

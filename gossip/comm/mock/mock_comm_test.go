@@ -10,9 +10,9 @@ import (
 	"testing"
 
 	proto "github.com/Yunpeng-J/fabric-protos-go/gossip"
-	"github.com/hyperledger/fabric/gossip/comm"
-	"github.com/hyperledger/fabric/gossip/common"
-	"github.com/hyperledger/fabric/gossip/protoext"
+	"github.com/Yunpeng-J/HLF-2.2/gossip/comm"
+	"github.com/Yunpeng-J/HLF-2.2/gossip/common"
+	"github.com/Yunpeng-J/HLF-2.2/gossip/protoext"
 	"github.com/stretchr/testify/assert"
 )
 

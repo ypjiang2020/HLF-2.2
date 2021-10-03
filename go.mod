@@ -1,4 +1,4 @@
-module github.com/hyperledger/fabric
+module github.com/Yunpeng-J/HLF-2.2
 
 go 1.14
 

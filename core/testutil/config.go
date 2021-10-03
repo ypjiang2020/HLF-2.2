@@ -12,10 +12,10 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/hyperledger/fabric/bccsp/factory"
-	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric/core/config/configtest"
-	"github.com/hyperledger/fabric/msp"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp/factory"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
+	"github.com/Yunpeng-J/HLF-2.2/core/config/configtest"
+	"github.com/Yunpeng-J/HLF-2.2/msp"
 	"github.com/spf13/viper"
 )
 

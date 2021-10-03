@@ -12,10 +12,10 @@ import (
 
 	"github.com/Yunpeng-J/fabric-protos-go/common"
 	protopeer "github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/bccsp/sw"
-	"github.com/hyperledger/fabric/core/ledger"
-	"github.com/hyperledger/fabric/core/ledger/ledgermgmt"
-	"github.com/hyperledger/fabric/core/ledger/mock"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp/sw"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/ledgermgmt"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/mock"
 	"github.com/stretchr/testify/assert"
 )
 

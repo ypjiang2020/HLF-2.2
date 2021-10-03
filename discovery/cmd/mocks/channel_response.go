@@ -2,7 +2,7 @@
 
 package mocks
 
-import client "github.com/hyperledger/fabric/discovery/client"
+import client "github.com/Yunpeng-J/HLF-2.2/discovery/client"
 
 import discovery "github.com/Yunpeng-J/fabric-protos-go/discovery"
 import mock "github.com/stretchr/testify/mock"

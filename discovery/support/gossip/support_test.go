@@ -10,11 +10,11 @@ import (
 	"testing"
 
 	"github.com/Yunpeng-J/fabric-protos-go/gossip"
-	gossipSupport "github.com/hyperledger/fabric/discovery/support/gossip"
-	"github.com/hyperledger/fabric/discovery/support/gossip/mocks"
-	"github.com/hyperledger/fabric/gossip/common"
-	"github.com/hyperledger/fabric/gossip/discovery"
-	"github.com/hyperledger/fabric/gossip/protoext"
+	gossipSupport "github.com/Yunpeng-J/HLF-2.2/discovery/support/gossip"
+	"github.com/Yunpeng-J/HLF-2.2/discovery/support/gossip/mocks"
+	"github.com/Yunpeng-J/HLF-2.2/gossip/common"
+	"github.com/Yunpeng-J/HLF-2.2/gossip/discovery"
+	"github.com/Yunpeng-J/HLF-2.2/gossip/protoext"
 	"github.com/stretchr/testify/assert"
 )
 

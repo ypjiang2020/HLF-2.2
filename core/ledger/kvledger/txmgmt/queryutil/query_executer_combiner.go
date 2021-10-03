@@ -10,11 +10,11 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/hyperledger/fabric/common/flogging"
-	commonledger "github.com/hyperledger/fabric/common/ledger"
-	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/privacyenabledstate"
-	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/statedb"
-	"github.com/hyperledger/fabric/core/ledger/util"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
+	commonledger "github.com/Yunpeng-J/HLF-2.2/common/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/privacyenabledstate"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/statedb"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/util"
 )
 
 var logger = flogging.MustGetLogger("util")

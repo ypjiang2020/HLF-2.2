@@ -17,8 +17,8 @@ import (
 	"github.com/golang/protobuf/proto"
 	cb "github.com/Yunpeng-J/fabric-protos-go/common"
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/bccsp"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )

@@ -10,7 +10,7 @@ import (
 	"time"
 
 	pmsp "github.com/Yunpeng-J/fabric-protos-go/msp"
-	"github.com/hyperledger/fabric/msp"
+	"github.com/Yunpeng-J/HLF-2.2/msp"
 	"github.com/stretchr/testify/mock"
 )
 

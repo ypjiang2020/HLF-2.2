@@ -15,8 +15,8 @@ import (
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/queryresult"
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
 	protopeer "github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/core/ledger"
-	"github.com/hyperledger/fabric/internal/pkg/txflags"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/internal/pkg/txflags"
 	"github.com/stretchr/testify/assert"
 )
 

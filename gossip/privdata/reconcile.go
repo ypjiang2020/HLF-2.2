@@ -15,12 +15,12 @@ import (
 
 	protosgossip "github.com/Yunpeng-J/fabric-protos-go/gossip"
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
-	commonutil "github.com/hyperledger/fabric/common/util"
-	"github.com/hyperledger/fabric/core/committer"
-	"github.com/hyperledger/fabric/core/ledger"
-	"github.com/hyperledger/fabric/gossip/metrics"
-	privdatacommon "github.com/hyperledger/fabric/gossip/privdata/common"
-	"github.com/hyperledger/fabric/gossip/util"
+	commonutil "github.com/Yunpeng-J/HLF-2.2/common/util"
+	"github.com/Yunpeng-J/HLF-2.2/core/committer"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/gossip/metrics"
+	privdatacommon "github.com/Yunpeng-J/HLF-2.2/gossip/privdata/common"
+	"github.com/Yunpeng-J/HLF-2.2/gossip/util"
 	"github.com/pkg/errors"
 )
 

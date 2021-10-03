@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	blockledger "github.com/hyperledger/fabric/common/ledger/blockledger"
+	blockledger "github.com/Yunpeng-J/HLF-2.2/common/ledger/blockledger"
 	mock "github.com/stretchr/testify/mock"
 )
 

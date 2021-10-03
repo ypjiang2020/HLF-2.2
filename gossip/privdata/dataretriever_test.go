@@ -14,9 +14,9 @@ import (
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset"
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
 	"github.com/Yunpeng-J/fabric-protos-go/transientstore"
-	"github.com/hyperledger/fabric/core/ledger"
-	privdatacommon "github.com/hyperledger/fabric/gossip/privdata/common"
-	"github.com/hyperledger/fabric/gossip/privdata/mocks"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
+	privdatacommon "github.com/Yunpeng-J/HLF-2.2/gossip/privdata/common"
+	"github.com/Yunpeng-J/HLF-2.2/gossip/privdata/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

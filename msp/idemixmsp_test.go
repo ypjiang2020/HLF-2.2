@@ -11,7 +11,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/Yunpeng-J/fabric-protos-go/msp"
-	"github.com/hyperledger/fabric/idemix"
+	"github.com/Yunpeng-J/HLF-2.2/idemix"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )

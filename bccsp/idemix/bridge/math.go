@@ -7,7 +7,7 @@ package bridge
 
 import (
 	"github.com/hyperledger/fabric-amcl/amcl/FP256BN"
-	"github.com/hyperledger/fabric/idemix"
+	"github.com/Yunpeng-J/HLF-2.2/idemix"
 )
 
 // Big encapsulate an amcl big integer

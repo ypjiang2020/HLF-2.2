@@ -7,8 +7,8 @@ SPDX-License-Identifier: Apache-2.0
 package chaincode
 
 import (
-	"github.com/hyperledger/fabric/core/container"
-	"github.com/hyperledger/fabric/core/container/ccintf"
+	"github.com/Yunpeng-J/HLF-2.2/core/container"
+	"github.com/Yunpeng-J/HLF-2.2/core/container/ccintf"
 	"github.com/pkg/errors"
 )
 

@@ -11,8 +11,8 @@ import (
 	"testing"
 
 	"github.com/Shopify/sarama"
-	localconfig "github.com/hyperledger/fabric/orderer/common/localconfig"
-	"github.com/hyperledger/fabric/orderer/mocks/util"
+	localconfig "github.com/Yunpeng-J/HLF-2.2/orderer/common/localconfig"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/mocks/util"
 	"github.com/stretchr/testify/assert"
 )
 

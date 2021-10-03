@@ -11,9 +11,9 @@ import (
 
 	"github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/core/tx"
-	pkgtx "github.com/hyperledger/fabric/pkg/tx"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/core/tx"
+	pkgtx "github.com/Yunpeng-J/HLF-2.2/pkg/tx"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"

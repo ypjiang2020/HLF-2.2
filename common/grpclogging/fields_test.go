@@ -10,8 +10,8 @@ import (
 	"encoding/json"
 
 	"github.com/golang/protobuf/jsonpb"
-	"github.com/hyperledger/fabric/common/grpclogging"
-	"github.com/hyperledger/fabric/common/grpclogging/testpb"
+	"github.com/Yunpeng-J/HLF-2.2/common/grpclogging"
+	"github.com/Yunpeng-J/HLF-2.2/common/grpclogging/testpb"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pkg/errors"

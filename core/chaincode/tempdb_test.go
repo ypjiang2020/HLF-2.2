@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/hyperledger/fabric/core/chaincode"
+	"github.com/Yunpeng-J/HLF-2.2/core/chaincode"
 )
 
 func comtxid(seq, session, txid int) string {

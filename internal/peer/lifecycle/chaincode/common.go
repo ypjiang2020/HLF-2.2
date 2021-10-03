@@ -14,9 +14,9 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/common/policydsl"
-	"github.com/hyperledger/fabric/internal/peer/chaincode"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/common/policydsl"
+	"github.com/Yunpeng-J/HLF-2.2/internal/peer/chaincode"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 )

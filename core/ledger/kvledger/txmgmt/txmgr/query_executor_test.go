@@ -12,13 +12,13 @@ import (
 
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/queryresult"
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
-	commonledger "github.com/hyperledger/fabric/common/ledger"
-	"github.com/hyperledger/fabric/common/ledger/testutil"
-	"github.com/hyperledger/fabric/core/ledger/internal/version"
-	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/privacyenabledstate"
-	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/rwsetutil"
-	btltestutil "github.com/hyperledger/fabric/core/ledger/pvtdatapolicy/testutil"
-	"github.com/hyperledger/fabric/core/ledger/util"
+	commonledger "github.com/Yunpeng-J/HLF-2.2/common/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/common/ledger/testutil"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/internal/version"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/privacyenabledstate"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/rwsetutil"
+	btltestutil "github.com/Yunpeng-J/HLF-2.2/core/ledger/pvtdatapolicy/testutil"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/util"
 	"github.com/stretchr/testify/require"
 )
 

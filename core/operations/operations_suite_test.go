@@ -15,7 +15,7 @@ import (
 	"testing"
 
 	"github.com/hyperledger/fabric-lib-go/healthz"
-	"github.com/hyperledger/fabric/common/crypto/tlsgen"
+	"github.com/Yunpeng-J/HLF-2.2/common/crypto/tlsgen"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

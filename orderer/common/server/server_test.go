@@ -16,9 +16,9 @@ import (
 	"github.com/golang/protobuf/proto"
 	cb "github.com/Yunpeng-J/fabric-protos-go/common"
 	ab "github.com/Yunpeng-J/fabric-protos-go/orderer"
-	localconfig "github.com/hyperledger/fabric/orderer/common/localconfig"
-	"github.com/hyperledger/fabric/orderer/common/multichannel"
-	"github.com/hyperledger/fabric/protoutil"
+	localconfig "github.com/Yunpeng-J/HLF-2.2/orderer/common/localconfig"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/common/multichannel"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
 )

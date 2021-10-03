@@ -12,14 +12,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hyperledger/fabric/common/metrics/disabled"
-	"github.com/hyperledger/fabric/core/ledger"
-	"github.com/hyperledger/fabric/core/ledger/kvledger/bookkeeping"
-	testmock "github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/privacyenabledstate/mock"
-	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/statedb"
-	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/statedb/statecouchdb"
-	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/statedb/stateleveldb"
-	"github.com/hyperledger/fabric/core/ledger/mock"
+	"github.com/Yunpeng-J/HLF-2.2/common/metrics/disabled"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/bookkeeping"
+	testmock "github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/privacyenabledstate/mock"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/statedb"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/statedb/statecouchdb"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/statedb/stateleveldb"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/mock"
 	"github.com/stretchr/testify/require"
 )
 

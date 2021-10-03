@@ -14,10 +14,10 @@ import (
 	"time"
 
 	"github.com/Yunpeng-J/fabric-protos-go/orderer/etcdraft"
-	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric/common/viperutil"
-	cf "github.com/hyperledger/fabric/core/config"
-	"github.com/hyperledger/fabric/msp"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
+	"github.com/Yunpeng-J/HLF-2.2/common/viperutil"
+	cf "github.com/Yunpeng-J/HLF-2.2/core/config"
+	"github.com/Yunpeng-J/HLF-2.2/msp"
 	"github.com/spf13/viper"
 )
 

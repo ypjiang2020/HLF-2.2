@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/Yunpeng-J/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/orderer/consensus/etcdraft"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/consensus/etcdraft"
 )
 
 type FakeBlockPuller struct {

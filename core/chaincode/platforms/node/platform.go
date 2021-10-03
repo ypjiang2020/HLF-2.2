@@ -19,8 +19,8 @@ import (
 	"strings"
 
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric/core/chaincode/platforms/util"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
+	"github.com/Yunpeng-J/HLF-2.2/core/chaincode/platforms/util"
 )
 
 var logger = flogging.MustGetLogger("chaincode.platform.node")

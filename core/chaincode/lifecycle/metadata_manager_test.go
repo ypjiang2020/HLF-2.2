@@ -7,9 +7,9 @@ SPDX-License-Identifier: Apache-2.0
 package lifecycle_test
 
 import (
-	"github.com/hyperledger/fabric/common/chaincode"
-	"github.com/hyperledger/fabric/core/chaincode/lifecycle"
-	"github.com/hyperledger/fabric/core/chaincode/lifecycle/mock"
+	"github.com/Yunpeng-J/HLF-2.2/common/chaincode"
+	"github.com/Yunpeng-J/HLF-2.2/core/chaincode/lifecycle"
+	"github.com/Yunpeng-J/HLF-2.2/core/chaincode/lifecycle/mock"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

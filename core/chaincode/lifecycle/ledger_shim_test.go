@@ -13,8 +13,8 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/queryresult"
-	"github.com/hyperledger/fabric/core/chaincode/lifecycle"
-	"github.com/hyperledger/fabric/core/chaincode/lifecycle/mock"
+	"github.com/Yunpeng-J/HLF-2.2/core/chaincode/lifecycle"
+	"github.com/Yunpeng-J/HLF-2.2/core/chaincode/lifecycle/mock"
 )
 
 var _ = Describe("LedgerShims", func() {

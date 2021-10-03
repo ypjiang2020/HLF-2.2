@@ -5,8 +5,8 @@ import (
 	"sync"
 
 	"github.com/Yunpeng-J/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/orderer/common/channelparticipation"
-	"github.com/hyperledger/fabric/orderer/common/types"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/common/channelparticipation"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/common/types"
 )
 
 type ChannelManagement struct {

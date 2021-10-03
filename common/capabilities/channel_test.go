@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	cb "github.com/Yunpeng-J/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/msp"
+	"github.com/Yunpeng-J/HLF-2.2/msp"
 	"github.com/stretchr/testify/assert"
 )
 

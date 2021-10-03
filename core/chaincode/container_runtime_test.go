@@ -10,10 +10,10 @@ import (
 	"testing"
 
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/core/chaincode"
-	"github.com/hyperledger/fabric/core/chaincode/mock"
-	"github.com/hyperledger/fabric/core/container"
-	"github.com/hyperledger/fabric/core/container/ccintf"
+	"github.com/Yunpeng-J/HLF-2.2/core/chaincode"
+	"github.com/Yunpeng-J/HLF-2.2/core/chaincode/mock"
+	"github.com/Yunpeng-J/HLF-2.2/core/container"
+	"github.com/Yunpeng-J/HLF-2.2/core/container/ccintf"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )

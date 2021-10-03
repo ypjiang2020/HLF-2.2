@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/Yunpeng-J/fabric-protos-go/transientstore"
-	"github.com/hyperledger/fabric/core/endorser"
+	"github.com/Yunpeng-J/HLF-2.2/core/endorser"
 )
 
 type PrivateDataDistributor struct {

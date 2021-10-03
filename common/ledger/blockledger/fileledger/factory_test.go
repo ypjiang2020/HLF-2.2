@@ -12,9 +12,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/hyperledger/fabric/common/ledger/blkstorage"
-	"github.com/hyperledger/fabric/common/ledger/blockledger"
-	"github.com/hyperledger/fabric/common/metrics/disabled"
+	"github.com/Yunpeng-J/HLF-2.2/common/ledger/blkstorage"
+	"github.com/Yunpeng-J/HLF-2.2/common/ledger/blockledger"
+	"github.com/Yunpeng-J/HLF-2.2/common/metrics/disabled"
 	"github.com/stretchr/testify/assert"
 )
 

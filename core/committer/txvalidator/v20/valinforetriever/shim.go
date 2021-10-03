@@ -10,8 +10,8 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/core/committer/txvalidator/v20/plugindispatcher"
-	"github.com/hyperledger/fabric/core/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/core/committer/txvalidator/v20/plugindispatcher"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
 )
 
 //go:generate mockery -dir . -name LifecycleResources -case underscore -output mocks/

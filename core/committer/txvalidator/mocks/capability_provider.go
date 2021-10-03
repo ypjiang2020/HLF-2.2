@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	channelconfig "github.com/hyperledger/fabric/common/channelconfig"
+	channelconfig "github.com/Yunpeng-J/HLF-2.2/common/channelconfig"
 	mock "github.com/stretchr/testify/mock"
 )
 

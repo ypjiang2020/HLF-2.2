@@ -7,19 +7,19 @@
 package etcdraft_test
 
 import (
-	"github.com/hyperledger/fabric/common/channelconfig"
-	"github.com/hyperledger/fabric/orderer/consensus/etcdraft/mocks"
+	"github.com/Yunpeng-J/HLF-2.2/common/channelconfig"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/consensus/etcdraft/mocks"
 	"io/ioutil"
 	"time"
 
 	"github.com/golang/protobuf/proto"
 	etcdraftproto "github.com/Yunpeng-J/fabric-protos-go/orderer/etcdraft"
 	raftprotos "github.com/Yunpeng-J/fabric-protos-go/orderer/etcdraft"
-	"github.com/hyperledger/fabric/bccsp"
-	"github.com/hyperledger/fabric/bccsp/sw"
-	"github.com/hyperledger/fabric/common/crypto/tlsgen"
-	"github.com/hyperledger/fabric/orderer/consensus/etcdraft"
-	consensusmocks "github.com/hyperledger/fabric/orderer/consensus/mocks"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp/sw"
+	"github.com/Yunpeng-J/HLF-2.2/common/crypto/tlsgen"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/consensus/etcdraft"
+	consensusmocks "github.com/Yunpeng-J/HLF-2.2/orderer/consensus/mocks"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

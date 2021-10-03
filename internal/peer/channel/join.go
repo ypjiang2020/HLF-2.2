@@ -14,9 +14,9 @@ import (
 
 	pcommon "github.com/Yunpeng-J/fabric-protos-go/common"
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/core/scc/cscc"
-	"github.com/hyperledger/fabric/internal/peer/common"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/core/scc/cscc"
+	"github.com/Yunpeng-J/HLF-2.2/internal/peer/common"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	"github.com/spf13/cobra"
 )
 

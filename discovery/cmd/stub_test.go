@@ -12,11 +12,11 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/hyperledger/fabric/cmd/common"
-	"github.com/hyperledger/fabric/cmd/common/comm"
-	"github.com/hyperledger/fabric/cmd/common/signer"
-	discovery "github.com/hyperledger/fabric/discovery/client"
-	corecomm "github.com/hyperledger/fabric/internal/pkg/comm"
+	"github.com/Yunpeng-J/HLF-2.2/cmd/common"
+	"github.com/Yunpeng-J/HLF-2.2/cmd/common/comm"
+	"github.com/Yunpeng-J/HLF-2.2/cmd/common/signer"
+	discovery "github.com/Yunpeng-J/HLF-2.2/discovery/client"
+	corecomm "github.com/Yunpeng-J/HLF-2.2/internal/pkg/comm"
 	"github.com/stretchr/testify/assert"
 )
 

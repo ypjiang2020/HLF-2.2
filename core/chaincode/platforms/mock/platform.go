@@ -4,7 +4,7 @@ package mock
 import (
 	"sync"
 
-	"github.com/hyperledger/fabric/core/chaincode/platforms/util"
+	"github.com/Yunpeng-J/HLF-2.2/core/chaincode/platforms/util"
 )
 
 type Platform struct {

@@ -24,8 +24,8 @@ import (
 	mrand "math/rand"
 	"testing"
 
-	"github.com/hyperledger/fabric/bccsp"
-	"github.com/hyperledger/fabric/bccsp/mocks"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp/mocks"
 	"github.com/stretchr/testify/assert"
 )
 

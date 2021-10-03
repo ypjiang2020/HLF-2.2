@@ -21,10 +21,10 @@ import (
 	"path/filepath"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/hyperledger/fabric/common/tools/idemixgen/idemixca"
-	"github.com/hyperledger/fabric/common/tools/idemixgen/metadata"
-	"github.com/hyperledger/fabric/idemix"
-	"github.com/hyperledger/fabric/msp"
+	"github.com/Yunpeng-J/HLF-2.2/common/tools/idemixgen/idemixca"
+	"github.com/Yunpeng-J/HLF-2.2/common/tools/idemixgen/metadata"
+	"github.com/Yunpeng-J/HLF-2.2/idemix"
+	"github.com/Yunpeng-J/HLF-2.2/msp"
 	"github.com/pkg/errors"
 	"gopkg.in/alecthomas/kingpin.v2"
 )

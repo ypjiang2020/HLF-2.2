@@ -11,9 +11,9 @@ import (
 	"testing"
 
 	"github.com/Yunpeng-J/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/common/ledger/blkstorage"
-	"github.com/hyperledger/fabric/core/ledger"
-	"github.com/hyperledger/fabric/core/ledger/kvledger"
+	"github.com/Yunpeng-J/HLF-2.2/common/ledger/blkstorage"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger"
 	"github.com/stretchr/testify/require"
 )
 

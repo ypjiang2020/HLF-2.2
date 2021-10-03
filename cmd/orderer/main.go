@@ -9,7 +9,7 @@ SPDX-License-Identifier: Apache-2.0
 // function should be included in this package.
 package main
 
-import "github.com/hyperledger/fabric/orderer/common/server"
+import "github.com/Yunpeng-J/HLF-2.2/orderer/common/server"
 
 func main() {
 	server.Main()

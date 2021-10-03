@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/hyperledger/fabric/common/flogging"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap/zapcore"
 )

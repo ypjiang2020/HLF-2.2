@@ -18,7 +18,7 @@ package committer
 
 import (
 	"github.com/Yunpeng-J/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/core/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
 )
 
 // Committer is the interface supported by committers

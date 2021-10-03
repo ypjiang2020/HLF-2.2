@@ -18,9 +18,9 @@ import (
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset"
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/common/policydsl"
-	validation "github.com/hyperledger/fabric/core/handlers/validation/api/state"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/common/policydsl"
+	validation "github.com/Yunpeng-J/HLF-2.2/core/handlers/validation/api/state"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )

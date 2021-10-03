@@ -15,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hyperledger/fabric/internal/pkg/comm"
+	"github.com/Yunpeng-J/HLF-2.2/internal/pkg/comm"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

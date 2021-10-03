@@ -10,8 +10,8 @@ import (
 	"hash"
 	"path/filepath"
 
-	"github.com/hyperledger/fabric/common/ledger/snapshot"
-	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/statedb"
+	"github.com/Yunpeng-J/HLF-2.2/common/ledger/snapshot"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/statedb"
 )
 
 const (

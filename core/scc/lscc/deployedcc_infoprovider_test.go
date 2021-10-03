@@ -13,11 +13,11 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/queryresult"
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/core/common/ccprovider"
-	"github.com/hyperledger/fabric/core/common/privdata"
-	"github.com/hyperledger/fabric/core/ledger"
-	"github.com/hyperledger/fabric/core/scc/lscc"
-	"github.com/hyperledger/fabric/core/scc/lscc/mock"
+	"github.com/Yunpeng-J/HLF-2.2/core/common/ccprovider"
+	"github.com/Yunpeng-J/HLF-2.2/core/common/privdata"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/core/scc/lscc"
+	"github.com/Yunpeng-J/HLF-2.2/core/scc/lscc/mock"
 	"github.com/stretchr/testify/assert"
 )
 

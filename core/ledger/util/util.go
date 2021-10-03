@@ -20,7 +20,7 @@ import (
 	"reflect"
 	"sort"
 
-	"github.com/hyperledger/fabric/common/util"
+	"github.com/Yunpeng-J/HLF-2.2/common/util"
 )
 
 // GetSortedKeys returns the keys of the map in a sorted order. This function assumes that the keys are string

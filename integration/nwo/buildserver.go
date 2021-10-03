@@ -15,7 +15,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hyperledger/fabric/integration/helpers"
+	"github.com/Yunpeng-J/HLF-2.2/integration/helpers"
 
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gexec"

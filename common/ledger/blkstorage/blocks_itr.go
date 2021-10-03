@@ -9,7 +9,7 @@ package blkstorage
 import (
 	"sync"
 
-	"github.com/hyperledger/fabric/common/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/common/ledger"
 )
 
 // blocksItr - an iterator for iterating over a sequence of blocks

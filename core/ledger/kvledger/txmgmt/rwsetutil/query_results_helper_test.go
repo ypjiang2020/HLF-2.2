@@ -13,7 +13,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
-	"github.com/hyperledger/fabric/core/ledger/internal/version"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/internal/version"
 	"github.com/stretchr/testify/require"
 )
 

@@ -13,12 +13,12 @@ import (
 
 	"github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
-	commonerrors "github.com/hyperledger/fabric/common/errors"
-	"github.com/hyperledger/fabric/common/flogging"
-	validation "github.com/hyperledger/fabric/core/handlers/validation/api"
-	s "github.com/hyperledger/fabric/core/handlers/validation/api/state"
-	"github.com/hyperledger/fabric/core/ledger"
-	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/rwsetutil"
+	commonerrors "github.com/Yunpeng-J/HLF-2.2/common/errors"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
+	validation "github.com/Yunpeng-J/HLF-2.2/core/handlers/validation/api"
+	s "github.com/Yunpeng-J/HLF-2.2/core/handlers/validation/api/state"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/rwsetutil"
 	"github.com/pkg/errors"
 )
 

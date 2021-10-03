@@ -9,9 +9,9 @@ package lifecycle
 import (
 	"github.com/Yunpeng-J/fabric-chaincode-go/shim"
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/queryresult"
-	commonledger "github.com/hyperledger/fabric/common/ledger"
-	validatorstate "github.com/hyperledger/fabric/core/handlers/validation/api/state"
-	"github.com/hyperledger/fabric/core/ledger"
+	commonledger "github.com/Yunpeng-J/HLF-2.2/common/ledger"
+	validatorstate "github.com/Yunpeng-J/HLF-2.2/core/handlers/validation/api/state"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
 
 	"github.com/pkg/errors"
 )

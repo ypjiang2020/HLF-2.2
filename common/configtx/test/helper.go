@@ -11,14 +11,14 @@ import (
 	mspproto "github.com/Yunpeng-J/fabric-protos-go/msp"
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/common/channelconfig"
-	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric/common/genesis"
-	"github.com/hyperledger/fabric/core/config/configtest"
-	"github.com/hyperledger/fabric/internal/configtxgen/encoder"
-	"github.com/hyperledger/fabric/internal/configtxgen/genesisconfig"
-	"github.com/hyperledger/fabric/internal/pkg/txflags"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/common/channelconfig"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
+	"github.com/Yunpeng-J/HLF-2.2/common/genesis"
+	"github.com/Yunpeng-J/HLF-2.2/core/config/configtest"
+	"github.com/Yunpeng-J/HLF-2.2/internal/configtxgen/encoder"
+	"github.com/Yunpeng-J/HLF-2.2/internal/configtxgen/genesisconfig"
+	"github.com/Yunpeng-J/HLF-2.2/internal/pkg/txflags"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 )
 
 var logger = flogging.MustGetLogger("common.configtx.test")

@@ -4,7 +4,7 @@ package mocks
 
 import (
 	common "github.com/Yunpeng-J/fabric-protos-go/common"
-	cluster "github.com/hyperledger/fabric/orderer/common/cluster"
+	cluster "github.com/Yunpeng-J/HLF-2.2/orderer/common/cluster"
 
 	mock "github.com/stretchr/testify/mock"
 )

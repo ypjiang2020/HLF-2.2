@@ -7,8 +7,8 @@ SPDX-License-Identifier: Apache-2.0
 package disabled_test
 
 import (
-	"github.com/hyperledger/fabric/common/metrics"
-	"github.com/hyperledger/fabric/common/metrics/disabled"
+	"github.com/Yunpeng-J/HLF-2.2/common/metrics"
+	"github.com/Yunpeng-J/HLF-2.2/common/metrics/disabled"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

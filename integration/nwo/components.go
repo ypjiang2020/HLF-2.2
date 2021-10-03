@@ -11,7 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/hyperledger/fabric/integration/runner"
+	"github.com/Yunpeng-J/HLF-2.2/integration/runner"
 	. "github.com/onsi/gomega"
 )
 
@@ -20,27 +20,27 @@ type Components struct {
 }
 
 func (c *Components) ConfigTxGen() string {
-	return c.Build("github.com/hyperledger/fabric/cmd/configtxgen")
+	return c.Build("github.com/Yunpeng-J/HLF-2.2/cmd/configtxgen")
 }
 
 func (c *Components) Cryptogen() string {
-	return c.Build("github.com/hyperledger/fabric/cmd/cryptogen")
+	return c.Build("github.com/Yunpeng-J/HLF-2.2/cmd/cryptogen")
 }
 
 func (c *Components) Discover() string {
-	return c.Build("github.com/hyperledger/fabric/cmd/discover")
+	return c.Build("github.com/Yunpeng-J/HLF-2.2/cmd/discover")
 }
 
 func (c *Components) Idemixgen() string {
-	return c.Build("github.com/hyperledger/fabric/cmd/idemixgen")
+	return c.Build("github.com/Yunpeng-J/HLF-2.2/cmd/idemixgen")
 }
 
 func (c *Components) Orderer() string {
-	return c.Build("github.com/hyperledger/fabric/cmd/orderer")
+	return c.Build("github.com/Yunpeng-J/HLF-2.2/cmd/orderer")
 }
 
 func (c *Components) Peer() string {
-	return c.Build("github.com/hyperledger/fabric/cmd/peer")
+	return c.Build("github.com/Yunpeng-J/HLF-2.2/cmd/peer")
 }
 
 func (c *Components) Cleanup() {}

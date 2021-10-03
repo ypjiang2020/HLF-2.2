@@ -10,9 +10,9 @@ import (
 	"bytes"
 	"encoding/gob"
 
-	"github.com/hyperledger/fabric/common/ledger/util/leveldbhelper"
-	"github.com/hyperledger/fabric/core/ledger/internal/version"
-	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/statedb"
+	"github.com/Yunpeng-J/HLF-2.2/common/ledger/util/leveldbhelper"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/internal/version"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/statedb"
 )
 
 var redologKeyPrefix = []byte{byte(0)}

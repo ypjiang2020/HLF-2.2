@@ -10,9 +10,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	configtxtest "github.com/hyperledger/fabric/common/configtx/test"
-	"github.com/hyperledger/fabric/common/ledger/util"
-	"github.com/hyperledger/fabric/core/ledger/mock"
+	configtxtest "github.com/Yunpeng-J/HLF-2.2/common/configtx/test"
+	"github.com/Yunpeng-J/HLF-2.2/common/ledger/util"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/mock"
 	"github.com/stretchr/testify/require"
 )
 

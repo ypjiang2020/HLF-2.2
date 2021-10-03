@@ -29,34 +29,34 @@ import (
 	"github.com/Yunpeng-J/fabric-protos-go/gossip"
 	msprotos "github.com/Yunpeng-J/fabric-protos-go/msp"
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/bccsp/sw"
-	bccsp "github.com/hyperledger/fabric/bccsp/utils"
-	"github.com/hyperledger/fabric/common/cauthdsl"
-	"github.com/hyperledger/fabric/common/configtx"
-	"github.com/hyperledger/fabric/common/crypto/tlsgen"
-	"github.com/hyperledger/fabric/common/policies"
-	"github.com/hyperledger/fabric/common/policydsl"
-	"github.com/hyperledger/fabric/common/util"
-	"github.com/hyperledger/fabric/core/cclifecycle"
-	lifecyclemocks "github.com/hyperledger/fabric/core/cclifecycle/mocks"
-	"github.com/hyperledger/fabric/core/common/ccprovider"
-	"github.com/hyperledger/fabric/discovery"
-	disc "github.com/hyperledger/fabric/discovery/client"
-	"github.com/hyperledger/fabric/discovery/endorsement"
-	discsupport "github.com/hyperledger/fabric/discovery/support"
-	discacl "github.com/hyperledger/fabric/discovery/support/acl"
-	ccsupport "github.com/hyperledger/fabric/discovery/support/chaincode"
-	"github.com/hyperledger/fabric/discovery/support/config"
-	"github.com/hyperledger/fabric/discovery/support/mocks"
-	"github.com/hyperledger/fabric/gossip/api"
-	gcommon "github.com/hyperledger/fabric/gossip/common"
-	gdisc "github.com/hyperledger/fabric/gossip/discovery"
-	"github.com/hyperledger/fabric/gossip/protoext"
-	"github.com/hyperledger/fabric/internal/configtxgen/encoder"
-	"github.com/hyperledger/fabric/internal/configtxgen/genesisconfig"
-	"github.com/hyperledger/fabric/internal/pkg/comm"
-	"github.com/hyperledger/fabric/msp"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp/sw"
+	bccsp "github.com/Yunpeng-J/HLF-2.2/bccsp/utils"
+	"github.com/Yunpeng-J/HLF-2.2/common/cauthdsl"
+	"github.com/Yunpeng-J/HLF-2.2/common/configtx"
+	"github.com/Yunpeng-J/HLF-2.2/common/crypto/tlsgen"
+	"github.com/Yunpeng-J/HLF-2.2/common/policies"
+	"github.com/Yunpeng-J/HLF-2.2/common/policydsl"
+	"github.com/Yunpeng-J/HLF-2.2/common/util"
+	"github.com/Yunpeng-J/HLF-2.2/core/cclifecycle"
+	lifecyclemocks "github.com/Yunpeng-J/HLF-2.2/core/cclifecycle/mocks"
+	"github.com/Yunpeng-J/HLF-2.2/core/common/ccprovider"
+	"github.com/Yunpeng-J/HLF-2.2/discovery"
+	disc "github.com/Yunpeng-J/HLF-2.2/discovery/client"
+	"github.com/Yunpeng-J/HLF-2.2/discovery/endorsement"
+	discsupport "github.com/Yunpeng-J/HLF-2.2/discovery/support"
+	discacl "github.com/Yunpeng-J/HLF-2.2/discovery/support/acl"
+	ccsupport "github.com/Yunpeng-J/HLF-2.2/discovery/support/chaincode"
+	"github.com/Yunpeng-J/HLF-2.2/discovery/support/config"
+	"github.com/Yunpeng-J/HLF-2.2/discovery/support/mocks"
+	"github.com/Yunpeng-J/HLF-2.2/gossip/api"
+	gcommon "github.com/Yunpeng-J/HLF-2.2/gossip/common"
+	gdisc "github.com/Yunpeng-J/HLF-2.2/gossip/discovery"
+	"github.com/Yunpeng-J/HLF-2.2/gossip/protoext"
+	"github.com/Yunpeng-J/HLF-2.2/internal/configtxgen/encoder"
+	"github.com/Yunpeng-J/HLF-2.2/internal/configtxgen/genesisconfig"
+	"github.com/Yunpeng-J/HLF-2.2/internal/pkg/comm"
+	"github.com/Yunpeng-J/HLF-2.2/msp"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	"github.com/onsi/gomega/gexec"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
@@ -621,12 +621,12 @@ func createPolicyManagerGetter(t *testing.T, mspMgr msp.MSPManager) *mocks.Chann
 
 func buildBinaries() error {
 	var err error
-	cryptogen, err = gexec.Build("github.com/hyperledger/fabric/cmd/cryptogen")
+	cryptogen, err = gexec.Build("github.com/Yunpeng-J/HLF-2.2/cmd/cryptogen")
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
-	idemixgen, err = gexec.Build("github.com/hyperledger/fabric/cmd/idemixgen")
+	idemixgen, err = gexec.Build("github.com/Yunpeng-J/HLF-2.2/cmd/idemixgen")
 	if err != nil {
 		return errors.WithStack(err)
 	}

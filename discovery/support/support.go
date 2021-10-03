@@ -7,13 +7,13 @@ SPDX-License-Identifier: Apache-2.0
 package support
 
 import (
-	"github.com/hyperledger/fabric/common/channelconfig"
-	"github.com/hyperledger/fabric/common/configtx"
-	"github.com/hyperledger/fabric/common/policies"
-	"github.com/hyperledger/fabric/discovery"
-	"github.com/hyperledger/fabric/discovery/support/acl"
-	"github.com/hyperledger/fabric/discovery/support/config"
-	"github.com/hyperledger/fabric/msp"
+	"github.com/Yunpeng-J/HLF-2.2/common/channelconfig"
+	"github.com/Yunpeng-J/HLF-2.2/common/configtx"
+	"github.com/Yunpeng-J/HLF-2.2/common/policies"
+	"github.com/Yunpeng-J/HLF-2.2/discovery"
+	"github.com/Yunpeng-J/HLF-2.2/discovery/support/acl"
+	"github.com/Yunpeng-J/HLF-2.2/discovery/support/config"
+	"github.com/Yunpeng-J/HLF-2.2/msp"
 )
 
 //go:generate mockery -dir . -name GossipSupport -case underscore -output mocks/

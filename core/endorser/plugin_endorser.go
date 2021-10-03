@@ -11,9 +11,9 @@ import (
 	"sync"
 
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
-	endorsement "github.com/hyperledger/fabric/core/handlers/endorsement/api"
-	endorsement3 "github.com/hyperledger/fabric/core/handlers/endorsement/api/identities"
-	"github.com/hyperledger/fabric/core/transientstore"
+	endorsement "github.com/Yunpeng-J/HLF-2.2/core/handlers/endorsement/api"
+	endorsement3 "github.com/Yunpeng-J/HLF-2.2/core/handlers/endorsement/api/identities"
+	"github.com/Yunpeng-J/HLF-2.2/core/transientstore"
 	"github.com/pkg/errors"
 )
 

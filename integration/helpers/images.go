@@ -12,7 +12,7 @@ import (
 	"strings"
 
 	docker "github.com/fsouza/go-dockerclient"
-	"github.com/hyperledger/fabric/common/util"
+	"github.com/Yunpeng-J/HLF-2.2/common/util"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

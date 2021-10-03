@@ -9,8 +9,8 @@ package scc
 import (
 	"github.com/Yunpeng-J/fabric-chaincode-go/shim"
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric/core/container/ccintf"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
+	"github.com/Yunpeng-J/HLF-2.2/core/container/ccintf"
 )
 
 // SysCCVersion is a constant used for the version field of system chaincodes.

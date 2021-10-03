@@ -11,7 +11,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/hyperledger/fabric/gossip/util"
+	"github.com/Yunpeng-J/HLF-2.2/gossip/util"
 )
 
 /* PullEngine is an object that performs pull-based gossip, and maintains an internal state of items

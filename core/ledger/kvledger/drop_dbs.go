@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package kvledger
 
-import "github.com/hyperledger/fabric/internal/fileutil"
+import "github.com/Yunpeng-J/HLF-2.2/internal/fileutil"
 
 func dropDBs(rootFSPath string) error {
 	// During block commits to stateDB, the transaction manager updates the bookkeeperDB and one of the

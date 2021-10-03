@@ -12,9 +12,9 @@ import (
 	"testing"
 
 	cb "github.com/Yunpeng-J/fabric-protos-go/common"
-	mockpolicies "github.com/hyperledger/fabric/common/configtx/mock"
-	"github.com/hyperledger/fabric/common/policies"
-	"github.com/hyperledger/fabric/protoutil"
+	mockpolicies "github.com/Yunpeng-J/HLF-2.2/common/configtx/mock"
+	"github.com/Yunpeng-J/HLF-2.2/common/policies"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	"github.com/stretchr/testify/assert"
 )
 

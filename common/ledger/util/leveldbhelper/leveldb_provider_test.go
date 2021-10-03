@@ -11,9 +11,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/hyperledger/fabric/common/ledger/dataformat"
+	"github.com/Yunpeng-J/HLF-2.2/common/ledger/dataformat"
 
-	"github.com/hyperledger/fabric/common/flogging"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

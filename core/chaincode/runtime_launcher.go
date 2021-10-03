@@ -10,9 +10,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hyperledger/fabric/core/chaincode/accesscontrol"
-	"github.com/hyperledger/fabric/core/chaincode/extcc"
-	"github.com/hyperledger/fabric/core/container/ccintf"
+	"github.com/Yunpeng-J/HLF-2.2/core/chaincode/accesscontrol"
+	"github.com/Yunpeng-J/HLF-2.2/core/chaincode/extcc"
+	"github.com/Yunpeng-J/HLF-2.2/core/container/ccintf"
 	"github.com/pkg/errors"
 )
 

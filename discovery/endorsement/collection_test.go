@@ -15,11 +15,11 @@ import (
 	"github.com/Yunpeng-J/fabric-protos-go/discovery"
 	"github.com/Yunpeng-J/fabric-protos-go/msp"
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/common/policies"
-	"github.com/hyperledger/fabric/gossip/api"
-	gcommon "github.com/hyperledger/fabric/gossip/common"
-	disc "github.com/hyperledger/fabric/gossip/discovery"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/common/policies"
+	"github.com/Yunpeng-J/HLF-2.2/gossip/api"
+	gcommon "github.com/Yunpeng-J/HLF-2.2/gossip/common"
+	disc "github.com/Yunpeng-J/HLF-2.2/gossip/discovery"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	"github.com/stretchr/testify/assert"
 )
 

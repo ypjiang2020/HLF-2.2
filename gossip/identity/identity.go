@@ -12,8 +12,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/hyperledger/fabric/gossip/api"
-	"github.com/hyperledger/fabric/gossip/common"
+	"github.com/Yunpeng-J/HLF-2.2/gossip/api"
+	"github.com/Yunpeng-J/HLF-2.2/gossip/common"
 	errors "github.com/pkg/errors"
 )
 

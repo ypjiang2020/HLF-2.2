@@ -4,7 +4,7 @@ package mock
 import (
 	"sync"
 
-	"github.com/hyperledger/fabric/common/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/common/ledger"
 )
 
 type SimpleQueryExecutor struct {

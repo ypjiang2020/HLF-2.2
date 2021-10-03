@@ -7,14 +7,14 @@ SPDX-License-Identifier: Apache-2.0
 package library
 
 import (
-	"github.com/hyperledger/fabric/core/handlers/auth"
-	"github.com/hyperledger/fabric/core/handlers/auth/filter"
-	"github.com/hyperledger/fabric/core/handlers/decoration"
-	"github.com/hyperledger/fabric/core/handlers/decoration/decorator"
-	endorsement "github.com/hyperledger/fabric/core/handlers/endorsement/api"
-	"github.com/hyperledger/fabric/core/handlers/endorsement/builtin"
-	validation "github.com/hyperledger/fabric/core/handlers/validation/api"
-	. "github.com/hyperledger/fabric/core/handlers/validation/builtin"
+	"github.com/Yunpeng-J/HLF-2.2/core/handlers/auth"
+	"github.com/Yunpeng-J/HLF-2.2/core/handlers/auth/filter"
+	"github.com/Yunpeng-J/HLF-2.2/core/handlers/decoration"
+	"github.com/Yunpeng-J/HLF-2.2/core/handlers/decoration/decorator"
+	endorsement "github.com/Yunpeng-J/HLF-2.2/core/handlers/endorsement/api"
+	"github.com/Yunpeng-J/HLF-2.2/core/handlers/endorsement/builtin"
+	validation "github.com/Yunpeng-J/HLF-2.2/core/handlers/validation/api"
+	. "github.com/Yunpeng-J/HLF-2.2/core/handlers/validation/builtin"
 )
 
 // HandlerLibrary is used to assert

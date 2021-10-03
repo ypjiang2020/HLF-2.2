@@ -13,8 +13,8 @@ import (
 	"path"
 	"strconv"
 
-	"github.com/hyperledger/fabric/common/ledger/util"
-	"github.com/hyperledger/fabric/internal/fileutil"
+	"github.com/Yunpeng-J/HLF-2.2/common/ledger/util"
+	"github.com/Yunpeng-J/HLF-2.2/internal/fileutil"
 )
 
 // ResetBlockStore drops the block storage index and truncates the blocks files for all channels/ledgers to genesis blocks

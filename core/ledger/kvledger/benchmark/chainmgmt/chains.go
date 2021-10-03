@@ -13,10 +13,10 @@ import (
 	"sync"
 
 	"github.com/Yunpeng-J/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/common/configtx/test"
-	"github.com/hyperledger/fabric/core/ledger"
-	"github.com/hyperledger/fabric/core/ledger/ledgermgmt"
-	"github.com/hyperledger/fabric/core/ledger/ledgermgmt/ledgermgmttest"
+	"github.com/Yunpeng-J/HLF-2.2/common/configtx/test"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/ledgermgmt"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/ledgermgmt/ledgermgmttest"
 )
 
 // ChainID is a type used for the ids for the chains for experiments

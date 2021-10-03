@@ -17,9 +17,9 @@ import (
 	. "github.com/Yunpeng-J/fabric-protos-go/discovery"
 	"github.com/Yunpeng-J/fabric-protos-go/gossip"
 	"github.com/Yunpeng-J/fabric-protos-go/msp"
-	"github.com/hyperledger/fabric/cmd/common"
-	discovery "github.com/hyperledger/fabric/discovery/client"
-	"github.com/hyperledger/fabric/gossip/protoext"
+	"github.com/Yunpeng-J/HLF-2.2/cmd/common"
+	discovery "github.com/Yunpeng-J/HLF-2.2/discovery/client"
+	"github.com/Yunpeng-J/HLF-2.2/gossip/protoext"
 	"github.com/pkg/errors"
 )
 

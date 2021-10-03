@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hyperledger/fabric/common/metrics"
-	"github.com/hyperledger/fabric/common/metrics/metricsfakes"
-	"github.com/hyperledger/fabric/common/metrics/statsd/goruntime"
+	"github.com/Yunpeng-J/HLF-2.2/common/metrics"
+	"github.com/Yunpeng-J/HLF-2.2/common/metrics/metricsfakes"
+	"github.com/Yunpeng-J/HLF-2.2/common/metrics/statsd/goruntime"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

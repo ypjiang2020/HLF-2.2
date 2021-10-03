@@ -15,8 +15,8 @@ import (
 	"github.com/golang/protobuf/proto"
 	cb "github.com/Yunpeng-J/fabric-protos-go/common"
 	mb "github.com/Yunpeng-J/fabric-protos-go/msp"
-	"github.com/hyperledger/fabric/common/policydsl"
-	"github.com/hyperledger/fabric/msp"
+	"github.com/Yunpeng-J/HLF-2.2/common/policydsl"
+	"github.com/Yunpeng-J/HLF-2.2/msp"
 	"github.com/stretchr/testify/assert"
 )
 

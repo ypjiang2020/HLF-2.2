@@ -5,8 +5,8 @@ import (
 	"io"
 	"sync"
 
-	"github.com/hyperledger/fabric/core/chaincode/persistence"
-	"github.com/hyperledger/fabric/core/container"
+	"github.com/Yunpeng-J/HLF-2.2/core/chaincode/persistence"
+	"github.com/Yunpeng-J/HLF-2.2/core/container"
 )
 
 type PackageProvider struct {

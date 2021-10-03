@@ -8,7 +8,7 @@ package cceventmgmt
 
 import (
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
-	"github.com/hyperledger/fabric/core/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
 )
 
 // KVLedgerLSCCStateListener listens for state changes for chaincode lifecycle

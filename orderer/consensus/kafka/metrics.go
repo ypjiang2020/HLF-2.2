@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hyperledger/fabric/common/metrics"
+	"github.com/Yunpeng-J/HLF-2.2/common/metrics"
 
 	gometrics "github.com/rcrowley/go-metrics"
 )

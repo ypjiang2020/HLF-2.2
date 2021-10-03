@@ -4,8 +4,8 @@ package mocks
 import (
 	"sync"
 
-	"github.com/hyperledger/fabric/orderer/common/cluster"
-	"github.com/hyperledger/fabric/orderer/consensus/etcdraft"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/common/cluster"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/consensus/etcdraft"
 )
 
 type FakeConfigurator struct {

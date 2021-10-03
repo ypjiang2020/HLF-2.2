@@ -11,7 +11,7 @@ import (
 	"crypto/x509"
 	"io"
 
-	"github.com/hyperledger/fabric/bccsp"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp"
 	"github.com/pkg/errors"
 )
 

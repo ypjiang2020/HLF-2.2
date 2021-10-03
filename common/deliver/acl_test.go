@@ -10,9 +10,9 @@ import (
 	"time"
 
 	cb "github.com/Yunpeng-J/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/common/deliver"
-	"github.com/hyperledger/fabric/common/deliver/mock"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/common/deliver"
+	"github.com/Yunpeng-J/HLF-2.2/common/deliver/mock"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/pkg/errors"

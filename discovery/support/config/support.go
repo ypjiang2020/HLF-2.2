@@ -15,9 +15,9 @@ import (
 	"github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/Yunpeng-J/fabric-protos-go/discovery"
 	"github.com/Yunpeng-J/fabric-protos-go/msp"
-	"github.com/hyperledger/fabric/common/channelconfig"
-	"github.com/hyperledger/fabric/common/flogging"
-	mspconstants "github.com/hyperledger/fabric/msp"
+	"github.com/Yunpeng-J/HLF-2.2/common/channelconfig"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
+	mspconstants "github.com/Yunpeng-J/HLF-2.2/msp"
 	"github.com/pkg/errors"
 )
 

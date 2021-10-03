@@ -13,7 +13,7 @@ import (
 	"reflect"
 
 	lb "github.com/Yunpeng-J/fabric-protos-go/peer/lifecycle"
-	"github.com/hyperledger/fabric/common/util"
+	"github.com/Yunpeng-J/HLF-2.2/common/util"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"

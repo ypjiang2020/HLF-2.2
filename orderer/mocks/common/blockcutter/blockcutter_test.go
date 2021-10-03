@@ -19,7 +19,7 @@ package blockcutter
 import (
 	"testing"
 
-	"github.com/hyperledger/fabric/orderer/common/blockcutter"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/common/blockcutter"
 )
 
 func TestBlockCutterInterface(t *testing.T) {

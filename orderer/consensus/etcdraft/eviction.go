@@ -13,9 +13,9 @@ import (
 	"time"
 
 	"github.com/Yunpeng-J/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric/orderer/common/cluster"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/common/cluster"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 	"go.etcd.io/etcd/raft/raftpb"
 )
 

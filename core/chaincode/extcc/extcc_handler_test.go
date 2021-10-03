@@ -10,10 +10,10 @@ import (
 	"net"
 	"time"
 
-	"github.com/hyperledger/fabric/core/chaincode/extcc"
-	"github.com/hyperledger/fabric/core/chaincode/extcc/mock"
-	"github.com/hyperledger/fabric/core/container/ccintf"
-	"github.com/hyperledger/fabric/internal/pkg/comm"
+	"github.com/Yunpeng-J/HLF-2.2/core/chaincode/extcc"
+	"github.com/Yunpeng-J/HLF-2.2/core/chaincode/extcc/mock"
+	"github.com/Yunpeng-J/HLF-2.2/core/container/ccintf"
+	"github.com/Yunpeng-J/HLF-2.2/internal/pkg/comm"
 
 	"google.golang.org/grpc"
 

@@ -9,13 +9,13 @@ package msgprocessor
 import (
 	cb "github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/Yunpeng-J/fabric-protos-go/orderer"
-	"github.com/hyperledger/fabric/bccsp"
-	"github.com/hyperledger/fabric/common/channelconfig"
-	"github.com/hyperledger/fabric/common/policies"
-	"github.com/hyperledger/fabric/internal/pkg/identity"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp"
+	"github.com/Yunpeng-J/HLF-2.2/common/channelconfig"
+	"github.com/Yunpeng-J/HLF-2.2/common/policies"
+	"github.com/Yunpeng-J/HLF-2.2/internal/pkg/identity"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 
-	"github.com/hyperledger/fabric/orderer/common/localconfig"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/common/localconfig"
 	"github.com/pkg/errors"
 )
 

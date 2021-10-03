@@ -12,8 +12,8 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric-amcl/amcl/FP256BN"
 	m "github.com/Yunpeng-J/fabric-protos-go/msp"
-	"github.com/hyperledger/fabric/idemix"
-	"github.com/hyperledger/fabric/msp"
+	"github.com/Yunpeng-J/HLF-2.2/idemix"
+	"github.com/Yunpeng-J/HLF-2.2/msp"
 	"github.com/pkg/errors"
 )
 

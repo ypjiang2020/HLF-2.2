@@ -8,7 +8,7 @@ package follower
 
 import (
 	"github.com/Yunpeng-J/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/orderer/common/types"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/common/types"
 )
 
 //TODO skeleton

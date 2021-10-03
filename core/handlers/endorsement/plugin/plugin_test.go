@@ -11,9 +11,9 @@ import (
 	"testing"
 
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/core/endorser/mocks"
-	mocks2 "github.com/hyperledger/fabric/core/handlers/endorsement/builtin/mocks"
-	plgn "github.com/hyperledger/fabric/core/handlers/endorsement/plugin"
+	"github.com/Yunpeng-J/HLF-2.2/core/endorser/mocks"
+	mocks2 "github.com/Yunpeng-J/HLF-2.2/core/handlers/endorsement/builtin/mocks"
+	plgn "github.com/Yunpeng-J/HLF-2.2/core/handlers/endorsement/plugin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

@@ -15,8 +15,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/hyperledger/fabric/core/container/ccintf"
-	"github.com/hyperledger/fabric/internal/pkg/comm"
+	"github.com/Yunpeng-J/HLF-2.2/core/container/ccintf"
+	"github.com/Yunpeng-J/HLF-2.2/internal/pkg/comm"
 	"github.com/pkg/errors"
 )
 

@@ -13,8 +13,8 @@ import (
 	"testing"
 
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/queryresult"
-	"github.com/hyperledger/fabric/core/chaincode"
-	"github.com/hyperledger/fabric/core/chaincode/mock"
+	"github.com/Yunpeng-J/HLF-2.2/core/chaincode"
+	"github.com/Yunpeng-J/HLF-2.2/core/chaincode/mock"
 	"github.com/stretchr/testify/assert"
 )
 

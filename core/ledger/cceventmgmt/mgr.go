@@ -9,8 +9,8 @@ package cceventmgmt
 import (
 	"sync"
 
-	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric/core/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
 )
 
 var logger = flogging.MustGetLogger("cceventmgmt")

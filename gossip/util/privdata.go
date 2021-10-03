@@ -14,8 +14,8 @@ import (
 	"github.com/Yunpeng-J/fabric-protos-go/gossip"
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset"
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/common/util"
-	"github.com/hyperledger/fabric/core/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/common/util"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
 	"github.com/pkg/errors"
 )
 

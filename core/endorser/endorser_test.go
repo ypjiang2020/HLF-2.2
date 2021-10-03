@@ -18,15 +18,15 @@ import (
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset"
 	mspproto "github.com/Yunpeng-J/fabric-protos-go/msp"
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/common/metrics/metricsfakes"
-	"github.com/hyperledger/fabric/core/chaincode/lifecycle"
-	"github.com/hyperledger/fabric/core/endorser"
-	"github.com/hyperledger/fabric/core/endorser/fake"
-	"github.com/hyperledger/fabric/core/ledger"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/common/metrics/metricsfakes"
+	"github.com/Yunpeng-J/HLF-2.2/core/chaincode/lifecycle"
+	"github.com/Yunpeng-J/HLF-2.2/core/endorser"
+	"github.com/Yunpeng-J/HLF-2.2/core/endorser/fake"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 
 	"github.com/golang/protobuf/proto"
-	ledgermock "github.com/hyperledger/fabric/core/ledger/mock"
+	ledgermock "github.com/Yunpeng-J/HLF-2.2/core/ledger/mock"
 )
 
 var _ = Describe("Endorser", func() {

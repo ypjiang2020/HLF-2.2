@@ -15,9 +15,9 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/hyperledger/fabric/bccsp/sw"
-	"github.com/hyperledger/fabric/idemix"
-	m "github.com/hyperledger/fabric/msp"
+	"github.com/Yunpeng-J/HLF-2.2/bccsp/sw"
+	"github.com/Yunpeng-J/HLF-2.2/idemix"
+	m "github.com/Yunpeng-J/HLF-2.2/msp"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )

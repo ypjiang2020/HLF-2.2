@@ -15,9 +15,9 @@ import (
 	cb "github.com/Yunpeng-J/fabric-protos-go/common"
 	mspproto "github.com/Yunpeng-J/fabric-protos-go/msp"
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/core/endorser"
-	"github.com/hyperledger/fabric/core/endorser/fake"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/core/endorser"
+	"github.com/Yunpeng-J/HLF-2.2/core/endorser/fake"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 
 	"github.com/golang/protobuf/proto"
 )

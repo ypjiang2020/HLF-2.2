@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/hyperledger/fabric/common/ledger/util"
+	"github.com/Yunpeng-J/HLF-2.2/common/ledger/util"
 	"github.com/pkg/errors"
 
 	"github.com/stretchr/testify/require"

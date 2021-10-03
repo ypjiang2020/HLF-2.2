@@ -8,7 +8,7 @@ package main
 
 import (
 	"github.com/Yunpeng-J/fabric-protos-go/common"
-	validation "github.com/hyperledger/fabric/core/handlers/validation/api"
+	validation "github.com/Yunpeng-J/HLF-2.2/core/handlers/validation/api"
 )
 
 // NoOpValidator is used to test validation plugin infrastructure

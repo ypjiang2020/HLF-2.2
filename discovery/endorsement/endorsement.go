@@ -11,14 +11,14 @@ import (
 
 	"github.com/Yunpeng-J/fabric-protos-go/discovery"
 	"github.com/Yunpeng-J/fabric-protos-go/msp"
-	"github.com/hyperledger/fabric/common/chaincode"
-	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric/common/graph"
-	"github.com/hyperledger/fabric/common/policies"
-	"github.com/hyperledger/fabric/common/policies/inquire"
-	"github.com/hyperledger/fabric/gossip/api"
-	"github.com/hyperledger/fabric/gossip/common"
-	. "github.com/hyperledger/fabric/gossip/discovery"
+	"github.com/Yunpeng-J/HLF-2.2/common/chaincode"
+	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
+	"github.com/Yunpeng-J/HLF-2.2/common/graph"
+	"github.com/Yunpeng-J/HLF-2.2/common/policies"
+	"github.com/Yunpeng-J/HLF-2.2/common/policies/inquire"
+	"github.com/Yunpeng-J/HLF-2.2/gossip/api"
+	"github.com/Yunpeng-J/HLF-2.2/gossip/common"
+	. "github.com/Yunpeng-J/HLF-2.2/gossip/discovery"
 	"github.com/pkg/errors"
 )
 

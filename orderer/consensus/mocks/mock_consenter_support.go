@@ -5,11 +5,11 @@ import (
 	"sync"
 
 	"github.com/Yunpeng-J/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/common/channelconfig"
-	"github.com/hyperledger/fabric/orderer/common/blockcutter"
-	"github.com/hyperledger/fabric/orderer/common/msgprocessor"
-	"github.com/hyperledger/fabric/orderer/consensus"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/Yunpeng-J/HLF-2.2/common/channelconfig"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/common/blockcutter"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/common/msgprocessor"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/consensus"
+	"github.com/Yunpeng-J/HLF-2.2/protoutil"
 )
 
 type FakeConsenterSupport struct {
