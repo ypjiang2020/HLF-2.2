@@ -10,7 +10,6 @@ package ledger
 
 import (
 	"fmt"
-	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/txmgr"
 	"hash"
 	"time"
 
@@ -36,6 +35,11 @@ type Initializer struct {
 	Config                          *Config
 	CustomTxProcessors              map[common.HeaderType]CustomTxProcessor
 	HashProvider                    HashProvider
+}
+
+type VersionedValue struct {
+	Txid string
+	Val  []byte
 }
 
 // Config is a structure used to configure a ledger provider.
@@ -267,7 +271,6 @@ type QueryExecutor interface {
 	ExecuteQueryOnPrivateData(namespace, collection, query string) (commonledger.ResultsIterator, error)
 	// Done releases resources occupied by the QueryExecutor
 	Done()
-
 }
 
 // HistoryQueryExecutor executes the history queries
@@ -318,7 +321,7 @@ type TxSimulator interface {
 	// optimistic code begin
 	UpdateReadSet(namespace, key, txid string)
 	PreSetState(namespace string, key string, value []byte) error
-	PreGetState(namespace string, key string, session string) *txmgr.VersionedValue
+	PreGetState(namespace string, key string, session string) *VersionedValue
 	Commit(txid string)
 	Rollback(txid string)
 	// optimistic code end

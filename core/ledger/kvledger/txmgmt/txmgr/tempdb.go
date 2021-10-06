@@ -6,12 +6,9 @@ import (
 	"log"
 	"strings"
 	"sync"
-)
 
-type VersionedValue struct {
-	Txid string
-	Val  []byte
-}
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
+)
 
 type TempDB struct {
 	mutex    sync.Mutex
@@ -46,14 +43,14 @@ func newSessionDB(session string) *SessionDB {
 	}
 }
 
-func (sdb *SessionDB) Get(key string) *VersionedValue {
+func (sdb *SessionDB) Get(key string) *ledger.VersionedValue {
 	// TODO: do we need to read from writeSets?
 	val, ok := sdb.db[key]
 	if !ok {
 		return nil
 	}
 
-	versionedValue := &VersionedValue{}
+	versionedValue := &ledger.VersionedValue{}
 	err := json.Unmarshal(val, versionedValue)
 	if err != nil {
 		log.Fatalln("get from session db,", key, versionedValue.Txid, err)
@@ -101,7 +98,7 @@ func newTempDB() *TempDB {
 	return res
 }
 
-func (tdb *TempDB) Get(key, session string) *VersionedValue {
+func (tdb *TempDB) Get(key, session string) *ledger.VersionedValue {
 	if session == "" {
 		return nil
 	}
@@ -179,7 +176,7 @@ func (tdb *TempDB) String() string {
 		res += fmt.Sprintf("session:%s\n", session)
 		res += fmt.Sprintf("\tcommitdb:\n")
 		for key, val := range sessiondb.db {
-			var verval VersionedValue
+			var verval ledger.VersionedValue
 			err := json.Unmarshal(val, &verval)
 			if err != nil {
 				log.Fatalf("stringfy tempdb, unmarshal error: %v", err)

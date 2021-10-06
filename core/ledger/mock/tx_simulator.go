@@ -9,6 +9,11 @@ import (
 )
 
 type TxSimulator struct {
+	CommitStub        func(string)
+	commitMutex       sync.RWMutex
+	commitArgsForCall []struct {
+		arg1 string
+	}
 	DeletePrivateDataStub        func(string, string, string) error
 	deletePrivateDataMutex       sync.RWMutex
 	deletePrivateDataArgsForCall []struct {
@@ -295,6 +300,37 @@ type TxSimulator struct {
 		result1 *ledger.TxSimulationResults
 		result2 error
 	}
+	PreGetStateStub        func(string, string, string) *ledger.VersionedValue
+	preGetStateMutex       sync.RWMutex
+	preGetStateArgsForCall []struct {
+		arg1 string
+		arg2 string
+		arg3 string
+	}
+	preGetStateReturns struct {
+		result1 *ledger.VersionedValue
+	}
+	preGetStateReturnsOnCall map[int]struct {
+		result1 *ledger.VersionedValue
+	}
+	PreSetStateStub        func(string, string, []byte) error
+	preSetStateMutex       sync.RWMutex
+	preSetStateArgsForCall []struct {
+		arg1 string
+		arg2 string
+		arg3 []byte
+	}
+	preSetStateReturns struct {
+		result1 error
+	}
+	preSetStateReturnsOnCall map[int]struct {
+		result1 error
+	}
+	RollbackStub        func(string)
+	rollbackMutex       sync.RWMutex
+	rollbackArgsForCall []struct {
+		arg1 string
+	}
 	SetPrivateDataStub        func(string, string, string, []byte) error
 	setPrivateDataMutex       sync.RWMutex
 	setPrivateDataArgsForCall []struct {
@@ -383,6 +419,38 @@ type TxSimulator struct {
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
+}
+
+func (fake *TxSimulator) Commit(arg1 string) {
+	fake.commitMutex.Lock()
+	fake.commitArgsForCall = append(fake.commitArgsForCall, struct {
+		arg1 string
+	}{arg1})
+	stub := fake.CommitStub
+	fake.recordInvocation("Commit", []interface{}{arg1})
+	fake.commitMutex.Unlock()
+	if stub != nil {
+		fake.CommitStub(arg1)
+	}
+}
+
+func (fake *TxSimulator) CommitCallCount() int {
+	fake.commitMutex.RLock()
+	defer fake.commitMutex.RUnlock()
+	return len(fake.commitArgsForCall)
+}
+
+func (fake *TxSimulator) CommitCalls(stub func(string)) {
+	fake.commitMutex.Lock()
+	defer fake.commitMutex.Unlock()
+	fake.CommitStub = stub
+}
+
+func (fake *TxSimulator) CommitArgsForCall(i int) string {
+	fake.commitMutex.RLock()
+	defer fake.commitMutex.RUnlock()
+	argsForCall := fake.commitArgsForCall[i]
+	return argsForCall.arg1
 }
 
 func (fake *TxSimulator) DeletePrivateData(arg1 string, arg2 string, arg3 string) error {
@@ -1714,6 +1782,169 @@ func (fake *TxSimulator) GetTxSimulationResultsReturnsOnCall(i int, result1 *led
 	}{result1, result2}
 }
 
+func (fake *TxSimulator) PreGetState(arg1 string, arg2 string, arg3 string) *ledger.VersionedValue {
+	fake.preGetStateMutex.Lock()
+	ret, specificReturn := fake.preGetStateReturnsOnCall[len(fake.preGetStateArgsForCall)]
+	fake.preGetStateArgsForCall = append(fake.preGetStateArgsForCall, struct {
+		arg1 string
+		arg2 string
+		arg3 string
+	}{arg1, arg2, arg3})
+	stub := fake.PreGetStateStub
+	fakeReturns := fake.preGetStateReturns
+	fake.recordInvocation("PreGetState", []interface{}{arg1, arg2, arg3})
+	fake.preGetStateMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2, arg3)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fakeReturns.result1
+}
+
+func (fake *TxSimulator) PreGetStateCallCount() int {
+	fake.preGetStateMutex.RLock()
+	defer fake.preGetStateMutex.RUnlock()
+	return len(fake.preGetStateArgsForCall)
+}
+
+func (fake *TxSimulator) PreGetStateCalls(stub func(string, string, string) *ledger.VersionedValue) {
+	fake.preGetStateMutex.Lock()
+	defer fake.preGetStateMutex.Unlock()
+	fake.PreGetStateStub = stub
+}
+
+func (fake *TxSimulator) PreGetStateArgsForCall(i int) (string, string, string) {
+	fake.preGetStateMutex.RLock()
+	defer fake.preGetStateMutex.RUnlock()
+	argsForCall := fake.preGetStateArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
+}
+
+func (fake *TxSimulator) PreGetStateReturns(result1 *ledger.VersionedValue) {
+	fake.preGetStateMutex.Lock()
+	defer fake.preGetStateMutex.Unlock()
+	fake.PreGetStateStub = nil
+	fake.preGetStateReturns = struct {
+		result1 *ledger.VersionedValue
+	}{result1}
+}
+
+func (fake *TxSimulator) PreGetStateReturnsOnCall(i int, result1 *ledger.VersionedValue) {
+	fake.preGetStateMutex.Lock()
+	defer fake.preGetStateMutex.Unlock()
+	fake.PreGetStateStub = nil
+	if fake.preGetStateReturnsOnCall == nil {
+		fake.preGetStateReturnsOnCall = make(map[int]struct {
+			result1 *ledger.VersionedValue
+		})
+	}
+	fake.preGetStateReturnsOnCall[i] = struct {
+		result1 *ledger.VersionedValue
+	}{result1}
+}
+
+func (fake *TxSimulator) PreSetState(arg1 string, arg2 string, arg3 []byte) error {
+	var arg3Copy []byte
+	if arg3 != nil {
+		arg3Copy = make([]byte, len(arg3))
+		copy(arg3Copy, arg3)
+	}
+	fake.preSetStateMutex.Lock()
+	ret, specificReturn := fake.preSetStateReturnsOnCall[len(fake.preSetStateArgsForCall)]
+	fake.preSetStateArgsForCall = append(fake.preSetStateArgsForCall, struct {
+		arg1 string
+		arg2 string
+		arg3 []byte
+	}{arg1, arg2, arg3Copy})
+	stub := fake.PreSetStateStub
+	fakeReturns := fake.preSetStateReturns
+	fake.recordInvocation("PreSetState", []interface{}{arg1, arg2, arg3Copy})
+	fake.preSetStateMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2, arg3)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fakeReturns.result1
+}
+
+func (fake *TxSimulator) PreSetStateCallCount() int {
+	fake.preSetStateMutex.RLock()
+	defer fake.preSetStateMutex.RUnlock()
+	return len(fake.preSetStateArgsForCall)
+}
+
+func (fake *TxSimulator) PreSetStateCalls(stub func(string, string, []byte) error) {
+	fake.preSetStateMutex.Lock()
+	defer fake.preSetStateMutex.Unlock()
+	fake.PreSetStateStub = stub
+}
+
+func (fake *TxSimulator) PreSetStateArgsForCall(i int) (string, string, []byte) {
+	fake.preSetStateMutex.RLock()
+	defer fake.preSetStateMutex.RUnlock()
+	argsForCall := fake.preSetStateArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
+}
+
+func (fake *TxSimulator) PreSetStateReturns(result1 error) {
+	fake.preSetStateMutex.Lock()
+	defer fake.preSetStateMutex.Unlock()
+	fake.PreSetStateStub = nil
+	fake.preSetStateReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *TxSimulator) PreSetStateReturnsOnCall(i int, result1 error) {
+	fake.preSetStateMutex.Lock()
+	defer fake.preSetStateMutex.Unlock()
+	fake.PreSetStateStub = nil
+	if fake.preSetStateReturnsOnCall == nil {
+		fake.preSetStateReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.preSetStateReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *TxSimulator) Rollback(arg1 string) {
+	fake.rollbackMutex.Lock()
+	fake.rollbackArgsForCall = append(fake.rollbackArgsForCall, struct {
+		arg1 string
+	}{arg1})
+	stub := fake.RollbackStub
+	fake.recordInvocation("Rollback", []interface{}{arg1})
+	fake.rollbackMutex.Unlock()
+	if stub != nil {
+		fake.RollbackStub(arg1)
+	}
+}
+
+func (fake *TxSimulator) RollbackCallCount() int {
+	fake.rollbackMutex.RLock()
+	defer fake.rollbackMutex.RUnlock()
+	return len(fake.rollbackArgsForCall)
+}
+
+func (fake *TxSimulator) RollbackCalls(stub func(string)) {
+	fake.rollbackMutex.Lock()
+	defer fake.rollbackMutex.Unlock()
+	fake.RollbackStub = stub
+}
+
+func (fake *TxSimulator) RollbackArgsForCall(i int) string {
+	fake.rollbackMutex.RLock()
+	defer fake.rollbackMutex.RUnlock()
+	argsForCall := fake.rollbackArgsForCall[i]
+	return argsForCall.arg1
+}
+
 func (fake *TxSimulator) SetPrivateData(arg1 string, arg2 string, arg3 string, arg4 []byte) error {
 	var arg4Copy []byte
 	if arg4 != nil {
@@ -2140,6 +2371,8 @@ func (fake *TxSimulator) UpdateReadSetArgsForCall(i int) (string, string, string
 func (fake *TxSimulator) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.commitMutex.RLock()
+	defer fake.commitMutex.RUnlock()
 	fake.deletePrivateDataMutex.RLock()
 	defer fake.deletePrivateDataMutex.RUnlock()
 	fake.deletePrivateDataMetadataMutex.RLock()
@@ -2182,6 +2415,12 @@ func (fake *TxSimulator) Invocations() map[string][][]interface{} {
 	defer fake.getStateRangeScanIteratorWithPaginationMutex.RUnlock()
 	fake.getTxSimulationResultsMutex.RLock()
 	defer fake.getTxSimulationResultsMutex.RUnlock()
+	fake.preGetStateMutex.RLock()
+	defer fake.preGetStateMutex.RUnlock()
+	fake.preSetStateMutex.RLock()
+	defer fake.preSetStateMutex.RUnlock()
+	fake.rollbackMutex.RLock()
+	defer fake.rollbackMutex.RUnlock()
 	fake.setPrivateDataMutex.RLock()
 	defer fake.setPrivateDataMutex.RUnlock()
 	fake.setPrivateDataMetadataMutex.RLock()

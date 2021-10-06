@@ -4,8 +4,8 @@ package mock
 import (
 	"sync"
 
-	"github.com/Yunpeng-J/fabric-protos-go/peer"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
+	"github.com/Yunpeng-J/fabric-protos-go/peer"
 )
 
 type MembershipInfoProvider struct {
@@ -34,15 +34,16 @@ func (fake *MembershipInfoProvider) AmMemberOf(arg1 string, arg2 *peer.Collectio
 		arg1 string
 		arg2 *peer.CollectionPolicyConfig
 	}{arg1, arg2})
+	stub := fake.AmMemberOfStub
+	fakeReturns := fake.amMemberOfReturns
 	fake.recordInvocation("AmMemberOf", []interface{}{arg1, arg2})
 	fake.amMemberOfMutex.Unlock()
-	if fake.AmMemberOfStub != nil {
-		return fake.AmMemberOfStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.amMemberOfReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 

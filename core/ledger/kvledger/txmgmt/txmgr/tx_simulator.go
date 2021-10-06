@@ -55,9 +55,8 @@ func (s *txSimulator) PreSetState(key string, txid string, value []byte) error {
 	return nil
 }
 
-func (s *txSimulator) PreGetState(ns string, key string, session string) *VersionedValue {
-	s.TempDB.Get(key, session)
-	return nil
+func (s *txSimulator) PreGetState(ns string, key string, session string) *ledger.VersionedValue {
+	return s.TempDB.Get(key, session)
 }
 
 func (s *txSimulator) Commit(txid string) {

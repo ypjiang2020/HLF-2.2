@@ -24,9 +24,10 @@ func (fake *ChaincodeLifecycleEventProvider) RegisterListener(arg1 string, arg2 
 		arg1 string
 		arg2 ledger.ChaincodeLifecycleEventListener
 	}{arg1, arg2})
+	stub := fake.RegisterListenerStub
 	fake.recordInvocation("RegisterListener", []interface{}{arg1, arg2})
 	fake.registerListenerMutex.Unlock()
-	if fake.RegisterListenerStub != nil {
+	if stub != nil {
 		fake.RegisterListenerStub(arg1, arg2)
 	}
 }

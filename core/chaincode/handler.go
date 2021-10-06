@@ -144,7 +144,6 @@ type Handler struct {
 	mutex sync.Mutex
 	// streamDoneChan is closed when the chaincode stream terminates.
 	streamDoneChan chan struct{}
-
 }
 
 // handleMessage is called by ProcessStream to dispatch messages.
@@ -516,12 +515,15 @@ func (h *Handler) Notify(msg *pb.ChaincodeMessage) {
 	}
 	if res.Status >= shim.ERRORTHRESHOLD {
 		// error happened, rollback
-		tctx.TXSimulator.Rollback(msg.Txid)
+		if tctx.TXSimulator != nil {
+			tctx.TXSimulator.Rollback(msg.Txid)
+		}
 	} else {
 		// TODO: how do we deal with nondeterminism?
 		// After we commit, clients may receive different endorsement results because of nondeterminism.
-
-		tctx.TXSimulator.Commit(msg.Txid)
+		if tctx.TXSimulator != nil {
+			tctx.TXSimulator.Commit(msg.Txid)
+		}
 	}
 	// optimistic code end
 
