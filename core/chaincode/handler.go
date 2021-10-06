@@ -16,9 +16,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Yunpeng-J/fabric-chaincode-go/shim"
-	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/golang/protobuf/proto"
 	"github.com/Yunpeng-J/HLF-2.2/common/channelconfig"
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
 	commonledger "github.com/Yunpeng-J/HLF-2.2/common/ledger"
@@ -29,6 +26,9 @@ import (
 	"github.com/Yunpeng-J/HLF-2.2/core/container/ccintf"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
 	"github.com/Yunpeng-J/HLF-2.2/core/scc"
+	"github.com/Yunpeng-J/fabric-chaincode-go/shim"
+	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
+	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
 )
 
@@ -663,14 +663,18 @@ func (h *Handler) HandleGetState(msg *pb.ChaincodeMessage, txContext *Transactio
 	} else {
 		// optimistic code begin
 		session := GetSessionFromTxid(msg.Txid)
+		// seq := strconv.Atoi(GetSessionFromTxid(msg.Txid))
 		tempVal := h.tempState.Get(getState.Key, session)
 		if tempVal == nil {
 			payload = resp
 			txContext.TXSimulator.UpdateReadSet(namespaceID, getState.Key, dbVal.Txid)
 		} else {
 			tempSession := GetSessionFromTxid(tempVal.Txid)
+			// tempSeq := GetSeqFromTxid(tempVal.Txid)
 			dbSession := GetSessionFromTxid(dbVal.Txid)
-			if tempSession == dbSession {
+			// if (tempSession == dbSession) && (strconv.Atoi(tempSeq)+1 == seq) {
+			if true || (tempSession == dbSession) {
+				// TODO: cascading abort
 				// choose tempVal
 				payload = tempVal.Val
 				txContext.TXSimulator.UpdateReadSet(namespaceID, getState.Key, tempVal.Txid)

@@ -21,8 +21,8 @@ import (
 
 // optimistic code begin
 type VerVal struct {
-	txid string
-	val  []byte
+	Txid string
+	Val  []byte
 }
 
 // optimistic code end
@@ -194,7 +194,7 @@ func (v *validator) validateKVRead(ns string, kvRead *kvrwset.KVRead, updates *p
 		if err != nil {
 			log.Fatalln("please check VersionedValue if value=txid+value", err)
 		}
-		if kvRead.Txid == verval.txid {
+		if kvRead.Txid == verval.Txid {
 			log.Println("same with previous uncommitted key")
 			return true, nil
 		} else {
@@ -224,7 +224,7 @@ func (v *validator) validateKVRead(ns string, kvRead *kvrwset.KVRead, updates *p
 		if err != nil {
 			log.Fatalln("please check versionedValue in validataeKVRead", err)
 		}
-		if version.txid == kvRead.Txid {
+		if version.Txid == kvRead.Txid {
 			return true, nil
 		} else {
 			logger.Debugf("Version mismatch for key [%s:%s]. Committed version = [%#v], Version in readSet [%#v]",

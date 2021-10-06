@@ -105,7 +105,10 @@ func (tdb *TempDB) Get(key, session string) *VersionedValue {
 	if session == "" {
 		return nil
 	}
-	if sdb, ok := tdb.Sessions[session]; ok {
+	tdb.mutex.Lock()
+	sdb, ok := tdb.Sessions[session]
+	tdb.mutex.Unlock()
+	if ok {
 		return sdb.Get(key)
 	} else {
 		return nil
@@ -118,12 +121,16 @@ func (tdb *TempDB) Put(key, txid string, val []byte) {
 	if session == "" {
 		return
 	}
-	if sdb, ok := tdb.Sessions[session]; ok {
+	tdb.mutex.Lock()
+	sdb, ok := tdb.Sessions[session]
+	if ok {
+		tdb.mutex.Unlock()
 		sdb.Put(txid, key, val)
 	} else {
 		db := newSessionDB(session)
-		db.Put(txid, key, val)
 		tdb.Sessions[session] = db
+		tdb.mutex.Unlock()
+		db.Put(txid, key, val)
 	}
 }
 
@@ -132,7 +139,10 @@ func (tdb *TempDB) Rollback(txid string) {
 	if session == "" {
 		return
 	}
-	if sdb, ok := tdb.Sessions[session]; ok {
+	tdb.mutex.Lock()
+	sdb, ok := tdb.Sessions[session]
+	tdb.mutex.Unlock()
+	if ok {
 		sdb.Rollback(txid)
 	} else {
 		log.Fatalln("something is wrong with the Temp DB, please check it")
@@ -143,7 +153,10 @@ func (tdb *TempDB) Commit(txid string) {
 	if session == "" {
 		return
 	}
-	if sdb, ok := tdb.Sessions[session]; ok {
+	tdb.mutex.Lock()
+	sdb, ok := tdb.Sessions[session]
+	tdb.mutex.Unlock()
+	if ok {
 		sdb.Commit(txid)
 	} else {
 		log.Fatalln("something is wrong with the Temp DB, please check it")
@@ -153,11 +166,15 @@ func (tdb *TempDB) Commit(txid string) {
 // Prune: delete the session that txid belongs to.
 func (tdb *TempDB) Prune(txid string) {
 	session := GetSessionFromTxid(txid)
+	tdb.mutex.Lock()
 	delete(tdb.Sessions, session)
+	tdb.mutex.Unlock()
 }
 
 func (tdb *TempDB) String() string {
 	var res string
+	tdb.mutex.Lock()
+	defer tdb.mutex.Unlock()
 	for session, sessiondb := range tdb.Sessions {
 		res += fmt.Sprintf("session:%s\n", session)
 		res += fmt.Sprintf("\tcommitdb:\n")
