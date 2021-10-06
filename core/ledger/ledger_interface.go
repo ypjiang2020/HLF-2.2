@@ -10,18 +10,19 @@ package ledger
 
 import (
 	"fmt"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/txmgr"
 	"hash"
 	"time"
 
+	"github.com/Yunpeng-J/HLF-2.2/bccsp"
+	commonledger "github.com/Yunpeng-J/HLF-2.2/common/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/common/metrics"
 	"github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset"
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
 	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric-lib-go/healthz"
-	"github.com/Yunpeng-J/HLF-2.2/bccsp"
-	commonledger "github.com/Yunpeng-J/HLF-2.2/common/ledger"
-	"github.com/Yunpeng-J/HLF-2.2/common/metrics"
 )
 
 // Initializer encapsulates dependencies for PeerLedgerProvider
@@ -266,6 +267,7 @@ type QueryExecutor interface {
 	ExecuteQueryOnPrivateData(namespace, collection, query string) (commonledger.ResultsIterator, error)
 	// Done releases resources occupied by the QueryExecutor
 	Done()
+
 }
 
 // HistoryQueryExecutor executes the history queries
@@ -315,7 +317,10 @@ type TxSimulator interface {
 
 	// optimistic code begin
 	UpdateReadSet(namespace, key, txid string)
-
+	PreSetState(namespace string, key string, value []byte) error
+	PreGetState(namespace string, key string, session string) *txmgr.VersionedValue
+	Commit(txid string)
+	Rollback(txid string)
 	// optimistic code end
 }
 

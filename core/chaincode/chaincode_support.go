@@ -11,8 +11,6 @@ import (
 	"time"
 	"unicode/utf8"
 
-	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/golang/protobuf/proto"
 	"github.com/Yunpeng-J/HLF-2.2/common/util"
 	"github.com/Yunpeng-J/HLF-2.2/core/chaincode/extcc"
 	"github.com/Yunpeng-J/HLF-2.2/core/chaincode/lifecycle"
@@ -21,6 +19,8 @@ import (
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
 	"github.com/Yunpeng-J/HLF-2.2/core/peer"
 	"github.com/Yunpeng-J/HLF-2.2/core/scc"
+	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
+	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
 )
 
@@ -120,7 +120,6 @@ func (cs *ChaincodeSupport) HandleChaincodeStream(stream ccintf.ChaincodeStream)
 		AppConfig:              cs.AppConfig,
 		Metrics:                cs.HandlerMetrics,
 		TotalQueryLimit:        cs.TotalQueryLimit,
-		tempState:              newTempDB(),
 	}
 
 	return handler.ProcessStream(stream)

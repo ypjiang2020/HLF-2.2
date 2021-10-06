@@ -12,10 +12,6 @@ import (
 	"bytes"
 	"sync"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/Yunpeng-J/fabric-protos-go/common"
-	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset"
-	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
 	"github.com/Yunpeng-J/HLF-2.2/common/ledger/snapshot"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
@@ -28,6 +24,10 @@ import (
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/validation"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/pvtdatapolicy"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/util"
+	"github.com/Yunpeng-J/fabric-protos-go/common"
+	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset"
+	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
+	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
 )
 
@@ -46,6 +46,7 @@ type LockBasedTxMgr struct {
 	oldBlockCommit      sync.Mutex
 	current             *current
 	hashFunc            rwsetutil.HashFunc
+	tempdb              *TempDB
 }
 
 // pvtdataPurgeMgr wraps the actual purge manager and an additional flag 'usedOnce'
@@ -117,6 +118,7 @@ func NewLockBasedTxMgr(initializer *Initializer) (*LockBasedTxMgr, error) {
 		stateListeners: initializer.StateListeners,
 		ccInfoProvider: initializer.CCInfoProvider,
 		hashFunc:       initializer.HashFunc,
+		tempdb:         newTempDB(),
 	}
 	pvtstatePurgeMgr, err := pvtstatepurgemgmt.InstantiatePurgeMgr(
 		initializer.LedgerID,
@@ -167,7 +169,7 @@ func (txmgr *LockBasedTxMgr) NewQueryExecutorNoCollChecks() (ledger.QueryExecuto
 // NewTxSimulator implements method in interface `txmgmt.TxMgr`
 func (txmgr *LockBasedTxMgr) NewTxSimulator(txid string) (ledger.TxSimulator, error) {
 	logger.Debugf("constructing new tx simulator")
-	s, err := newTxSimulator(txmgr, txid, txmgr.hashFunc)
+	s, err := newTxSimulator(txmgr, txid, txmgr.hashFunc, txmgr.tempdb)
 	if err != nil {
 		return nil, err
 	}
@@ -557,6 +559,11 @@ func (txmgr *LockBasedTxMgr) Commit() error {
 		txmgr.commitRWLock.Unlock()
 		return err
 	}
+	// optimistic code begin
+	// TODO: prune tempdb
+	// txmgr.tempdb.Prune("")
+	// optimistic code end
+
 	txmgr.commitRWLock.Unlock()
 	// only while holding a lock on oldBlockCommit, we should clear the cache as the
 	// cache is being used by the old pvtData committer to load the version of

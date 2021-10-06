@@ -145,7 +145,6 @@ type Handler struct {
 	// streamDoneChan is closed when the chaincode stream terminates.
 	streamDoneChan chan struct{}
 
-	tempState *TempDB
 }
 
 // handleMessage is called by ProcessStream to dispatch messages.
@@ -517,12 +516,12 @@ func (h *Handler) Notify(msg *pb.ChaincodeMessage) {
 	}
 	if res.Status >= shim.ERRORTHRESHOLD {
 		// error happened, rollback
-		h.tempState.Rollback(msg.Txid)
+		tctx.TXSimulator.Rollback(msg.Txid)
 	} else {
 		// TODO: how do we deal with nondeterminism?
 		// After we commit, clients may receive different endorsement results because of nondeterminism.
 
-		h.tempState.Commit(msg.Txid)
+		tctx.TXSimulator.Commit(msg.Txid)
 	}
 	// optimistic code end
 
@@ -664,7 +663,7 @@ func (h *Handler) HandleGetState(msg *pb.ChaincodeMessage, txContext *Transactio
 		// optimistic code begin
 		session := GetSessionFromTxid(msg.Txid)
 		// seq := strconv.Atoi(GetSessionFromTxid(msg.Txid))
-		tempVal := h.tempState.Get(getState.Key, session)
+		tempVal := txContext.TXSimulator.PreGetState(namespaceID, getState.Key, session)
 		if tempVal == nil {
 			payload = resp
 			txContext.TXSimulator.UpdateReadSet(namespaceID, getState.Key, dbVal.Txid)
@@ -1075,7 +1074,7 @@ func (h *Handler) HandlePutState(msg *pb.ChaincodeMessage, txContext *Transactio
 			log.Fatalln("please check versionedValue, putState error", err)
 		}
 		// put into tempdb
-		h.tempState.Put(putState.Key, msg.Txid, putState.Value)
+		txContext.TXSimulator.PreSetState(putState.Key, msg.Txid, putState.Value)
 		// optimistic code end
 		err = txContext.TXSimulator.SetState(namespaceID, putState.Key, putState.Value)
 	}

@@ -25,13 +25,14 @@ type txSimulator struct {
 	pvtdataQueriesPerformed   bool
 	simulationResultsComputed bool
 	paginatedQueriesPerformed bool
+	TempDB                    *TempDB
 }
 
-func newTxSimulator(txmgr *LockBasedTxMgr, txid string, hashFunc rwsetutil.HashFunc) (*txSimulator, error) {
+func newTxSimulator(txmgr *LockBasedTxMgr, txid string, hashFunc rwsetutil.HashFunc, tempdb *TempDB) (*txSimulator, error) {
 	rwsetBuilder := rwsetutil.NewRWSetBuilder()
 	qe := newQueryExecutor(txmgr, txid, rwsetBuilder, true, hashFunc)
 	logger.Debugf("constructing new tx simulator txid = [%s]", txid)
-	return &txSimulator{qe, rwsetBuilder, false, false, false, false}, nil
+	return &txSimulator{qe, rwsetBuilder, false, false, false, false, tempdb}, nil
 }
 
 // ethereum: update state
@@ -44,9 +45,30 @@ func (s *txSimulator) SetState(ns string, key string, value []byte) error {
 	return nil
 }
 
+// optimistic code begin
 func (s *txSimulator) UpdateReadSet(ns string, key string, txid string) {
 	s.rwsetBuilder.UpdateReadSet(ns, key, txid)
 }
+
+func (s *txSimulator) PreSetState(key string, txid string, value []byte) error {
+	s.TempDB.Put(key, txid, value)
+	return nil
+}
+
+func (s *txSimulator) PreGetState(ns string, key string, session string) *VersionedValue {
+	s.TempDB.Get(key, session)
+	return nil
+}
+
+func (s *txSimulator) Commit(txid string) {
+	s.TempDB.Commit(txid)
+}
+
+func (s *txSimulator) Rollback(txid string) {
+	s.TempDB.Rollback(txid)
+}
+
+// optimistic code end
 
 // DeleteState implements method in interface `ledger.TxSimulator`
 func (s *txSimulator) DeleteState(ns string, key string) error {
