@@ -29,6 +29,8 @@ github.com/Yunpeng-J/fabric-protos-go v0.0.0-20210607081447-738a8a3feef5 h1:5XQk
 github.com/Yunpeng-J/fabric-protos-go v0.0.0-20210607081447-738a8a3feef5/go.mod h1:d0dpIUe51uSuMwyw2llOrTFsPNX00QfdtaJtZ1XER+U=
 github.com/Yunpeng-J/fabric-protos-go v0.0.0-20210928071911-ec2b84cdd1d8 h1:sRRxI0IhAMljzkd9AcQwwJgItHfYGCFowtmw5slQ3I4=
 github.com/Yunpeng-J/fabric-protos-go v0.0.0-20210928071911-ec2b84cdd1d8/go.mod h1:d0dpIUe51uSuMwyw2llOrTFsPNX00QfdtaJtZ1XER+U=
+github.com/Yunpeng-J/fabric-protos-go v0.0.0-20211006015502-ab11fb4df785 h1:q1tFeM5m2tbXJBi6WxAhsQRB6KxrlT4CTqD7rZHwBL4=
+github.com/Yunpeng-J/fabric-protos-go v0.0.0-20211006015502-ab11fb4df785/go.mod h1:d0dpIUe51uSuMwyw2llOrTFsPNX00QfdtaJtZ1XER+U=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc h1:cAKDfWh5VpdgMhJosfJnn5/FoN2SRZ4p7fJNX58YPaU=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
 github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf h1:qet1QNfXsQxTZqLG4oE62mJzwPIB8+Tee4RNCL9ulrY=

@@ -16,7 +16,7 @@ require (
 	github.com/VividCortex/gohistogram v1.0.0 // indirect
 	github.com/Yunpeng-J/fabric-chaincode-go v0.0.0-20210607094423-1c77abb20acc
 	github.com/Yunpeng-J/fabric-config v0.0.0-20210607091326-a85e56a3ec3c
-	github.com/Yunpeng-J/fabric-protos-go v0.0.0-20210928071911-ec2b84cdd1d8
+	github.com/Yunpeng-J/fabric-protos-go v0.0.0-20211006015502-ab11fb4df785
 	github.com/containerd/continuity v0.0.0-20190426062206-aaeac12a7ffc // indirect
 	github.com/coreos/go-systemd v0.0.0-20190620071333-e64a0ec8b42a // indirect
 	github.com/coreos/pkg v0.0.0-20180108230652-97fdf19511ea // indirect
