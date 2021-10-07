@@ -43,6 +43,11 @@ func newSessionDB(session string) *SessionDB {
 	}
 }
 
+func (sdb *SessionDB) Contain(key string) bool {
+	_, ok := sdb.db[key]
+	return ok
+}
+
 func (sdb *SessionDB) Get(key string) *ledger.VersionedValue {
 	// TODO: do we need to read from writeSets?
 	val, ok := sdb.db[key]
@@ -63,6 +68,10 @@ func (sdb *SessionDB) Put(txid, key string, val []byte) {
 		sdb.writeSets[txid] = &WriteSet{}
 	}
 	sdb.writeSets[txid].append(key, val)
+}
+
+func (sdb *SessionDB) Delete(key string) {
+	delete(sdb.db, key)
 }
 
 func (sdb *SessionDB) Rollback(txid string) {
@@ -160,12 +169,19 @@ func (tdb *TempDB) Commit(txid string) {
 	}
 }
 
-// Prune: delete the session that txid belongs to.
-func (tdb *TempDB) Prune(txid string) {
-	session := GetSessionFromTxid(txid)
+// Prune: delete all obsolete keys
+func (tdb *TempDB) Prune(ks map[string]string) {
+	// TODO: optimization
 	tdb.mutex.Lock()
-	delete(tdb.Sessions, session)
-	tdb.mutex.Unlock()
+	defer tdb.mutex.Unlock()
+	for k, s := range ks {
+		if _, ok := tdb.Sessions[s]; !ok {
+			// from other sessions
+			for _, sdb := range tdb.Sessions {
+				sdb.Delete(k)
+			}
+		}
+	}
 }
 
 func (tdb *TempDB) String() string {

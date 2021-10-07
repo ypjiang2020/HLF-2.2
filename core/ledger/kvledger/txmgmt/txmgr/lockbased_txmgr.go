@@ -10,7 +10,9 @@ package txmgr
 
 import (
 	"bytes"
+	"encoding/json"
 	"sync"
+	"log"
 
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
 	"github.com/Yunpeng-J/HLF-2.2/common/ledger/snapshot"
@@ -560,8 +562,18 @@ func (txmgr *LockBasedTxMgr) Commit() error {
 		return err
 	}
 	// optimistic code begin
-	// TODO: prune tempdb
-	// txmgr.tempdb.Prune("")
+	keysession := make(map[string]string)
+	for ns, data := range txmgr.current.batch.PubUpdates.Updates {
+		log.Printf("debug namespace=%s", ns)
+		for k, v := range data.M {
+			var verval ledger.VersionedValue
+			err := json.Unmarshal(v.Value, &verval)
+			if err != nil {
+				keysession[k] = GetSessionFromTxid(verval.Txid)
+			}
+		}
+	}
+	txmgr.tempdb.Prune(keysession)
 	// optimistic code end
 
 	txmgr.commitRWLock.Unlock()
