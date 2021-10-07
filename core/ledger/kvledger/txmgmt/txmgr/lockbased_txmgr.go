@@ -11,8 +11,8 @@ package txmgr
 import (
 	"bytes"
 	"encoding/json"
-	"sync"
 	"log"
+	"sync"
 
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
 	"github.com/Yunpeng-J/HLF-2.2/common/ledger/snapshot"
@@ -568,7 +568,7 @@ func (txmgr *LockBasedTxMgr) Commit() error {
 		for k, v := range data.M {
 			var verval ledger.VersionedValue
 			err := json.Unmarshal(v.Value, &verval)
-			if err != nil {
+			if err == nil {
 				keysession[k] = GetSessionFromTxid(verval.Txid)
 			}
 		}
