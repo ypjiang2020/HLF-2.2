@@ -48,7 +48,7 @@ github.com/Yunpeng-J/fabric-config/protolator/protoext/ledger/rwsetext
 github.com/Yunpeng-J/fabric-config/protolator/protoext/mspext
 github.com/Yunpeng-J/fabric-config/protolator/protoext/ordererext
 github.com/Yunpeng-J/fabric-config/protolator/protoext/peerext
-# github.com/Yunpeng-J/fabric-protos-go v0.0.0-20211010091757-2d24e7c57693
+# github.com/Yunpeng-J/fabric-protos-go v0.0.0-20211010122313-9ba1322394cf
 ## explicit
 github.com/Yunpeng-J/fabric-protos-go/common
 github.com/Yunpeng-J/fabric-protos-go/discovery
