@@ -25,7 +25,7 @@ message TxReadWriteDeltaSet {
         KV = 0;
     }
     DataModel data_model = 1;
-    repeated NsReadWriteDeltaSet ns_rwset = 2;
+    repeated NsReadWriteDeltaSet ns_rwdset = 2;
 }
 
 // NsReadWriteSet encapsulates the read-write set for a chaincode
