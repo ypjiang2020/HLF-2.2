@@ -50,6 +50,10 @@ func (s *txSimulator) UpdateReadSet(ns string, key string, txid string) {
 	s.rwsetBuilder.UpdateReadSet(ns, key, txid)
 }
 
+func (s *txSimulator) UpdateReadSetWithValue(ns string, key string, txid string, value[]byte) {
+	s.rwsetBuilder.UpdateReadSetWithValue(ns, key, txid, value)
+}
+
 func (s *txSimulator) PreSetState(key string, txid string, value []byte) error {
 	s.TempDB.Put(key, txid, value)
 	return nil

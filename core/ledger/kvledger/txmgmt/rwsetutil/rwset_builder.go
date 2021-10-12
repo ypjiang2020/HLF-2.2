@@ -19,12 +19,14 @@ limitations under the License.
 package rwsetutil
 
 import (
-	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset"
-	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
+	"encoding/json"
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/internal/version"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/util"
+	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset"
+	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
+	"log"
 )
 
 var logger = flogging.MustGetLogger("rwsetutil")
@@ -43,6 +45,10 @@ type nsPubRwBuilder struct {
 	rangeQueriesMap   map[rangeQueryKey]*kvrwset.RangeQueryInfo //for phantom read validation
 	rangeQueriesKeys  []rangeQueryKey
 	collHashRwBuilder map[string]*collHashRwBuilder
+
+	// optimistic code begin
+	// analyzer *analyzer.Analyzer
+	// optimistic code end
 }
 
 type collHashRwBuilder struct {
@@ -93,6 +99,15 @@ func (b *RWSetBuilder) UpdateReadSet(ns string, key string, txid string) {
 		return
 	}
 	nsPubRwBuilder.readMap[key].Txid = txid
+}
+
+func (b *RWSetBuilder) UpdateReadSetWithValue(ns string, key string, txid string, value []byte) {
+	nsPubRwBuilder := b.getOrCreateNsPubRwBuilder(ns)
+	if _, ok := nsPubRwBuilder.readMap[key]; !ok {
+		return
+	}
+	nsPubRwBuilder.readMap[key].Txid = txid
+	nsPubRwBuilder.readMap[key].Value = value
 }
 
 // optimistic code end
@@ -152,7 +167,7 @@ func (b *RWSetBuilder) GetTxSimulationResults() (*ledger.TxSimulationResults, er
 	pvtData := b.getTxPvtReadWriteSet()
 	var err error
 
-	var pubDataProto *rwset.TxReadWriteSet
+	var pubDataProto *rwset.TxReadWriteDeltaSet // optimistic code
 	var pvtDataProto *rwset.TxPvtReadWriteSet
 
 	// Populate the collection-level hashes into pub rwset and compute the proto bytes for pvt rwset
@@ -167,7 +182,7 @@ func (b *RWSetBuilder) GetTxSimulationResults() (*ledger.TxSimulationResults, er
 		}
 	}
 	// Compute the proto bytes for pub rwset
-	pubSet := b.GetTxReadWriteSet()
+	pubSet := b.GetTxReadWriteDeltaSet() // optimistic code
 	if pubSet != nil {
 		if pubDataProto, err = pubSet.toProtoMsg(); err != nil {
 			return nil, err
@@ -196,6 +211,22 @@ func (b *RWSetBuilder) GetTxReadWriteSet() *TxRwSet {
 	}
 	return &TxRwSet{NsRwSets: nsPubRwSets}
 }
+
+// optimistic code begin
+// GetTxReadWriteSet returns the read-write set
+// TODO make this function private once txmgr starts using new function `GetTxSimulationResults` introduced here
+func (b *RWSetBuilder) GetTxReadWriteDeltaSet() *TxRwdSet {
+	sortedNsPubBuilders := []*nsPubRwBuilder{}
+	util.GetValuesBySortedKeys(&(b.pubRwBuilderMap), &sortedNsPubBuilders)
+
+	var nsPubRwSets []*NsRwdSet
+	for _, nsPubRwBuilder := range sortedNsPubBuilders {
+		nsPubRwSets = append(nsPubRwSets, nsPubRwBuilder.buildDelta())
+	}
+	return &TxRwdSet{NsRwdSets: nsPubRwSets}
+}
+
+// optimistic code end
 
 // getTxPvtReadWriteSet returns the private read-write set
 func (b *RWSetBuilder) getTxPvtReadWriteSet() *TxPvtRwSet {
@@ -244,6 +275,157 @@ func (b *nsPubRwBuilder) build() *NsRwSet {
 		CollHashedRwSets: collHashedRwSet,
 	}
 }
+
+// optimistic code begin
+func CalculateDeltaFromRWset(readSet []*kvrwset.KVRead, writeSet []*kvrwset.KVWrite) (delta []*kvrwset.KVDelta, rs []*kvrwset.KVRead, ws []*kvrwset.KVWrite) {
+	// process read set
+	initial_map := make(map[string]interface{})
+	for _, rs := range readSet {
+		var payload []byte
+		var verval ledger.VersionedValue
+		err := json.Unmarshal(rs.Value, &verval)
+		if err != nil {
+			log.Printf("optimistic code unmarshal read set key=%s, use origin version", rs.Key)
+			payload = rs.Value
+		} else {
+			log.Printf("optimistic code unmarshal read set key=%s, use optimistic version", rs.Key)
+			payload = verval.Val
+		}
+		var obj interface{}
+		err = json.Unmarshal(payload, &obj)
+		if err != nil {
+			log.Fatalln("optimistic code CalculateDeltaFromWRset", err)
+		}
+		t_obj, _ := obj.(map[string]interface{})
+		initial_map[rs.Key] = t_obj
+	}
+
+	// process write set
+	for _, ws := range writeSet {
+		var payload []byte
+		var verval ledger.VersionedValue
+		err := json.Unmarshal(ws.Value, &verval)
+		if err != nil {
+			log.Printf("optimistic code unmarshal write set key=%s, use origin version", ws.Key)
+			payload = ws.Value
+		} else {
+			log.Printf("optimistic code unmarshal write set key=%s, use optimistic version", ws.Key)
+			payload = verval.Val
+		}
+		var obj interface{}
+		err = json.Unmarshal(payload, &obj)
+		if err != nil {
+			log.Fatalln("optimistic code CalculateDeltaFromWRset", err)
+		}
+		t_obj, _ := obj.(map[string]interface{})
+		// TODO: use static analysis results to guarantee safety
+		// currently only work for smallbank chaincode
+		flag := false
+		for k, v := range t_obj {
+			switch vv := v.(type) {
+			case int:
+				tempDelta := vv - initial_map[k].(int)
+				if tempDelta > 0 {
+					flag = true
+					t_obj[k] = tempDelta
+				}
+			case float64:
+				tempDelta := vv - initial_map[k].(float64)
+				if tempDelta > 0 {
+					flag = true
+					t_obj[k] = tempDelta
+				}
+			case string:
+				log.Println("TODO string")
+			}
+		}
+		if flag {
+			log.Printf("optimisitc code build delta txid=%s, key=%s, val=%v",ws.Key, verval.Txid, t_obj)
+			bs, err := json.Marshal(t_obj)
+			if err != nil {
+				log.Fatalln("optimistic code marshal delta", err)
+			}
+			dt := &kvrwset.KVDelta{
+				Key: ws.Key,
+				Txid: verval.Txid,
+				Value: bs,
+			}
+			delta = append(delta, dt)
+		}
+	}
+	// update read set
+	ri := 0
+	for _, rs := range readSet {
+		flag := true
+		for _, dt := range delta {
+			if dt.Key == rs.Key {
+				flag = false
+				break
+			}
+		}
+		if flag {
+			readSet[ri] = rs
+			ri += 1
+		} else {
+			log.Printf("optimisitc code delete element from read set txid=%s, key=%s, val=%v", rs.Txid, rs.Key, rs.Value)
+		}
+	}
+	// update write set
+	wi := 0
+	for _, ws := range writeSet {
+		flag := true
+		for _, dt := range delta {
+			if dt.Key == ws.Key {
+				flag = false
+				break
+			}
+		}
+		if flag {
+			writeSet[wi] = ws
+			wi += 1
+		} else {
+			log.Printf("optimisitc code delete element from write set key=%s, val=%v", ws.Key, ws.Value)
+		}
+	}
+	return delta, readSet[:ri], writeSet[:wi]
+}
+
+func (b *nsPubRwBuilder) buildDelta() *NsRwdSet {
+	var readSet []*kvrwset.KVRead
+	var writeSet []*kvrwset.KVWrite
+	var metadataWriteSet []*kvrwset.KVMetadataWrite
+	var rangeQueriesInfo []*kvrwset.RangeQueryInfo
+	var collHashedRwSet []*CollHashedRwSet
+	//add read set
+	util.GetValuesBySortedKeys(&(b.readMap), &readSet)
+	//add write set
+	util.GetValuesBySortedKeys(&(b.writeMap), &writeSet)
+	util.GetValuesBySortedKeys(&(b.metadataWriteMap), &metadataWriteSet)
+	//add range query info
+	for _, key := range b.rangeQueriesKeys {
+		rangeQueriesInfo = append(rangeQueriesInfo, b.rangeQueriesMap[key])
+	}
+	// add hashed rws for private collections
+	sortedCollBuilders := []*collHashRwBuilder{}
+	util.GetValuesBySortedKeys(&(b.collHashRwBuilder), &sortedCollBuilders)
+	for _, collBuilder := range sortedCollBuilders {
+		collHashedRwSet = append(collHashedRwSet, collBuilder.build())
+	}
+	deltaSet, readSet, writeSet := CalculateDeltaFromRWset(readSet, writeSet)
+	return &NsRwdSet{
+		NameSpace: b.namespace,
+		KvRwdSet: &kvrwset.KVRWDSet{
+			Reads:            readSet,
+			Writes:           writeSet,
+			Deltas:           deltaSet,
+			MetadataWrites:   metadataWriteSet,
+			RangeQueriesInfo: rangeQueriesInfo,
+		},
+		CollHashedRwSets: collHashedRwSet,
+	}
+}
+
+// optimistic code end
 
 func (b *nsPvtRwBuilder) build() *NsPvtRwSet {
 	sortedCollBuilders := []*collPvtRwBuilder{}

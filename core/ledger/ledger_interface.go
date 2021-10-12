@@ -320,6 +320,7 @@ type TxSimulator interface {
 
 	// optimistic code begin
 	UpdateReadSet(namespace, key, txid string)
+	UpdateReadSetWithValue(namespace, key, txid string, value []byte)
 	PreSetState(namespace string, key string, value []byte) error
 	PreGetState(namespace string, key string, session string) *VersionedValue
 	Commit(txid string)
@@ -460,7 +461,7 @@ func (filter PvtNsCollFilter) Has(ns string, coll string) bool {
 
 // TxSimulationResults captures the details of the simulation results
 type TxSimulationResults struct {
-	PubSimulationResults *rwset.TxReadWriteSet
+	PubSimulationResults *rwset.TxReadWriteDeltaSet // optimistic code
 	PvtSimulationResults *rwset.TxPvtReadWriteSet
 }
 

@@ -667,24 +667,13 @@ func (h *Handler) HandleGetState(msg *pb.ChaincodeMessage, txContext *Transactio
 		// seq := strconv.Atoi(GetSessionFromTxid(msg.Txid))
 		tempVal := txContext.TXSimulator.PreGetState(namespaceID, getState.Key, session)
 		if tempVal == nil {
+			// choose dbVal
 			payload = resp
 			txContext.TXSimulator.UpdateReadSet(namespaceID, getState.Key, dbVal.Txid)
 		} else {
-			tempSession := GetSessionFromTxid(tempVal.Txid)
-			// tempSeq := GetSeqFromTxid(tempVal.Txid)
-			dbSession := GetSessionFromTxid(dbVal.Txid)
-			// if (tempSession == dbSession) && (strconv.Atoi(tempSeq)+1 == seq) {
-			if true || (tempSession == dbSession) {
-				// TODO: cascading abort
-				// choose tempVal
-				payload = tempVal.Val
-				txContext.TXSimulator.UpdateReadSet(namespaceID, getState.Key, tempVal.Txid)
-			} else {
-				// some transaction commit during session `lastTxid[1]`
-				// we choose dbVal
-				payload = dbVal.Val
-				// txContext.TXSimulator.UpdateReadSet(namespaceID, getState.Key, dbVal.txid)
-			}
+			// choose tempVal
+			payload = tempVal.Val
+			txContext.TXSimulator.UpdateReadSetWithValue(namespaceID, getState.Key, tempVal.Txid, tempVal.Val)
 		}
 		// optimistic code end
 	}

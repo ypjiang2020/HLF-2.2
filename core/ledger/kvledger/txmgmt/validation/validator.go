@@ -10,12 +10,12 @@ package validation
 
 import (
 	"encoding/json"
-	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
-	"github.com/Yunpeng-J/fabric-protos-go/peer"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/internal/version"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/privacyenabledstate"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/rwsetutil"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/statedb"
+	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
+	"github.com/Yunpeng-J/fabric-protos-go/peer"
 	"log"
 )
 
@@ -51,8 +51,8 @@ func (v *validator) preLoadCommittedVersionOfRSet(blk *block) error {
 	hashedKeysMap := make(map[privacyenabledstate.HashedCompositeKey]interface{})
 
 	for _, tx := range blk.txs {
-		for _, nsRWSet := range tx.rwset.NsRwSets {
-			for _, kvRead := range nsRWSet.KvRwSet.Reads {
+		for _, nsRWSet := range tx.rwdset.NsRwdSets {
+			for _, kvRead := range nsRWSet.KvRwdSet.Reads {
 				compositeKey := statedb.CompositeKey{
 					Namespace: nsRWSet.NameSpace,
 					Key:       kvRead.Key,
@@ -106,7 +106,7 @@ func (v *validator) validateAndPrepareBatch(blk *block, doMVCCValidation bool) (
 	for _, tx := range blk.txs {
 		var validationCode peer.TxValidationCode
 		var err error
-		if validationCode, err = v.validateEndorserTX(tx.rwset, doMVCCValidation, updates); err != nil {
+		if validationCode, err = v.validateEndorserTX(tx.rwdset, doMVCCValidation, updates); err != nil {
 			return nil, err
 		}
 
@@ -114,7 +114,7 @@ func (v *validator) validateAndPrepareBatch(blk *block, doMVCCValidation bool) (
 		if validationCode == peer.TxValidationCode_VALID {
 			logger.Debugf("Block [%d] Transaction index [%d] TxId [%s] marked as valid by state validator. ContainsPostOrderWrites [%t]", blk.num, tx.indexInBlock, tx.id, tx.containsPostOrderWrites)
 			committingTxHeight := version.NewHeight(blk.num, uint64(tx.indexInBlock))
-			if err := updates.applyWriteSet(tx.rwset, committingTxHeight, v.db, tx.containsPostOrderWrites); err != nil {
+			if err := updates.applyWriteSetAndDeltaSet(tx.rwdset, committingTxHeight, v.db, tx.containsPostOrderWrites); err != nil { // optimistic code
 				return nil, err
 			}
 		} else {
@@ -127,7 +127,7 @@ func (v *validator) validateAndPrepareBatch(blk *block, doMVCCValidation bool) (
 
 // validateEndorserTX validates endorser transaction
 func (v *validator) validateEndorserTX(
-	txRWSet *rwsetutil.TxRwSet,
+	txRWDSet *rwsetutil.TxRwdSet,
 	doMVCCValidation bool,
 	updates *publicAndHashUpdates) (peer.TxValidationCode, error) {
 
@@ -135,32 +135,32 @@ func (v *validator) validateEndorserTX(
 	var err error
 	//mvcc validation, may invalidate transaction
 	if doMVCCValidation {
-		validationCode, err = v.validateTx(txRWSet, updates)
+		validationCode, err = v.validateTx(txRWDSet, updates)
 	}
 	return validationCode, err
 }
 
-func (v *validator) validateTx(txRWSet *rwsetutil.TxRwSet, updates *publicAndHashUpdates) (peer.TxValidationCode, error) {
+func (v *validator) validateTx(txRWDSet *rwsetutil.TxRwdSet, updates *publicAndHashUpdates) (peer.TxValidationCode, error) {
 	// Uncomment the following only for local debugging. Don't want to print data in the logs in production
 	//logger.Debugf("validateTx - validating txRWSet: %s", spew.Sdump(txRWSet))
-	for _, nsRWSet := range txRWSet.NsRwSets {
-		ns := nsRWSet.NameSpace
+	for _, nsRWDSet := range txRWDSet.NsRwdSets {
+		ns := nsRWDSet.NameSpace
 		// Validate public reads
-		if valid, err := v.validateReadSet(ns, nsRWSet.KvRwSet.Reads, updates.publicUpdates); !valid || err != nil {
+		if valid, err := v.validateReadSet(ns, nsRWDSet.KvRwdSet.Reads, updates.publicUpdates); !valid || err != nil {
 			if err != nil {
 				return peer.TxValidationCode(-1), err
 			}
 			return peer.TxValidationCode_MVCC_READ_CONFLICT, nil
 		}
 		// Validate range queries for phantom items
-		if valid, err := v.validateRangeQueries(ns, nsRWSet.KvRwSet.RangeQueriesInfo, updates.publicUpdates); !valid || err != nil {
+		if valid, err := v.validateRangeQueries(ns, nsRWDSet.KvRwdSet.RangeQueriesInfo, updates.publicUpdates); !valid || err != nil {
 			if err != nil {
 				return peer.TxValidationCode(-1), err
 			}
 			return peer.TxValidationCode_PHANTOM_READ_CONFLICT, nil
 		}
 		// Validate hashes for private reads
-		if valid, err := v.validateNsHashedReadSets(ns, nsRWSet.CollHashedRwSets, updates.hashUpdates); !valid || err != nil {
+		if valid, err := v.validateNsHashedReadSets(ns, nsRWDSet.CollHashedRwSets, updates.hashUpdates); !valid || err != nil {
 			if err != nil {
 				return peer.TxValidationCode(-1), err
 			}

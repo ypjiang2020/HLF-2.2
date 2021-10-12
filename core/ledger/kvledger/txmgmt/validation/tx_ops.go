@@ -7,18 +7,18 @@ SPDX-License-Identifier: Apache-2.0
 package validation
 
 import (
-	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/internal/version"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/privacyenabledstate"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/rwsetutil"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/statedb"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/statemetadata"
+	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
 )
 
-func prepareTxOps(rwset *rwsetutil.TxRwSet, txht *version.Height,
+func prepareTxOps(rwdset *rwsetutil.TxRwdSet, txht *version.Height,
 	precedingUpdates *publicAndHashUpdates, db *privacyenabledstate.DB) (txOps, error) {
 	txops := txOps{}
-	if err := txops.applyTxRwset(rwset); err != nil {
+	if err := txops.applyTxRwset(rwdset); err != nil {
 		return nil, err
 	}
 	for ck, keyop := range txops {
@@ -56,13 +56,13 @@ func prepareTxOps(rwset *rwsetutil.TxRwSet, txht *version.Height,
 
 // applyTxRwset records the upsertion/deletion of a kv and updatation/deletion
 // of associated metadata present in a txrwset
-func (txops txOps) applyTxRwset(rwset *rwsetutil.TxRwSet) error {
-	for _, nsRWSet := range rwset.NsRwSets {
+func (txops txOps) applyTxRwset(rwdset *rwsetutil.TxRwdSet) error {
+	for _, nsRWSet := range rwdset.NsRwdSets {
 		ns := nsRWSet.NameSpace
-		for _, kvWrite := range nsRWSet.KvRwSet.Writes {
+		for _, kvWrite := range nsRWSet.KvRwdSet.Writes {
 			txops.applyKVWrite(ns, "", kvWrite)
 		}
-		for _, kvMetadataWrite := range nsRWSet.KvRwSet.MetadataWrites {
+		for _, kvMetadataWrite := range nsRWSet.KvRwdSet.MetadataWrites {
 			if err := txops.applyMetadata(ns, "", kvMetadataWrite); err != nil {
 				return err
 			}
