@@ -20,13 +20,14 @@ package rwsetutil
 
 import (
 	"encoding/json"
+	"log"
+
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/internal/version"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/util"
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset"
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
-	"log"
 )
 
 var logger = flogging.MustGetLogger("rwsetutil")
@@ -279,7 +280,7 @@ func (b *nsPubRwBuilder) build() *NsRwSet {
 // optimistic code begin
 func CalculateDeltaFromRWset(readSet []*kvrwset.KVRead, writeSet []*kvrwset.KVWrite) (delta []*kvrwset.KVDelta, rs []*kvrwset.KVRead, ws []*kvrwset.KVWrite) {
 	// process read set
-	initial_map := make(map[string]interface{})
+	initial_map := make(map[string]map[string]interface{})
 	for _, rs := range readSet {
 		var payload []byte
 		var verval ledger.VersionedValue
@@ -294,7 +295,10 @@ func CalculateDeltaFromRWset(readSet []*kvrwset.KVRead, writeSet []*kvrwset.KVWr
 		var obj interface{}
 		err = json.Unmarshal(payload, &obj)
 		if err != nil {
-			log.Fatalln("optimistic code CalculateDeltaFromWRset", err)
+			// value = nil; createAccount
+			log.Printf("Fatal optimistic code CalculateDeltaFromWRset 1 buf=%v err=%v", payload, err)
+			initial_map[rs.Key] = nil
+			continue
 		}
 		t_obj, _ := obj.(map[string]interface{})
 		initial_map[rs.Key] = t_obj
@@ -302,6 +306,9 @@ func CalculateDeltaFromRWset(readSet []*kvrwset.KVRead, writeSet []*kvrwset.KVWr
 
 	// process write set
 	for _, ws := range writeSet {
+		if initial_map[ws.Key] == nil {
+			continue
+		}
 		var payload []byte
 		var verval ledger.VersionedValue
 		err := json.Unmarshal(ws.Value, &verval)
@@ -315,7 +322,8 @@ func CalculateDeltaFromRWset(readSet []*kvrwset.KVRead, writeSet []*kvrwset.KVWr
 		var obj interface{}
 		err = json.Unmarshal(payload, &obj)
 		if err != nil {
-			log.Fatalln("optimistic code CalculateDeltaFromWRset", err)
+			log.Printf("FATAL optimistic code CalculateDeltaFromWRset 2 buf=%v err=%v", payload, err)
+			continue
 		}
 		t_obj, _ := obj.(map[string]interface{})
 		// TODO: use static analysis results to guarantee safety
@@ -324,13 +332,13 @@ func CalculateDeltaFromRWset(readSet []*kvrwset.KVRead, writeSet []*kvrwset.KVWr
 		for k, v := range t_obj {
 			switch vv := v.(type) {
 			case int:
-				tempDelta := vv - initial_map[k].(int)
+				tempDelta := vv - initial_map[ws.Key][k].(int)
 				if tempDelta > 0 {
 					flag = true
 					t_obj[k] = tempDelta
 				}
 			case float64:
-				tempDelta := vv - initial_map[k].(float64)
+				tempDelta := vv - initial_map[ws.Key][k].(float64)
 				if tempDelta > 0 {
 					flag = true
 					t_obj[k] = tempDelta
@@ -340,14 +348,14 @@ func CalculateDeltaFromRWset(readSet []*kvrwset.KVRead, writeSet []*kvrwset.KVWr
 			}
 		}
 		if flag {
-			log.Printf("optimisitc code build delta txid=%s, key=%s, val=%v",ws.Key, verval.Txid, t_obj)
+			log.Printf("optimisitc code build delta txid=%s, key=%s, val=%v", ws.Key, verval.Txid, t_obj)
 			bs, err := json.Marshal(t_obj)
 			if err != nil {
 				log.Fatalln("optimistic code marshal delta", err)
 			}
 			dt := &kvrwset.KVDelta{
-				Key: ws.Key,
-				Txid: verval.Txid,
+				Key:   ws.Key,
+				Txid:  verval.Txid,
 				Value: bs,
 			}
 			delta = append(delta, dt)
@@ -411,17 +419,34 @@ func (b *nsPubRwBuilder) buildDelta() *NsRwdSet {
 	for _, collBuilder := range sortedCollBuilders {
 		collHashedRwSet = append(collHashedRwSet, collBuilder.build())
 	}
-	deltaSet, readSet, writeSet := CalculateDeltaFromRWset(readSet, writeSet)
-	return &NsRwdSet{
-		NameSpace: b.namespace,
-		KvRwdSet: &kvrwset.KVRWDSet{
-			Reads:            readSet,
-			Writes:           writeSet,
-			Deltas:           deltaSet,
-			MetadataWrites:   metadataWriteSet,
-			RangeQueriesInfo: rangeQueriesInfo,
-		},
-		CollHashedRwSets: collHashedRwSet,
+
+	if b.namespace == "" || b.namespace == "_lifecycle" || b.namespace == "lscc" {
+		return &NsRwdSet{
+			NameSpace: b.namespace,
+			KvRwdSet: &kvrwset.KVRWDSet{
+				Reads:            readSet,
+				Writes:           writeSet,
+				Deltas:           nil,
+				MetadataWrites:   metadataWriteSet,
+				RangeQueriesInfo: rangeQueriesInfo,
+			},
+			CollHashedRwSets: collHashedRwSet,
+		}
+
+	} else {
+		log.Printf("build delta set for namespace %s", b.namespace)
+		deltaSet, readSet, writeSet := CalculateDeltaFromRWset(readSet, writeSet)
+		return &NsRwdSet{
+			NameSpace: b.namespace,
+			KvRwdSet: &kvrwset.KVRWDSet{
+				Reads:            readSet,
+				Writes:           writeSet,
+				Deltas:           deltaSet,
+				MetadataWrites:   metadataWriteSet,
+				RangeQueriesInfo: rangeQueriesInfo,
+			},
+			CollHashedRwSets: collHashedRwSet,
+		}
 	}
 }
 

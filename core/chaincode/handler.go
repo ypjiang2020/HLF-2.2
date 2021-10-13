@@ -673,7 +673,11 @@ func (h *Handler) HandleGetState(msg *pb.ChaincodeMessage, txContext *Transactio
 		} else {
 			// choose tempVal
 			payload = tempVal.Val
-			txContext.TXSimulator.UpdateReadSetWithValue(namespaceID, getState.Key, tempVal.Txid, tempVal.Val)
+			bs, err := json.Marshal(tempVal)
+			if err != nil {
+				log.Fatalf("jyp debug tag=0x234", err)
+			}
+			txContext.TXSimulator.UpdateReadSetWithValue(namespaceID, getState.Key, tempVal.Txid, bs)
 		}
 		// optimistic code end
 	}

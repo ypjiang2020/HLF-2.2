@@ -10,8 +10,9 @@ package validation
 
 import (
 	"encoding/json"
-	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
 	"log"
+
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/internal/version"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/privacyenabledstate"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/rwsetutil"
@@ -30,7 +31,7 @@ type block struct {
 type transaction struct {
 	indexInBlock            int
 	id                      string
-	rwdset                   *rwsetutil.TxRwdSet // optimistic code
+	rwdset                  *rwsetutil.TxRwdSet // optimistic code
 	validationCode          peer.TxValidationCode
 	containsPostOrderWrites bool
 }
@@ -172,12 +173,11 @@ func (u *publicAndHashUpdates) applyWriteSetAndDeltaSet(
 			}
 			var delta_obj interface{}
 			var db_obj interface{}
-			err = json.Unmarshal(payload, &db_obj)
+			err = json.Unmarshal(verval.Val, &db_obj)
 			if err != nil {
 				log.Fatalf("unmarshal versionedvalue error: %v", err)
 			}
 			err = json.Unmarshal(kvDelta.Value, &delta_obj)
-			err = json.Unmarshal(payload, &db_obj)
 			if err != nil {
 				log.Fatalf("unmarshal versionedvalue error: %v", err)
 			}
@@ -211,4 +211,5 @@ func (u *publicAndHashUpdates) applyWriteSetAndDeltaSet(
 	}
 	return nil
 }
+
 // optimistic code end

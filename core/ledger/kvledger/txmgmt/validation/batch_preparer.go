@@ -9,9 +9,6 @@ package validation
 import (
 	"bytes"
 
-	"github.com/Yunpeng-J/fabric-protos-go/common"
-	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset"
-	"github.com/Yunpeng-J/fabric-protos-go/peer"
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/internal/version"
@@ -21,6 +18,9 @@ import (
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/util"
 	"github.com/Yunpeng-J/HLF-2.2/internal/pkg/txflags"
 	"github.com/Yunpeng-J/HLF-2.2/protoutil"
+	"github.com/Yunpeng-J/fabric-protos-go/common"
+	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset"
+	"github.com/Yunpeng-J/fabric-protos-go/peer"
 	"github.com/pkg/errors"
 )
 
@@ -222,7 +222,7 @@ func preprocessProtoBlock(postOrderSimulatorProvider PostOrderSimulatorProvider,
 			return nil, nil, err
 		}
 
-		var txRWSet *rwsetutil.TxRwSet
+		var txRWDSet *rwsetutil.TxRwdSet
 		var containsPostOrderWrites bool
 		txType := common.HeaderType(chdr.Type)
 		logger.Debugf("txType=%s", txType)
@@ -235,13 +235,13 @@ func preprocessProtoBlock(postOrderSimulatorProvider PostOrderSimulatorProvider,
 				continue
 			}
 			txStatInfo.ChaincodeID = respPayload.ChaincodeId
-			txRWSet = &rwsetutil.TxRwSet{}
-			if err = txRWSet.FromProtoBytes(respPayload.Results); err != nil {
+			txRWDSet = &rwsetutil.TxRwdSet{}
+			if err = txRWDSet.FromProtoBytes(respPayload.Results); err != nil {
 				txsFilter.SetFlag(txIndex, peer.TxValidationCode_INVALID_OTHER_REASON)
 				continue
 			}
 		} else {
-			rwsetProto, err := processNonEndorserTx(
+			rwdsetProto, err := processNonEndorserTx(
 				env,
 				chdr.TxId,
 				txType,
@@ -256,16 +256,16 @@ func preprocessProtoBlock(postOrderSimulatorProvider PostOrderSimulatorProvider,
 			if err != nil {
 				return nil, nil, err
 			}
-			if rwsetProto != nil {
-				if txRWSet, err = rwsetutil.TxRwSetFromProtoMsg(rwsetProto); err != nil {
+			if rwdsetProto != nil {
+				if txRWDSet, err = rwsetutil.TxRwdSetFromProtoMsg(rwdsetProto); err != nil {
 					return nil, nil, err
 				}
 			}
 			containsPostOrderWrites = true
 		}
-		if txRWSet != nil {
-			txStatInfo.NumCollections = txRWSet.NumCollections()
-			if err := validateWriteset(txRWSet, validateKVFunc); err != nil {
+		if txRWDSet != nil {
+			txStatInfo.NumCollections = txRWDSet.NumCollections()
+			if err := validateWriteset(txRWDSet, validateKVFunc); err != nil {
 				logger.Warningf("Channel [%s]: Block [%d] Transaction index [%d] TxId [%s]"+
 					" marked as invalid. Reason code [%s]",
 					chdr.GetChannelId(), blk.Header.Number, txIndex, chdr.GetTxId(), peer.TxValidationCode_INVALID_WRITESET)
@@ -275,7 +275,7 @@ func preprocessProtoBlock(postOrderSimulatorProvider PostOrderSimulatorProvider,
 			b.txs = append(b.txs, &transaction{
 				indexInBlock:            txIndex,
 				id:                      chdr.TxId,
-				rwset:                   txRWSet,
+				rwdset:                  txRWDSet,
 				containsPostOrderWrites: containsPostOrderWrites,
 			})
 		}
@@ -290,7 +290,7 @@ func processNonEndorserTx(
 	postOrderSimulatorProvider PostOrderSimulatorProvider,
 	synchingState bool,
 	customTxProcessors map[common.HeaderType]ledger.CustomTxProcessor,
-) (*rwset.TxReadWriteSet, error) {
+) (*rwset.TxReadWriteDeltaSet, error) {
 	logger.Debugf("Performing custom processing for transaction [txid=%s], [txType=%s]", txid, txType)
 	processor := customTxProcessors[txType]
 	logger.Debugf("Processor for custom tx processing:%#v", processor)
@@ -314,9 +314,9 @@ func processNonEndorserTx(
 	return simRes.PubSimulationResults, nil
 }
 
-func validateWriteset(txRWSet *rwsetutil.TxRwSet, validateKVFunc func(key string, value []byte) error) error {
-	for _, nsRwSet := range txRWSet.NsRwSets {
-		pubWriteset := nsRwSet.KvRwSet
+func validateWriteset(txRWDSet *rwsetutil.TxRwdSet, validateKVFunc func(key string, value []byte) error) error {
+	for _, nsRwSet := range txRWDSet.NsRwdSets {
+		pubWriteset := nsRwSet.KvRwdSet
 		if pubWriteset == nil {
 			continue
 		}

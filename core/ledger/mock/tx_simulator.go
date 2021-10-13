@@ -417,6 +417,14 @@ type TxSimulator struct {
 		arg2 string
 		arg3 string
 	}
+	UpdateReadSetWithValueStub        func(string, string, string, []byte)
+	updateReadSetWithValueMutex       sync.RWMutex
+	updateReadSetWithValueArgsForCall []struct {
+		arg1 string
+		arg2 string
+		arg3 string
+		arg4 []byte
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
@@ -2368,6 +2376,46 @@ func (fake *TxSimulator) UpdateReadSetArgsForCall(i int) (string, string, string
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
+func (fake *TxSimulator) UpdateReadSetWithValue(arg1 string, arg2 string, arg3 string, arg4 []byte) {
+	var arg4Copy []byte
+	if arg4 != nil {
+		arg4Copy = make([]byte, len(arg4))
+		copy(arg4Copy, arg4)
+	}
+	fake.updateReadSetWithValueMutex.Lock()
+	fake.updateReadSetWithValueArgsForCall = append(fake.updateReadSetWithValueArgsForCall, struct {
+		arg1 string
+		arg2 string
+		arg3 string
+		arg4 []byte
+	}{arg1, arg2, arg3, arg4Copy})
+	stub := fake.UpdateReadSetWithValueStub
+	fake.recordInvocation("UpdateReadSetWithValue", []interface{}{arg1, arg2, arg3, arg4Copy})
+	fake.updateReadSetWithValueMutex.Unlock()
+	if stub != nil {
+		fake.UpdateReadSetWithValueStub(arg1, arg2, arg3, arg4)
+	}
+}
+
+func (fake *TxSimulator) UpdateReadSetWithValueCallCount() int {
+	fake.updateReadSetWithValueMutex.RLock()
+	defer fake.updateReadSetWithValueMutex.RUnlock()
+	return len(fake.updateReadSetWithValueArgsForCall)
+}
+
+func (fake *TxSimulator) UpdateReadSetWithValueCalls(stub func(string, string, string, []byte)) {
+	fake.updateReadSetWithValueMutex.Lock()
+	defer fake.updateReadSetWithValueMutex.Unlock()
+	fake.UpdateReadSetWithValueStub = stub
+}
+
+func (fake *TxSimulator) UpdateReadSetWithValueArgsForCall(i int) (string, string, string, []byte) {
+	fake.updateReadSetWithValueMutex.RLock()
+	defer fake.updateReadSetWithValueMutex.RUnlock()
+	argsForCall := fake.updateReadSetWithValueArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
+}
+
 func (fake *TxSimulator) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
@@ -2435,6 +2483,8 @@ func (fake *TxSimulator) Invocations() map[string][][]interface{} {
 	defer fake.setStateMultipleKeysMutex.RUnlock()
 	fake.updateReadSetMutex.RLock()
 	defer fake.updateReadSetMutex.RUnlock()
+	fake.updateReadSetWithValueMutex.RLock()
+	defer fake.updateReadSetWithValueMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value
