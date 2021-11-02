@@ -6,6 +6,7 @@ import (
 	"log"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
 )
@@ -172,15 +173,25 @@ func (tdb *TempDB) Commit(txid string) {
 // Prune: delete all obsolete keys
 func (tdb *TempDB) Prune(ks map[string]string) {
 	// TODO: optimization
+	st := time.Now()
+	defer func(last int64) {
+		log.Printf("benchmark prune tempdb with %d keys in us\n", len(ks), last)
+	}(time.Since(st).Nanoseconds())
 	tdb.mutex.Lock()
 	defer tdb.mutex.Unlock()
 	for k, s := range ks {
-		if _, ok := tdb.Sessions[s]; !ok {
-			// from other sessions
-			for _, sdb := range tdb.Sessions {
-				sdb.Delete(k)
+		for sname, sdb := range tdb.Sessions {
+			if sname == s {
+				continue
 			}
+			sdb.Delete(k)
 		}
+		// if _, ok := tdb.Sessions[s]; !ok {
+		// 	// from other sessions
+		// 	for _, sdb := range tdb.Sessions {
+		// 		sdb.Delete(k)
+		// 	}
+		// }
 	}
 }
 

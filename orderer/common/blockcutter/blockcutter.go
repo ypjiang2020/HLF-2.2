@@ -7,11 +7,14 @@ SPDX-License-Identifier: Apache-2.0
 package blockcutter
 
 import (
+	"log"
 	"time"
 
-	cb "github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/Yunpeng-J/HLF-2.2/common/channelconfig"
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
+	"github.com/Yunpeng-J/HLF-2.2/orderer/common/blockcutter/scheduler"
+	cb "github.com/Yunpeng-J/fabric-protos-go/common"
+	utils "github.com/Yunpeng-J/HLF-2.2/protoutil"
 )
 
 var logger = flogging.MustGetLogger("orderer.common.blockcutter")
@@ -39,6 +42,8 @@ type receiver struct {
 	PendingBatchStartTime time.Time
 	ChannelID             string
 	Metrics               *Metrics
+
+	scheduler *scheduler.Scheduler
 }
 
 // NewReceiverImpl creates a Receiver implementation based on the given configtxorderer manager
@@ -47,8 +52,20 @@ func NewReceiverImpl(channelID string, sharedConfigFetcher OrdererConfigFetcher,
 		sharedConfigFetcher: sharedConfigFetcher,
 		Metrics:             metrics,
 		ChannelID:           channelID,
+		scheduler: scheduler.NewScheduler(),
 	}
 }
+
+// optimistic code begin
+// ScheduleMsg
+func (r *receiver) ScheduleMsg(msg *cb.Envelope) {
+	payload, err := utils.UnmarshalPayload(msg.GetPayload())
+	if err != nil {
+		panic("Can not get payload from the txn envelop: %v", err)
+	}
+	r.pendingBatch = append(r.pendingBatch, msg)
+}
+// optimistic code end
 
 // Ordered should be invoked sequentially as messages are ordered
 //
@@ -109,7 +126,7 @@ func (r *receiver) Ordered(msg *cb.Envelope) (messageBatches [][]*cb.Envelope, p
 	}
 
 	logger.Debugf("Enqueuing message into batch")
-	r.pendingBatch = append(r.pendingBatch, msg)
+	r.ScheduleMsg(msg) // optimistic code
 	r.pendingBatchSizeBytes += messageSizeBytes
 	pending = true
 
