@@ -7,14 +7,14 @@ SPDX-License-Identifier: Apache-2.0
 package blockcutter
 
 import (
-	"log"
 	"time"
 
 	"github.com/Yunpeng-J/HLF-2.2/common/channelconfig"
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
 	"github.com/Yunpeng-J/HLF-2.2/orderer/common/blockcutter/scheduler"
-	cb "github.com/Yunpeng-J/fabric-protos-go/common"
 	utils "github.com/Yunpeng-J/HLF-2.2/protoutil"
+	cb "github.com/Yunpeng-J/fabric-protos-go/common"
+	"github.com/Yunpeng-J/fabric-protos-go/peer"
 )
 
 var logger = flogging.MustGetLogger("orderer.common.blockcutter")
@@ -35,15 +35,19 @@ type Receiver interface {
 }
 
 type receiver struct {
-	sharedConfigFetcher   OrdererConfigFetcher
-	pendingBatch          []*cb.Envelope
+	sharedConfigFetcher OrdererConfigFetcher
+	// optimistic code begin
+	// pendingBatch []*cb.Envelope
+	pendingBatch           map[string]*cb.Envelope
+	pendingBatchNonEndorse []*cb.Envelope
+	scheduler *scheduler.Scheduler
+	// optimistic code end
 	pendingBatchSizeBytes uint32
 
 	PendingBatchStartTime time.Time
 	ChannelID             string
 	Metrics               *Metrics
 
-	scheduler *scheduler.Scheduler
 }
 
 // NewReceiverImpl creates a Receiver implementation based on the given configtxorderer manager
@@ -52,19 +56,39 @@ func NewReceiverImpl(channelID string, sharedConfigFetcher OrdererConfigFetcher,
 		sharedConfigFetcher: sharedConfigFetcher,
 		Metrics:             metrics,
 		ChannelID:           channelID,
-		scheduler: scheduler.NewScheduler(),
+		pendingBatchNonEndorse: make([]*cb.Envelope, 0),
+		pendingBatch: make(map[string]*cb.Envelope),
+		pendingBatchSizeBytes: 0,
+		scheduler:           scheduler.NewScheduler(),
 	}
 }
 
 // optimistic code begin
 // ScheduleMsg
-func (r *receiver) ScheduleMsg(msg *cb.Envelope) {
+func (r *receiver) ScheduleMsg(msg *cb.Envelope) bool {
 	payload, err := utils.UnmarshalPayload(msg.GetPayload())
 	if err != nil {
-		panic("Can not get payload from the txn envelop: %v", err)
+		panic("Can not get payload from the txn envelop: ")
 	}
-	r.pendingBatch = append(r.pendingBatch, msg)
+	chdr, err := utils.UnmarshalChannelHeader(payload.Header.ChannelHeader)
+	if err != nil {
+		panic("Can not mershal channel header from the txn payload")
+	}
+	if cb.HeaderType(chdr.Type) != cb.HeaderType_ENDORSER_TRANSACTION {
+		r.pendingBatchNonEndorse = append(r.pendingBatchNonEndorse, msg)
+		logger.Infof("Put ahead non-endorsement txn %s\n\n", chdr.TxId[0:8])
+		return true
+	} else {
+		var respPayload *peer.ChaincodeAction
+		if respPayload, err = utils.GetActionFromEnvelopeMsg(msg); err != nil {
+			panic("Fail to get action from the txn envelop")
+		}
+		r.scheduler.Schedule(respPayload, chdr.TxId[0:16])
+		r.pendingBatch[chdr.TxId[0:16]] = msg
+		return true
+	}
 }
+
 // optimistic code end
 
 // Ordered should be invoked sequentially as messages are ordered
@@ -146,8 +170,18 @@ func (r *receiver) Cut() []*cb.Envelope {
 		r.Metrics.BlockFillDuration.With("channel", r.ChannelID).Observe(time.Since(r.PendingBatchStartTime).Seconds())
 	}
 	r.PendingBatchStartTime = time.Time{}
-	batch := r.pendingBatch
-	r.pendingBatch = nil
+	// optimistic code begin
+	// batch := r.pendingBatch
+	batch := make([]*cb.Envelope, 0)
+	batch = append(batch, r.pendingBatchNonEndorse...)
+	r.pendingBatchNonEndorse = make([]*cb.Envelope, 0)
+	schedule := r.scheduler.ProcessBlk()
+	for _, txId := range schedule {
+		batch = append(batch, r.pendingBatch[txId])
+	}
+	// r.pendingBatch = nil
+	r.pendingBatch = make(map[string]*cb.Envelope)
+	// optimistic code end
 	r.pendingBatchSizeBytes = 0
 	return batch
 }
