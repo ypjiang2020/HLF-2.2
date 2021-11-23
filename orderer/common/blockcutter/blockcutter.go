@@ -8,6 +8,7 @@ package blockcutter
 
 import (
 	"time"
+	"log"
 
 	"github.com/Yunpeng-J/HLF-2.2/common/channelconfig"
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
@@ -175,14 +176,20 @@ func (r *receiver) Cut() []*cb.Envelope {
 	batch := make([]*cb.Envelope, 0)
 	batch = append(batch, r.pendingBatchNonEndorse...)
 	r.pendingBatchNonEndorse = make([]*cb.Envelope, 0)
-	schedule := r.scheduler.ProcessBlk()
+	schedule, invalid := r.scheduler.ProcessBlk()
 	for _, txId := range schedule {
 		batch = append(batch, r.pendingBatch[txId])
 	}
+	// debug
+	log.Printf("length of invalid transactions %d, should be 0 in benign case\n", len(invalid))
+	for _, txid := range invalid {
+		log.Printf("invalid transactions %s\n", txid)
+	}
+
 	// r.pendingBatch = nil
+	r.pendingBatchSizeBytes = 0
 	r.pendingBatch = make(map[string]*cb.Envelope)
 	// optimistic code end
-	r.pendingBatchSizeBytes = 0
 	return batch
 }
 
