@@ -84,9 +84,12 @@ func (r *receiver) ScheduleMsg(msg *cb.Envelope) bool {
 		if respPayload, err = utils.GetActionFromEnvelopeMsg(msg); err != nil {
 			panic("Fail to get action from the txn envelop")
 		}
-		r.scheduler.Schedule(respPayload, chdr.TxId[0:16])
-		r.pendingBatch[chdr.TxId[0:16]] = msg
-		return true
+		if r.scheduler.Schedule(respPayload, chdr.TxId[0:16]) {
+			r.pendingBatch[chdr.TxId[0:16]] = msg
+			return true
+		} else {
+			return false
+		}
 	}
 }
 
