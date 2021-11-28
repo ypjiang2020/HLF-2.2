@@ -160,7 +160,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 		}
 		if pq, ok := scheduler.sessionFutureTxs[sessionName]; ok {
 			for pq.Len() > 0 && pq[0].seq == txs[len(txs)-1].seq+1 {
-				txs = append(txs, pq.Pop().(*TxNode))
+				txs = append(txs, heap.Pop(&pq).(*TxNode))
 			}
 		}
 		// reverse
@@ -228,8 +228,10 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 
 	// build dependency graph
 	graph := make([][]int32, numOfNodes)
+	invgraph := make([][]int32, numOfNodes)
 	for i := int32(0); i < numOfNodes; i++ {
 		graph[i] = make([]int32, numOfNodes)
+		invgraph[i] = make([]int32, numOfNodes)
 	}
 	for i := int32(0); i < numOfNodes; i++ {
 		for j := int32(0); j < numOfNodes; j++ {
@@ -239,10 +241,12 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 			for k := uint32(0); k < (maxUniqueKeys / 64); k++ {
 				if allNodes[i].writeSet[k]&allNodes[j].readSet[k] != 0 {
 					graph[i] = append(graph[i], j)
+					invgraph[j] = append(graph[j], i)
 					break
 				}
 				if allNodes[i].deltaSet[k]&allNodes[j].readSet[k] != 0 {
 					graph[i] = append(graph[i], j)
+					invgraph[j] = append(graph[j], i)
 					break
 				}
 			}
@@ -250,8 +254,59 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 	}
 
 	// schedule
+	schedule, invSet := scheduler.getSchedule(&graph, &invgraph)
+	nodeLen := len(schedule)
+
+	for i := 0; i < nodeLen; i += 1 {
+		for _, txid := range allNodes[schedule[nodeLen - 1 - i]].txids {
+			result = append(result, txid)
+		}
+	}
+	for i := int32(0); i < numOfNodes; i += 1 {
+		if invSet[i] == true {
+			for _, txid := range allNodes[i].txids {
+				invalidTxns = append(invalidTxns, txid)
+			}
+		}
+	}
 
 	return result, invalidTxns
+}
+
+func (scheduler *Scheduler) getSchedule(graph *[][]int32, invgraph *[][]int32) ([]int32, []bool) {
+	dagGenerator := NewJohnsonCE(graph)
+	invCount, invSet := dagGenerator.Run()
+	n := int32(len(*graph))
+	visited := make([]bool, n)
+	schedule := make([]int32, 0, n-invCount)
+	remainintNode := n - invCount
+	cur := int32(0)
+	for remainintNode != 0 {
+		flag := true
+		if visited[cur] || invSet[cur] {
+			cur = (cur + 1) % n
+			continue
+		}
+		for _, in := range (*invgraph)[cur] {
+			if (visited[in] || invSet[in]) == false {
+				cur = in
+				flag = false
+				break
+			}
+		}
+		if flag {
+			visited[cur] = true
+			remainintNode -= 1
+			schedule = append(schedule, cur)
+			for _, next := range (*graph)[cur] {
+				if (visited[next] || invSet[next]) == false {
+					cur = next
+					break
+				}
+			}
+		}
+	}
+	return schedule, invSet
 }
 
 func (scheduler *Scheduler) checkDependency(i int32) bool {
