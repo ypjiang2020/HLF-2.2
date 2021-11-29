@@ -4,7 +4,7 @@ type Node struct {
 	index int32
 	txids []string // TODO: optimize by using bitset
 	// weight = len(txids)
-	readSet []uint64
+	readSet  []uint64
 	writeSet []uint64
 	deltaSet []uint64
 }

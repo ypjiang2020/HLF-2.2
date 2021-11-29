@@ -4,14 +4,15 @@ import (
 	"container/heap"
 	"encoding/json"
 	"fmt"
-	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
-	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/rwsetutil"
-	"github.com/Yunpeng-J/fabric-protos-go/peer"
 	"log"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/rwsetutil"
+	"github.com/Yunpeng-J/fabric-protos-go/peer"
 )
 
 const maxUniqueKeys = 65563
@@ -38,8 +39,15 @@ func (scheduler *Scheduler) parseAction(action *peer.ChaincodeAction) (readSet, 
 	if err := txRWDset.FromProtoBytes(action.Results); err != nil {
 		panic("Fail to retrieve rwset from txn payload")
 	}
+	log.Println("debug v1 length rwd sets ", len(txRWDset.NsRwdSets))
 	if len(txRWDset.NsRwdSets) > 1 {
+		log.Println("debug v1 namespace of idx=0", txRWDset.NsRwdSets[0].NameSpace)
 		ns := txRWDset.NsRwdSets[1]
+		log.Println("debug v1 namespace of idx=1", ns.NameSpace)
+		if ns.NameSpace == "lscc" {
+			//
+			return nil, nil, nil, nil, true
+		}
 		for _, read := range ns.KvRwdSet.Reads {
 			readkey := read.GetKey()
 			// readver := read.GetVersion()
@@ -100,7 +108,7 @@ func (scheduler *Scheduler) parseAction(action *peer.ChaincodeAction) (readSet, 
 func (scheduler *Scheduler) Schedule(action *peer.ChaincodeAction, txId string) bool {
 	temp := strings.Split(txId, "_+=+_")
 	seq := -1
-	session := ""
+	session := "unknown"
 	var err error
 	if len(temp) == 3 {
 		seq, err = strconv.Atoi(temp[0])
@@ -110,7 +118,7 @@ func (scheduler *Scheduler) Schedule(action *peer.ChaincodeAction, txId string) 
 		session = temp[1]
 	}
 	if sessionQueue, ok := scheduler.sessionTxs[session]; ok {
-		if len(sessionQueue) == 0 || sessionQueue[len(sessionQueue)-1].seq+1 == seq {
+		if session == "unknown" || len(sessionQueue) == 0 || sessionQueue[len(sessionQueue)-1].seq+1 == seq {
 			sessionQueue = append(sessionQueue, NewTxNode(seq, txId, action))
 		} else {
 			// future transactions
@@ -120,6 +128,7 @@ func (scheduler *Scheduler) Schedule(action *peer.ChaincodeAction, txId string) 
 					heap.Push(&pq, NewTxNode(seq, txId, action))
 				} else {
 					// drop this transaction
+					log.Println("debug v1 drop transaction", txId)
 					return false
 				}
 			} else {
@@ -138,6 +147,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 	defer func(sec int64) {
 		log.Printf("ProcessBlk in %d us\n", sec)
 		// clear scheduler
+		scheduler.sessionTxs = map[string][]*TxNode{}
 
 	}(time.Since(now).Microseconds())
 
@@ -147,6 +157,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 	}
 	// sort sessionNames to guarantee determinism
 	sort.Strings(sessionNames)
+	log.Println("debug v1 session names", sessionNames)
 
 	// build node (one node may contain multiple transactions)
 	var allNodes []*Node
@@ -172,6 +183,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 			tx := txs[i]
 			rs, ws, ds, dep, ok := scheduler.parseAction(tx.action)
 			if ok == false {
+				log.Println("debug v1 parse ation return false for transaction", tx.txid)
 				continue
 			}
 			var found []int
@@ -192,6 +204,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 			}
 			if len(found) == 0 {
 				// new node
+				log.Println("debug v1 new node with txid", tx.txid)
 				node := &Node{
 					index:    -1,
 					txids:    []string{tx.txid},
@@ -202,6 +215,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 				nodes = append(nodes, node)
 			} else {
 				// merge nodes
+				log.Println("debug v1 merge nodes")
 				var node Node
 				for _, idx := range found {
 					cur := nodes[idx]
@@ -226,12 +240,13 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 		}
 	}
 
+	log.Println("debug v1 number of nodes", numOfNodes)
 	// build dependency graph
 	graph := make([][]int32, numOfNodes)
 	invgraph := make([][]int32, numOfNodes)
 	for i := int32(0); i < numOfNodes; i++ {
-		graph[i] = make([]int32, numOfNodes)
-		invgraph[i] = make([]int32, numOfNodes)
+		graph[i] = make([]int32, 0, numOfNodes)
+		invgraph[i] = make([]int32, 0, numOfNodes)
 	}
 	for i := int32(0); i < numOfNodes; i++ {
 		for j := int32(0); j < numOfNodes; j++ {
@@ -256,9 +271,11 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 	// schedule
 	schedule, invSet := scheduler.getSchedule(&graph, &invgraph)
 	nodeLen := len(schedule)
+	log.Println("debug v1 length of schedule", nodeLen)
+	log.Println("debug v1 invSet", invSet)
 
 	for i := 0; i < nodeLen; i += 1 {
-		for _, txid := range allNodes[schedule[nodeLen - 1 - i]].txids {
+		for _, txid := range allNodes[schedule[nodeLen-1-i]].txids {
 			result = append(result, txid)
 		}
 	}

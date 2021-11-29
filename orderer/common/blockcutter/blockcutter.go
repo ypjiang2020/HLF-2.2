@@ -7,8 +7,8 @@ SPDX-License-Identifier: Apache-2.0
 package blockcutter
 
 import (
-	"time"
 	"log"
+	"time"
 
 	"github.com/Yunpeng-J/HLF-2.2/common/channelconfig"
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
@@ -41,26 +41,25 @@ type receiver struct {
 	// pendingBatch []*cb.Envelope
 	pendingBatch           map[string]*cb.Envelope
 	pendingBatchNonEndorse []*cb.Envelope
-	scheduler *scheduler.Scheduler
+	scheduler              *scheduler.Scheduler
 	// optimistic code end
 	pendingBatchSizeBytes uint32
 
 	PendingBatchStartTime time.Time
 	ChannelID             string
 	Metrics               *Metrics
-
 }
 
 // NewReceiverImpl creates a Receiver implementation based on the given configtxorderer manager
 func NewReceiverImpl(channelID string, sharedConfigFetcher OrdererConfigFetcher, metrics *Metrics) Receiver {
 	return &receiver{
-		sharedConfigFetcher: sharedConfigFetcher,
-		Metrics:             metrics,
-		ChannelID:           channelID,
+		sharedConfigFetcher:    sharedConfigFetcher,
+		Metrics:                metrics,
+		ChannelID:              channelID,
 		pendingBatchNonEndorse: make([]*cb.Envelope, 0),
-		pendingBatch: make(map[string]*cb.Envelope),
-		pendingBatchSizeBytes: 0,
-		scheduler:           scheduler.NewScheduler(),
+		pendingBatch:           make(map[string]*cb.Envelope),
+		pendingBatchSizeBytes:  0,
+		scheduler:              scheduler.NewScheduler(),
 	}
 }
 
@@ -84,6 +83,7 @@ func (r *receiver) ScheduleMsg(msg *cb.Envelope) bool {
 		if respPayload, err = utils.GetActionFromEnvelopeMsg(msg); err != nil {
 			panic("Fail to get action from the txn envelop")
 		}
+
 		if r.scheduler.Schedule(respPayload, chdr.TxId[0:16]) {
 			r.pendingBatch[chdr.TxId[0:16]] = msg
 			return true

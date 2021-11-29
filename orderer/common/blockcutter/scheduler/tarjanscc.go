@@ -1,7 +1,7 @@
 package scheduler
 
 import (
-sort "sort"
+	sort "sort"
 )
 
 // var logger *logging.Logger

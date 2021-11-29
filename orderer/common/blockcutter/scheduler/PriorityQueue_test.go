@@ -3,8 +3,9 @@ package scheduler_test
 import (
 	"container/heap"
 	"fmt"
-	"github.com/Yunpeng-J/HLF-2.2/orderer/common/blockcutter/scheduler"
 	"testing"
+
+	"github.com/Yunpeng-J/HLF-2.2/orderer/common/blockcutter/scheduler"
 )
 
 func Test1(t *testing.T) {
