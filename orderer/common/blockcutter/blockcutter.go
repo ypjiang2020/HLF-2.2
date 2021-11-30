@@ -84,8 +84,8 @@ func (r *receiver) ScheduleMsg(msg *cb.Envelope) bool {
 			panic("Fail to get action from the txn envelop")
 		}
 
-		if r.scheduler.Schedule(respPayload, chdr.TxId[0:16]) {
-			r.pendingBatch[chdr.TxId[0:16]] = msg
+		if r.scheduler.Schedule(respPayload, chdr.TxId) {
+			r.pendingBatch[chdr.TxId] = msg
 			return true
 		} else {
 			return false
@@ -183,10 +183,13 @@ func (r *receiver) Cut() []*cb.Envelope {
 	for _, txId := range schedule {
 		batch = append(batch, r.pendingBatch[txId])
 	}
+	for _, txId := range invalid {
+		batch = append(batch, r.pendingBatch[txId])
+	}
 	// debug
-	log.Printf("length of invalid transactions %d, should be 0 in benign case\n", len(invalid))
+	log.Printf("debug v1 length of invalid transactions %d, should be 0 in benign case\n", len(invalid))
 	for _, txid := range invalid {
-		log.Printf("invalid transactions %s\n", txid)
+		log.Printf("debug v1 invalid transactions %s\n", txid)
 	}
 
 	// r.pendingBatch = nil

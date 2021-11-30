@@ -21,20 +21,24 @@ type Scheduler struct {
 	windowSize int
 
 	sessionTxs       map[string][]*TxNode
-	sessionFutureTxs map[string]PriorityQueue
+	sessionFutureTxs map[string]*PriorityQueue
 	uniqueKeyMap     map[string]uint64
 	uniqueKeyCounter uint64
 }
 
 func NewScheduler() *Scheduler {
 	return &Scheduler{
-		windowSize:       128,
+		windowSize:       1024,
 		sessionTxs:       map[string][]*TxNode{},
-		sessionFutureTxs: map[string]PriorityQueue{},
+		sessionFutureTxs: map[string]*PriorityQueue{},
 	}
 }
 
-func (scheduler *Scheduler) parseAction(action *peer.ChaincodeAction) (readSet, writeSet, deltaSet []uint64, depSet []string, success bool) {
+func (scheduler *Scheduler) parseAction(action *peer.ChaincodeAction) ([]uint64, []uint64, []uint64, []string, bool) {
+	readSet := make([]uint64, maxUniqueKeys/64)
+	writeSet := make([]uint64, maxUniqueKeys/64)
+	deltaSet := make([]uint64, maxUniqueKeys/64)
+	var depSet []string
 	txRWDset := &rwsetutil.TxRwdSet{}
 	if err := txRWDset.FromProtoBytes(action.Results); err != nil {
 		panic("Fail to retrieve rwset from txn payload")
@@ -55,7 +59,10 @@ func (scheduler *Scheduler) parseAction(action *peer.ChaincodeAction) (readSet, 
 			var vval ledger.VersionedValue
 			err := json.Unmarshal(valbytes, &vval)
 			if err != nil {
-				panic(fmt.Sprintf("unmarshal error when extract version from value in readset: %v", err))
+				// e.g., when read a non-exist account, this will fail.
+				// But it's an expected behavior.
+				continue
+				// panic(fmt.Sprintf("unmarshal error when extract version from value in readset: %v", err))
 			}
 			depSet = append(depSet, vval.Txid)
 			key, ok := scheduler.uniqueKeyMap[readkey]
@@ -66,6 +73,7 @@ func (scheduler *Scheduler) parseAction(action *peer.ChaincodeAction) (readSet, 
 			}
 			if key >= maxUniqueKeys {
 				// cut the block, and re-process this transaction in the next block
+				log.Println("debug v1 drop transaction because read keys are overflow")
 				return nil, nil, nil, nil, false
 			}
 			index := key / 64
@@ -80,7 +88,9 @@ func (scheduler *Scheduler) parseAction(action *peer.ChaincodeAction) (readSet, 
 				scheduler.uniqueKeyCounter += 1
 			}
 			if key >= maxUniqueKeys {
-				// cut the block, and re-process this transaction in the next block
+				// cut the block, and re-process this transaction in the next
+				// block
+				log.Println("debug v1 drop transaction because write keys are overflow")
 				return nil, nil, nil, nil, false
 			}
 			index := key / 64
@@ -96,6 +106,7 @@ func (scheduler *Scheduler) parseAction(action *peer.ChaincodeAction) (readSet, 
 			}
 			if key >= maxUniqueKeys {
 				// cut the block, and re-process this transaction in the next block
+				log.Println("debug v1 drop transaction because delta keys are overflow")
 				return nil, nil, nil, nil, false
 			}
 			index := key / 64
@@ -106,6 +117,7 @@ func (scheduler *Scheduler) parseAction(action *peer.ChaincodeAction) (readSet, 
 }
 
 func (scheduler *Scheduler) Schedule(action *peer.ChaincodeAction, txId string) bool {
+	log.Println("debug v1 unique key length", scheduler.uniqueKeyCounter)
 	temp := strings.Split(txId, "_+=+_")
 	seq := -1
 	session := "unknown"
@@ -117,28 +129,28 @@ func (scheduler *Scheduler) Schedule(action *peer.ChaincodeAction, txId string) 
 		}
 		session = temp[1]
 	}
-	if sessionQueue, ok := scheduler.sessionTxs[session]; ok {
-		if session == "unknown" || len(sessionQueue) == 0 || sessionQueue[len(sessionQueue)-1].seq+1 == seq {
-			sessionQueue = append(sessionQueue, NewTxNode(seq, txId, action))
+	if session == "unknown" {
+		scheduler.sessionTxs[session] = append(scheduler.sessionTxs[session], NewTxNode(seq, txId, action))
+		return true
+	}
+	// future transactions
+	if pq, ok := scheduler.sessionFutureTxs[session]; ok {
+		// window size
+		if pq.Len() == 0 || (*pq)[0].seq+scheduler.windowSize >= seq {
+			log.Println("debug v1 append to future session", session, seq)
+			heap.Push(pq, NewTxNode(seq, txId, action))
 		} else {
-			// future transactions
-			if pq, ok := scheduler.sessionFutureTxs[session]; ok {
-				// window size
-				if pq.Len() == 0 || pq[0].seq+scheduler.windowSize >= seq {
-					heap.Push(&pq, NewTxNode(seq, txId, action))
-				} else {
-					// drop this transaction
-					log.Println("debug v1 drop transaction", txId)
-					return false
-				}
-			} else {
-				pq := PriorityQueue{NewTxNode(seq, txId, action)}
-				scheduler.sessionFutureTxs[session] = pq
-			}
+			// drop this transaction
+			log.Println("debug v1 drop transaction, seq is too high", txId)
+			return false
 		}
 	} else {
-		scheduler.sessionTxs[session] = append(scheduler.sessionTxs[session], NewTxNode(seq, txId, action))
+		log.Println("debug v1 create heap, insert transaction", txId)
+		pq := PriorityQueue{}
+		heap.Push(&pq, NewTxNode(seq, txId, action))
+		scheduler.sessionFutureTxs[session] = &pq
 	}
+
 	return true
 }
 
@@ -148,11 +160,16 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 		log.Printf("ProcessBlk in %d us\n", sec)
 		// clear scheduler
 		scheduler.sessionTxs = map[string][]*TxNode{}
+		scheduler.uniqueKeyCounter = 0
+		scheduler.uniqueKeyMap = map[string]uint64{}
 
 	}(time.Since(now).Microseconds())
 
-	var sessionNames []string
+	sessionNames := []string{}
 	for k, _ := range scheduler.sessionTxs {
+		sessionNames = append(sessionNames, k)
+	}
+	for k, _ := range scheduler.sessionFutureTxs {
 		sessionNames = append(sessionNames, k)
 	}
 	// sort sessionNames to guarantee determinism
@@ -170,10 +187,16 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 			txs = append(txs, v)
 		}
 		if pq, ok := scheduler.sessionFutureTxs[sessionName]; ok {
-			for pq.Len() > 0 && pq[0].seq == txs[len(txs)-1].seq+1 {
-				txs = append(txs, heap.Pop(&pq).(*TxNode))
+			for pq.Len() > 0 && (len(txs) == 0 || (*pq)[0].seq == txs[len(txs)-1].seq+1) {
+				log.Println("debug v1 length of pq", pq.Len(), (*pq)[0].seq)
+				txs = append(txs, heap.Pop(pq).(*TxNode))
+				log.Println("debug v1", txs[len(txs)-1].seq)
+			}
+			if pq.Len() == 0 {
+				delete(scheduler.sessionFutureTxs, sessionName)
 			}
 		}
+		log.Printf("debug v1 number of transactions %d in session %s\n", len(txs), sessionName)
 		// reverse
 		// for i, j := 0, len(txs)-1; i < j; i, j = i+1, j-1 {
 		//	txs[i], txs[j] = txs[j], txs[i]
@@ -186,6 +209,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 				log.Println("debug v1 parse ation return false for transaction", tx.txid)
 				continue
 			}
+			log.Printf("debug v1 tx %s dependency %v\n", tx.txid, dep)
 			var found []int
 			for j := 0; j < len(nodes); j++ {
 				if nodes[j] == nil {
@@ -215,8 +239,14 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 				nodes = append(nodes, node)
 			} else {
 				// merge nodes
-				log.Println("debug v1 merge nodes")
-				var node Node
+				log.Println("debug v1 merge nodes", i, found)
+				node := Node{
+					index:    -1,
+					txids:    []string{tx.txid},
+					readSet:  rs,
+					writeSet: ws,
+					deltaSet: ds,
+				}
 				for _, idx := range found {
 					cur := nodes[idx]
 					// merge
@@ -228,6 +258,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 					}
 					nodes[idx] = nil
 				}
+				log.Println("debug v1 merge txids:", node.txids)
 				nodes = append(nodes, &node)
 			}
 		}
@@ -241,6 +272,13 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 	}
 
 	log.Println("debug v1 number of nodes", numOfNodes)
+	for i := 0; i < int(numOfNodes); i++ {
+		log.Printf("debug v1: node %d contains:", i)
+		for j := 0; j < len(allNodes[i].txids); j++ {
+			log.Printf(" %d", allNodes[i].txids[j])
+		}
+		log.Println("")
+	}
 	// build dependency graph
 	graph := make([][]int32, numOfNodes)
 	invgraph := make([][]int32, numOfNodes)
@@ -275,14 +313,16 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 	log.Println("debug v1 invSet", invSet)
 
 	for i := 0; i < nodeLen; i += 1 {
-		for _, txid := range allNodes[schedule[nodeLen-1-i]].txids {
-			result = append(result, txid)
+		txids := allNodes[schedule[nodeLen-1-i]].txids
+		for j, _ := range txids {
+			result = append(result, txids[len(txids)-1-j])
 		}
 	}
 	for i := int32(0); i < numOfNodes; i += 1 {
 		if invSet[i] == true {
-			for _, txid := range allNodes[i].txids {
-				invalidTxns = append(invalidTxns, txid)
+			txids := allNodes[i].txids
+			for j, _ := range txids {
+				invalidTxns = append(invalidTxns, txids[len(txids)-1-j])
 			}
 		}
 	}
