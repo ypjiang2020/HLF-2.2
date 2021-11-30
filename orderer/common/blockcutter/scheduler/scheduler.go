@@ -226,19 +226,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 					}
 				}
 			}
-			if len(found) == 0 {
-				// new node
-				log.Println("debug v1 new node with txid", tx.txid)
-				node := &Node{
-					index:    -1,
-					txids:    []string{tx.txid},
-					readSet:  rs,
-					writeSet: ws,
-					deltaSet: ds,
-				}
-				nodes = append(nodes, node)
-			} else {
-				// merge nodes
+			mergeNodes := func() {
 				log.Println("debug v1 merge nodes", i, found)
 				node := Node{
 					index:    -1,
@@ -260,6 +248,41 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 				}
 				log.Println("debug v1 merge txids:", node.txids)
 				nodes = append(nodes, &node)
+			}
+
+			if len(found) == 0 {
+				// TODO: delta-read conflict
+				for j := 0; j < len(nodes); j++ {
+					if nodes[j] == nil {
+						// be nil because of the following merge
+						continue
+					}
+					for k := uint32(0); k < (maxUniqueKeys / 64); k++ {
+						if ds[k]&nodes[j].readSet[k] != 0 {
+							found = append(found, j)
+							break
+						}
+					}
+				}
+				if len(found) != 0 {
+					// merge ndoes
+					mergeNodes()
+				} else {
+					// new node
+					log.Println("debug v1 new node with txid", tx.txid)
+					node := &Node{
+						index:    -1,
+						txids:    []string{tx.txid},
+						readSet:  rs,
+						writeSet: ws,
+						deltaSet: ds,
+					}
+					nodes = append(nodes, node)
+				}
+
+			} else {
+				// merge nodes
+				mergeNodes()
 			}
 		}
 		for _, node := range nodes {
