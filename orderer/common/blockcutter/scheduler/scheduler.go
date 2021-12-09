@@ -288,6 +288,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 		for _, node := range nodes {
 			if node != nil {
 				node.index = numOfNodes
+				node.weight = len(node.txids)
 				allNodes = append(allNodes, node)
 				numOfNodes += 1
 			}
@@ -330,7 +331,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 	}
 
 	// schedule
-	schedule, invSet := scheduler.getSchedule(&graph, &invgraph)
+	schedule, invSet := scheduler.getSchedule(&graph, &invgraph, &allNodes)
 	nodeLen := len(schedule)
 	log.Println("debug v1 length of schedule", nodeLen)
 	log.Println("debug v1 invSet", invSet)
@@ -353,8 +354,9 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 	return result, invalidTxns
 }
 
-func (scheduler *Scheduler) getSchedule(graph *[][]int32, invgraph *[][]int32) ([]int32, []bool) {
-	dagGenerator := NewJohnsonCE(graph)
+func (scheduler *Scheduler) getSchedule(graph *[][]int32, invgraph *[][]int32, allNodes *[]*Node) ([]int32, []bool) {
+	// dagGenerator := NewJohnsonCE(graph, allNodes)
+	dagGenerator := NewFVS(graph, allNodes)
 	invCount, invSet := dagGenerator.Run()
 	n := int32(len(*graph))
 	visited := make([]bool, n)
