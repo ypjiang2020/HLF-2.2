@@ -299,7 +299,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 	for i := 0; i < int(numOfNodes); i++ {
 		log.Printf("debug v1: node %d contains:", i)
 		for j := 0; j < len(allNodes[i].txids); j++ {
-			log.Printf(" %d", allNodes[i].txids[j])
+			log.Printf(" %s", allNodes[i].txids[j])
 		}
 		log.Println("")
 	}
@@ -318,12 +318,12 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 			for k := uint32(0); k < (maxUniqueKeys / 64); k++ {
 				if allNodes[i].writeSet[k]&allNodes[j].readSet[k] != 0 {
 					graph[i] = append(graph[i], j)
-					invgraph[j] = append(graph[j], i)
+					invgraph[j] = append(invgraph[j], i)
 					break
 				}
 				if allNodes[i].deltaSet[k]&allNodes[j].readSet[k] != 0 {
 					graph[i] = append(graph[i], j)
-					invgraph[j] = append(graph[j], i)
+					invgraph[j] = append(invgraph[j], i)
 					break
 				}
 			}
@@ -333,8 +333,8 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 	// schedule
 	schedule, invSet := scheduler.getSchedule(&graph, &invgraph, &allNodes)
 	nodeLen := len(schedule)
-	log.Println("debug v1 length of schedule", nodeLen)
-	log.Println("debug v1 invSet", invSet)
+	log.Println("debug v2 length of schedule", nodeLen)
+	log.Println("debug v2 invSet", invSet)
 
 	for i := 0; i < nodeLen; i += 1 {
 		txids := allNodes[schedule[nodeLen-1-i]].txids
@@ -361,9 +361,10 @@ func (scheduler *Scheduler) getSchedule(graph *[][]int32, invgraph *[][]int32, a
 	n := int32(len(*graph))
 	visited := make([]bool, n)
 	schedule := make([]int32, 0, n-invCount)
-	remainintNode := n - invCount
+	remainingNode := n - invCount
 	cur := int32(0)
-	for remainintNode != 0 {
+	for remainingNode != 0 {
+		log.Printf("debug v2: remainingNode %d, cur %d", remainingNode, cur)
 		flag := true
 		if visited[cur] || invSet[cur] {
 			cur = (cur + 1) % n
@@ -378,7 +379,7 @@ func (scheduler *Scheduler) getSchedule(graph *[][]int32, invgraph *[][]int32, a
 		}
 		if flag {
 			visited[cur] = true
-			remainintNode -= 1
+			remainingNode -= 1
 			schedule = append(schedule, cur)
 			for _, next := range (*graph)[cur] {
 				if (visited[next] || invSet[next]) == false {

@@ -1,6 +1,9 @@
 package scheduler
 
-import "sort"
+import (
+	"log"
+	"sort"
+)
 
 // var logger *logging.Logger
 
@@ -27,7 +30,7 @@ type fvs struct {
 
 func NewFVS(graph *[][]int32, nodes *[]*Node) FVS {
 	return &fvs{
-		sccs:         nil,
+		sccs:            nil,
 		graph:           graph,
 		invalidVertices: make([]bool, len(*graph)),
 		nvertices:       len(*graph),
@@ -46,6 +49,11 @@ func (f *fvs) Run() (int32, []bool) {
 		inv := f.BreakCycles(&scc)
 		for _, vertex := range scc.Vertices {
 			invalidVertices[vertex] = inv[vertex]
+		}
+	}
+	for i := 0; i < f.nvertices; i++ {
+		if invalidVertices[i] {
+			f.removeSetSize += 1
 		}
 	}
 
@@ -69,7 +77,8 @@ func (f *fvs) FindCycles(component *SCC) ([][]int32, [][]int32, [][]int, int32) 
 		return nil, nil, nil, int32(0)
 	}
 
-	explore := (*component).Member
+	explore := make([]bool, f.nvertices)
+	copy(explore, (*component).Member)
 
 	sum := int32(0)
 	cycles := make([][]int32, 0, 1024)
@@ -191,8 +200,8 @@ func (f *fvs) BreakCycles(component *SCC) []bool {
 			for _, cid := range sumArray[idx] {
 				vis[cid] = true
 				// for _, cur := range circles[cid] {
-			// 		(*f.allNodes)[cur].weight -= min
-			// 	}
+				// 		(*f.allNodes)[cur].weight -= min
+				// 	}
 			}
 		}
 	}
@@ -207,7 +216,7 @@ func (f *fvs) BreakCycles(component *SCC) []bool {
 				if vis[v] == 1 {
 					return true
 				}
-				if vis[v] == 0 && invalidVertices[v] == false {
+				if component.Member[v] && vis[v] == 0 && invalidVertices[v] == false {
 					if dfs(int(v)) == true {
 						return true
 					}
@@ -216,9 +225,11 @@ func (f *fvs) BreakCycles(component *SCC) []bool {
 			vis[cur] = 2
 			return false
 		}
-		for i := 0; i < f.nvertices; i++ {
-			if vis[i] == 0 && invalidVertices[i] == false {
-				if dfs(i) == true {
+		for i := 0; i < len(component.Vertices); i++ {
+			id := component.Vertices[i]
+			if vis[id] == 0 && invalidVertices[id] == false {
+				log.Printf("debug v2: dfs start from %d", id)
+				if dfs(int(id)) == true {
 					// found circle
 					return true
 				}
@@ -234,7 +245,7 @@ func (f *fvs) BreakCycles(component *SCC) []bool {
 	// sort deleted nodes by weight
 	type weightedNode struct {
 		weight int
-		idx int
+		idx    int
 	}
 	var deleted []weightedNode
 	for i, idx := range invalidVertices {
