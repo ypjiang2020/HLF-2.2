@@ -205,7 +205,7 @@ func (u *publicAndHashUpdates) applyWriteSetAndDeltaSet(
 				log.Fatalf("marshal verval when merge, error: %v", err)
 			}
 			// TODO: check metadata
-			log.Printf("optimistic merge delta %v", verval)
+			// log.Printf("optimistic merge delta %v", verval)
 			u.publicUpdates.Put(ns, key, bs, txHeight)
 		}
 	}

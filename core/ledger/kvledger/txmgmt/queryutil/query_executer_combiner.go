@@ -8,7 +8,6 @@ package queryutil
 
 import (
 	"encoding/json"
-	"log"
 
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
 	commonledger "github.com/Yunpeng-J/HLF-2.2/common/ledger"
@@ -54,10 +53,10 @@ func (c *QECombiner) GetState(namespace string, key string) ([]byte, error) {
 				var verval VersionedValue
 				err := json.Unmarshal(vv.Value, &verval)
 				if err != nil {
-					log.Printf("jyp debug qecombinner getstate, unmarshal %v\n", err)
+					// log.Printf("jyp debug qecombinner getstate, unmarshal %v\n", err)
 					val = vv.Value
 				} else {
-					log.Printf("jyp get state check %v %v", key, verval.Val)
+					// log.Printf("jyp get state check %v %v", key, verval.Val)
 					val = verval.Val
 				}
 			}

@@ -188,9 +188,9 @@ func (r *receiver) Cut() []*cb.Envelope {
 	}
 	// debug
 	log.Printf("debug v1 length of invalid transactions %d, should be 0 in benign case\n", len(invalid))
-	for _, txid := range invalid {
-		log.Printf("debug v1 invalid transactions %s\n", txid)
-	}
+	// for _, txid := range invalid {
+	// 	log.Printf("debug v1 invalid transactions %s\n", txid)
+	// }
 
 	// r.pendingBatch = nil
 	r.pendingBatchSizeBytes = 0

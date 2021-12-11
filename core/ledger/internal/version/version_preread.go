@@ -21,7 +21,6 @@ package version
 import (
 	"encoding/hex"
 	"fmt"
-	"log"
 
 	"github.com/Yunpeng-J/HLF-2.2/common/ledger/util"
 )
@@ -42,7 +41,7 @@ func NewHeightWithTxid(blockNum, txNum uint64, txid string) *Height {
 	temp := &Height{BlockNum: blockNum, TxNum: txNum}
 	txidbytes, err := hex.DecodeString(txid)
 	if err != nil {
-		log.Printf("ethereum: DecodeString %s Error = %v\n", txid, err)
+		// log.Printf("ethereum: DecodeString %s Error = %v\n", txid, err)
 		return temp
 	}
 	copy(temp.Txid[:], txidbytes)

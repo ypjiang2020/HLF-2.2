@@ -286,17 +286,17 @@ func CalculateDeltaFromRWset(readSet []*kvrwset.KVRead, writeSet []*kvrwset.KVWr
 		var verval ledger.VersionedValue
 		err := json.Unmarshal(rs.Value, &verval)
 		if err != nil {
-			log.Printf("optimistic code unmarshal read set key=%s, use origin version", rs.Key)
+			// log.Printf("optimistic code unmarshal read set key=%s, use origin version", rs.Key)
 			payload = rs.Value
 		} else {
-			log.Printf("optimistic code unmarshal read set key=%s, use optimistic version", rs.Key)
+			// log.Printf("optimistic code unmarshal read set key=%s, use optimistic version", rs.Key)
 			payload = verval.Val
 		}
 		var obj interface{}
 		err = json.Unmarshal(payload, &obj)
 		if err != nil {
 			// value = nil; createAccount
-			log.Printf("Fatal optimistic code CalculateDeltaFromWRset 1 buf=%v err=%v", payload, err)
+			// log.Printf("Fatal optimistic code CalculateDeltaFromWRset 1 buf=%v err=%v", payload, err)
 			initial_map[rs.Key] = nil
 			continue
 		}
@@ -313,16 +313,16 @@ func CalculateDeltaFromRWset(readSet []*kvrwset.KVRead, writeSet []*kvrwset.KVWr
 		var verval ledger.VersionedValue
 		err := json.Unmarshal(ws.Value, &verval)
 		if err != nil {
-			log.Printf("optimistic code unmarshal write set key=%s, use origin version", ws.Key)
+			// log.Printf("optimistic code unmarshal write set key=%s, use origin version", ws.Key)
 			payload = ws.Value
 		} else {
-			log.Printf("optimistic code unmarshal write set key=%s, use optimistic version", ws.Key)
+			// log.Printf("optimistic code unmarshal write set key=%s, use optimistic version", ws.Key)
 			payload = verval.Val
 		}
 		var obj interface{}
 		err = json.Unmarshal(payload, &obj)
 		if err != nil {
-			log.Printf("FATAL optimistic code CalculateDeltaFromWRset 2 buf=%v err=%v", payload, err)
+			// log.Printf("FATAL optimistic code CalculateDeltaFromWRset 2 buf=%v err=%v", payload, err)
 			continue
 		}
 		t_obj, _ := obj.(map[string]interface{})
@@ -348,7 +348,7 @@ func CalculateDeltaFromRWset(readSet []*kvrwset.KVRead, writeSet []*kvrwset.KVWr
 			}
 		}
 		if flag {
-			log.Printf("optimisitc code build delta txid=%s, key=%s, val=%v", ws.Key, verval.Txid, t_obj)
+			// log.Printf("optimisitc code build delta txid=%s, key=%s, val=%v", ws.Key, verval.Txid, t_obj)
 			bs, err := json.Marshal(t_obj)
 			if err != nil {
 				log.Fatalln("optimistic code marshal delta", err)
@@ -375,7 +375,7 @@ func CalculateDeltaFromRWset(readSet []*kvrwset.KVRead, writeSet []*kvrwset.KVWr
 			readSet[ri] = rs
 			ri += 1
 		} else {
-			log.Printf("optimisitc code delete element from read set txid=%s, key=%s, val=%v", rs.Txid, rs.Key, rs.Value)
+			// log.Printf("optimisitc code delete element from read set txid=%s, key=%s, val=%v", rs.Txid, rs.Key, rs.Value)
 		}
 	}
 	// update write set
@@ -392,7 +392,7 @@ func CalculateDeltaFromRWset(readSet []*kvrwset.KVRead, writeSet []*kvrwset.KVWr
 			writeSet[wi] = ws
 			wi += 1
 		} else {
-			log.Printf("optimisitc code delete element from write set key=%s, val=%v", ws.Key, ws.Value)
+			// log.Printf("optimisitc code delete element from write set key=%s, val=%v", ws.Key, ws.Value)
 		}
 	}
 	return delta, readSet[:ri], writeSet[:wi]
@@ -434,7 +434,7 @@ func (b *nsPubRwBuilder) buildDelta() *NsRwdSet {
 		}
 
 	} else {
-		log.Printf("build delta set for namespace %s", b.namespace)
+		// log.Printf("build delta set for namespace %s", b.namespace)
 		deltaSet, readSet, writeSet := CalculateDeltaFromRWset(readSet, writeSet)
 		return &NsRwdSet{
 			NameSpace: b.namespace,

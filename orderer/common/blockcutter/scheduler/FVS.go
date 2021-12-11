@@ -177,7 +177,6 @@ func (f *fvs) BreakCycles(component *SCC) []bool {
 	invalidVertices := make([]bool, f.nvertices)
 	circles, _, sumArray, _ := f.FindCycles(component)
 
-	// fmt.Println(cycles)
 	// phase 1
 	n := len(circles)
 	vis := make([]bool, n)
@@ -228,7 +227,6 @@ func (f *fvs) BreakCycles(component *SCC) []bool {
 		for i := 0; i < len(component.Vertices); i++ {
 			id := component.Vertices[i]
 			if vis[id] == 0 && invalidVertices[id] == false {
-				log.Printf("debug v2: dfs start from %d", id)
 				if dfs(int(id)) == true {
 					// found circle
 					return true
@@ -264,6 +262,8 @@ func (f *fvs) BreakCycles(component *SCC) []bool {
 		invalidVertices[node.idx] = false
 		if existCircle() {
 			invalidVertices[node.idx] = true
+		} else {
+			log.Printf("debug v2 recover deleted node: %d", node.idx)
 		}
 	}
 

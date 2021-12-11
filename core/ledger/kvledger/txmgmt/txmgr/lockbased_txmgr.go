@@ -11,7 +11,6 @@ package txmgr
 import (
 	"bytes"
 	"encoding/json"
-	"log"
 	"sync"
 
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
@@ -564,7 +563,7 @@ func (txmgr *LockBasedTxMgr) Commit() error {
 	// optimistic code begin
 	keysession := make(map[string]string)
 	for ns, data := range txmgr.current.batch.PubUpdates.Updates {
-		log.Printf("debug namespace=%s", ns)
+		// log.Printf("debug namespace=%s", ns)
 		for k, v := range data.M {
 			var verval ledger.VersionedValue
 			err := json.Unmarshal(v.Value, &verval)

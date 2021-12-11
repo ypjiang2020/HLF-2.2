@@ -10,13 +10,14 @@ package validation
 
 import (
 	"encoding/json"
+	"log"
+
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/internal/version"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/privacyenabledstate"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/rwsetutil"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/statedb"
 	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset/kvrwset"
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
-	"log"
 )
 
 // optimistic code begin
@@ -195,10 +196,10 @@ func (v *validator) validateKVRead(ns string, kvRead *kvrwset.KVRead, updates *p
 			log.Fatalln("please check VersionedValue if value=txid+value", err)
 		}
 		if kvRead.Txid == verval.Txid {
-			log.Println("same with previous uncommitted key")
+			// log.Println("same with previous uncommitted key")
 			return true, nil
 		} else {
-			log.Println("not same with previous uncommitted key")
+			// log.Println("not same with previous uncommitted key")
 			return false, nil
 		}
 		// return false, nil
