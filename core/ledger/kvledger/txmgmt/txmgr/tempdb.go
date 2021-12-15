@@ -14,6 +14,7 @@ import (
 type TempDB struct {
 	mutex    sync.Mutex
 	Sessions map[string]*SessionDB
+	KeySession map[string]string
 }
 
 type WriteSet struct {
@@ -104,6 +105,7 @@ func (sdb *SessionDB) Commit(txid string) {
 func newTempDB() *TempDB {
 	res := &TempDB{
 		Sessions: map[string]*SessionDB{},
+		KeySession: map[string]string{},
 	}
 	return res
 }
@@ -113,8 +115,13 @@ func (tdb *TempDB) Get(key, session string) *ledger.VersionedValue {
 		return nil
 	}
 	tdb.mutex.Lock()
+	defer tdb.mutex.Unlock()
+	if tdb.KeySession[key] != session {
+		// obsolete
+		// TODO: clean
+		return nil
+	}
 	sdb, ok := tdb.Sessions[session]
-	tdb.mutex.Unlock()
 	if ok {
 		return sdb.Get(key)
 	} else {
@@ -171,26 +178,21 @@ func (tdb *TempDB) Commit(txid string) {
 }
 
 // Prune: delete all obsolete keys
-func (tdb *TempDB) Prune(ks map[string]string) {
+func (tdb *TempDB) Prune(keySession *map[string]string) {
 	// TODO: optimization
 	st := time.Now()
 	defer func(last int64) {
-		log.Printf("benchmark prune tempdb with %d keys in us\n", len(ks), last)
-	}(time.Since(st).Nanoseconds())
+		log.Printf("benchmark prune tempdb with %d keys in %d ms\n", len(*keySession), last)
+	}(time.Since(st).Milliseconds())
 	tdb.mutex.Lock()
 	defer tdb.mutex.Unlock()
-	for k, s := range ks {
-		for sname, sdb := range tdb.Sessions {
-			if sname == s {
-				continue
-			}
-			sdb.Delete(k)
-		}
-		// if _, ok := tdb.Sessions[s]; !ok {
-		// 	// from other sessions
-		// 	for _, sdb := range tdb.Sessions {
-		// 		sdb.Delete(k)
+	for k, s := range *keySession {
+		tdb.KeySession[k] = s
+		// for sname, sdb := range tdb.Sessions {
+		// 	if sname == s {
+		// 		continue
 		// 	}
+		// 	sdb.Delete(k)
 		// }
 	}
 }

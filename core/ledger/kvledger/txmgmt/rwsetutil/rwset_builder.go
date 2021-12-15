@@ -436,6 +436,8 @@ func (b *nsPubRwBuilder) buildDelta() *NsRwdSet {
 	} else {
 		// log.Printf("build delta set for namespace %s", b.namespace)
 		deltaSet, readSet, writeSet := CalculateDeltaFromRWset(readSet, writeSet)
+		// breakdown: disable CRDT
+		// var deltaSet []*kvrwset.KVWrite)
 		return &NsRwdSet{
 			NameSpace: b.namespace,
 			KvRwdSet: &kvrwset.KVRWDSet{

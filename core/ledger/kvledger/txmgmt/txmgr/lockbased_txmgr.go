@@ -572,7 +572,7 @@ func (txmgr *LockBasedTxMgr) Commit() error {
 			}
 		}
 	}
-	txmgr.tempdb.Prune(keysession)
+	txmgr.tempdb.Prune(&keysession)
 	// optimistic code end
 
 	txmgr.commitRWLock.Unlock()
