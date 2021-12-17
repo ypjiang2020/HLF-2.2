@@ -16,14 +16,23 @@ var (
 		LabelNames:   []string{"channel"},
 		StatsdFormat: "%{#fqname}.%{channel}",
 	}
+	blockScheduleDuration = metrics.HistogramOpts{
+		Namespace:    "blockcutter",
+		Name:         "block_schedule_duration",
+		Help:         "The time for FVS.",
+		LabelNames:   []string{"channel"},
+		StatsdFormat: "%{#fqname}.%{channel}",
+	}
 )
 
 type Metrics struct {
-	BlockFillDuration metrics.Histogram
+	BlockFillDuration     metrics.Histogram
+	BlockScheduleDuration metrics.Histogram
 }
 
 func NewMetrics(p metrics.Provider) *Metrics {
 	return &Metrics{
-		BlockFillDuration: p.NewHistogram(blockFillDuration),
+		BlockFillDuration:     p.NewHistogram(blockFillDuration),
+		BlockScheduleDuration: p.NewHistogram(blockScheduleDuration),
 	}
 }

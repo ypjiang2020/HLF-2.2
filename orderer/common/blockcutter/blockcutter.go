@@ -170,7 +170,7 @@ func (r *receiver) Ordered(msg *cb.Envelope) (messageBatches [][]*cb.Envelope, p
 
 // Cut returns the current batch and starts a new one
 func (r *receiver) Cut() []*cb.Envelope {
-	if r.pendingBatch != nil {
+	if len(r.pendingBatch) != 0 {
 		r.Metrics.BlockFillDuration.With("channel", r.ChannelID).Observe(time.Since(r.PendingBatchStartTime).Seconds())
 	}
 	r.PendingBatchStartTime = time.Time{}
@@ -179,7 +179,9 @@ func (r *receiver) Cut() []*cb.Envelope {
 	batch := make([]*cb.Envelope, 0)
 	batch = append(batch, r.pendingBatchNonEndorse...)
 	r.pendingBatchNonEndorse = make([]*cb.Envelope, 0)
+	st := time.Now()
 	schedule, invalid := r.scheduler.ProcessBlk()
+	r.Metrics.BlockScheduleDuration.With("channel", r.ChannelID).Observe(time.Since(st).Seconds())
 	for _, txId := range schedule {
 		batch = append(batch, r.pendingBatch[txId])
 	}
