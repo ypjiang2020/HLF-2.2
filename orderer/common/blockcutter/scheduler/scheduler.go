@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -15,18 +16,24 @@ import (
 	"github.com/Yunpeng-J/fabric-protos-go/peer"
 )
 
-const maxUniqueKeys = 65563
+var maxUniqueKeys = 2048 // 65563
 
 type Scheduler struct {
 	windowSize int
 
 	sessionTxs       map[string][]*TxNode
 	sessionFutureTxs map[string]*PriorityQueue
-	uniqueKeyMap     map[string]uint64
-	uniqueKeyCounter uint64
+	uniqueKeyMap     map[string]int
+	uniqueKeyCounter int
 }
 
 func NewScheduler() *Scheduler {
+	maxUniqueKeys, _ := strconv.Atoi(os.Getenv("maxUniqueKeys"))
+	log.Println("debug v3, maxUniqueKeys", maxUniqueKeys)
+	if maxUniqueKeys == 0 {
+		log.Println("debug v3")
+		maxUniqueKeys = 1024
+	}
 	return &Scheduler{
 		windowSize:       1024,
 		sessionTxs:       map[string][]*TxNode{},
@@ -156,14 +163,15 @@ func (scheduler *Scheduler) Schedule(action *peer.ChaincodeAction, txId string) 
 
 func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string) {
 	now := time.Now()
-	defer func(sec int64) {
-		log.Printf("ProcessBlk in %d us\n", sec)
+	defer func() {
+		sec := time.Since(now).Milliseconds()
+		log.Printf("debug v3 ProcessBlk in %d ms\n", sec)
 		// clear scheduler
 		scheduler.sessionTxs = map[string][]*TxNode{}
 		scheduler.uniqueKeyCounter = 0
-		scheduler.uniqueKeyMap = map[string]uint64{}
+		scheduler.uniqueKeyMap = map[string]int{}
 
-	}(time.Since(now).Microseconds())
+	}()
 
 	sessionNames := []string{}
 	for k, _ := range scheduler.sessionTxs {
@@ -175,6 +183,9 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 	// sort sessionNames to guarantee determinism
 	sort.Strings(sessionNames)
 	// log.Println("debug v1 session names", sessionNames)
+	log.Println("debug v3", time.Since(now).Milliseconds())
+
+	__temp := time.Now()
 
 	// build node (one node may contain multiple transactions)
 	var allNodes []*Node
@@ -239,7 +250,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 					cur := nodes[idx]
 					// merge
 					node.txids = append(node.txids, cur.txids...)
-					for k := uint32(0); k < (maxUniqueKeys / 64); k++ {
+					for k := 0; k < (maxUniqueKeys / 64); k++ {
 						node.readSet[k] |= cur.readSet[k]
 						node.writeSet[k] |= cur.writeSet[k]
 						node.deltaSet[k] |= cur.deltaSet[k]
@@ -257,7 +268,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 						// be nil because of the following merge
 						continue
 					}
-					for k := uint32(0); k < (maxUniqueKeys / 64); k++ {
+					for k := 0; k < (maxUniqueKeys / 64); k++ {
 						if ds[k]&nodes[j].readSet[k] != 0 {
 							found = append(found, j)
 							break
@@ -294,6 +305,8 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 			}
 		}
 	}
+	log.Println("debug v3 build node in", time.Since(__temp).Milliseconds())
+	__temp = time.Now()
 
 	// log.Println("debug v1 number of nodes", numOfNodes)
 	// for i := 0; i < int(numOfNodes); i++ {
@@ -315,7 +328,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 			if i == j {
 				continue
 			}
-			for k := uint32(0); k < (maxUniqueKeys / 64); k++ {
+			for k := 0; k < (maxUniqueKeys / 64); k++ {
 				if allNodes[i].writeSet[k]&allNodes[j].readSet[k] != 0 {
 					graph[i] = append(graph[i], j)
 					invgraph[j] = append(invgraph[j], i)
@@ -329,6 +342,8 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 			}
 		}
 	}
+	log.Println("debug v3 build graph in", time.Since(__temp).Milliseconds())
+	__temp = time.Now()
 	// log.Printf("debug v2 graph\n")
 	// for i := int32(0); i < numOfNodes; i++ {
 	// 	ps := fmt.Sprintf("Node %d: ", i)
@@ -358,6 +373,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 			}
 		}
 	}
+	log.Println("debug v3 schedule in", time.Since(__temp).Milliseconds())
 
 	return result, invalidTxns
 }
