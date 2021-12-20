@@ -12,8 +12,8 @@ import (
 )
 
 type TempDB struct {
-	mutex    sync.Mutex
-	Sessions map[string]*SessionDB
+	mutex      sync.Mutex
+	Sessions   map[string]*SessionDB
 	KeySession map[string]string
 }
 
@@ -104,7 +104,7 @@ func (sdb *SessionDB) Commit(txid string) {
 
 func newTempDB() *TempDB {
 	res := &TempDB{
-		Sessions: map[string]*SessionDB{},
+		Sessions:   map[string]*SessionDB{},
 		KeySession: map[string]string{},
 	}
 	return res
@@ -116,11 +116,11 @@ func (tdb *TempDB) Get(key, session string) *ledger.VersionedValue {
 	}
 	tdb.mutex.Lock()
 	defer tdb.mutex.Unlock()
-	if tdb.KeySession[key] != session {
-		// obsolete
-		// TODO: clean
-		return nil
-	}
+	// if tdb.KeySession[key] != session {
+	// 	// obsolete
+	// 	// TODO: clean
+	// 	return nil
+	// }
 	sdb, ok := tdb.Sessions[session]
 	if ok {
 		return sdb.Get(key)
@@ -137,6 +137,7 @@ func (tdb *TempDB) Put(key, txid string, val []byte) {
 	}
 	tdb.mutex.Lock()
 	sdb, ok := tdb.Sessions[session]
+	tdb.KeySession[key] = session
 	if ok {
 		tdb.mutex.Unlock()
 		sdb.Put(txid, key, val)

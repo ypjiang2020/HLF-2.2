@@ -41,11 +41,15 @@ func NewFVS(graph *[][]int32, nodes *[]*Node) FVS {
 
 func (f *fvs) Run() (int32, []bool) {
 	invalidVertices := make([]bool, f.nvertices)
-
 	sccGen := NewTarjanSCC(f.graph)
 	sccGen.SCC()
 
 	for _, scc := range sccGen.GetSCCs() {
+		// for j, ok := range scc.Member {
+		// 	if ok {
+		// 		log.Println(j)
+		// 	}
+		// }
 		inv := f.BreakCycles(&scc)
 		for _, vertex := range scc.Vertices {
 			invalidVertices[vertex] = inv[vertex]
@@ -127,6 +131,7 @@ func (f *fvs) FindCyclesRecur(component *SCC, explore []bool, startV, currentV i
 			continue
 		} else if n == startV {
 			// found a cycle
+			// log.Println("debug v3 trace findcycle", len(*cycles))
 			foundCycle = true
 			cycle := make([]int32, 0, len(*stack))
 			cycleBool := make([]int32, f.nvertices)
@@ -175,7 +180,9 @@ func (f *fvs) Unblock(v int32, blocked []bool, blockedMap *[][]int32) {
 
 func (f *fvs) BreakCycles(component *SCC) []bool {
 	invalidVertices := make([]bool, f.nvertices)
+	// log.Println("debug v3 breakcycles 0")
 	circles, _, sumArray, _ := f.FindCycles(component)
+	// log.Println("debug v3 breakcycles 1")
 
 	// phase 1
 	n := len(circles)

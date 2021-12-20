@@ -207,7 +207,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 				delete(scheduler.sessionFutureTxs, sessionName)
 			}
 		}
-		// log.Printf("debug v1 number of transactions %d in session %s\n", len(txs), sessionName)
+		// log.Printf("debug v2 number of transactions %d in session %s\n", len(txs), sessionName)
 		// reverse
 		// for i, j := 0, len(txs)-1; i < j; i, j = i+1, j-1 {
 		//	txs[i], txs[j] = txs[j], txs[i]
@@ -220,7 +220,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 				// log.Println("debug v1 parse ation return false for transaction", tx.txid)
 				continue
 			}
-			// log.Printf("debug v1 tx %s dependency %v\n", tx.txid, dep)
+			// log.Printf("debug v2 tx %s dependency %v\n", tx.txid, dep)
 			var found []int
 			for j := 0; j < len(nodes); j++ {
 				if nodes[j] == nil {
@@ -238,7 +238,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 				}
 			}
 			mergeNodes := func() {
-				// log.Println("debug v1 merge nodes", i, found)
+				// log.Println("debug v2 merge nodes", i, found)
 				node := Node{
 					index:    -1,
 					txids:    []string{tx.txid},
@@ -257,7 +257,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 					}
 					nodes[idx] = nil
 				}
-				// log.Println("debug v1 merge txids:", node.txids)
+				// log.Println("debug v2 merge txids:", node.txids)
 				nodes = append(nodes, &node)
 			}
 
@@ -280,7 +280,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 					mergeNodes()
 				} else {
 					// new node
-					// log.Println("debug v1 new node with txid", tx.txid)
+					// log.Println("debug v2 new node with txid", tx.txid)
 					node := &Node{
 						index:    -1,
 						txids:    []string{tx.txid},
@@ -308,9 +308,9 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 	log.Println("debug v3 build node in", time.Since(__temp).Milliseconds())
 	__temp = time.Now()
 
-	// log.Println("debug v1 number of nodes", numOfNodes)
+	log.Println("debug v2 number of nodes", numOfNodes)
 	// for i := 0; i < int(numOfNodes); i++ {
-	// 	log.Printf("debug v1: node %d contains:", i)
+	// 	log.Printf("debug v2: node %d contains:", i)
 	// 	for j := 0; j < len(allNodes[i].txids); j++ {
 	// 		log.Printf(" %s", allNodes[i].txids[j])
 	// 	}
@@ -346,7 +346,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 	__temp = time.Now()
 	// log.Printf("debug v2 graph\n")
 	// for i := int32(0); i < numOfNodes; i++ {
-	// 	ps := fmt.Sprintf("Node %d: ", i)
+	// 	ps := fmt.Sprintf("debug v2 Node %d: ", i)
 	// 	for j := 0; j < len(graph[i]); j++ {
 	// 		ps = ps + fmt.Sprintf("%d ", graph[i][j])
 	// 	}
@@ -356,8 +356,8 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 	// schedule
 	schedule, invSet := scheduler.getSchedule(&graph, &invgraph, &allNodes)
 	nodeLen := len(schedule)
-	// log.Println("debug v2 length of schedule", nodeLen)
-	// log.Println("debug v2 invSet", invSet)
+	// log.Println("debug v3 length of schedule", nodeLen)
+	// log.Println("debug v3 invSet", invSet)
 
 	for i := 0; i < nodeLen; i += 1 {
 		txids := allNodes[schedule[nodeLen-1-i]].txids
