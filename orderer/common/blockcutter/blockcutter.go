@@ -7,6 +7,8 @@ SPDX-License-Identifier: Apache-2.0
 package blockcutter
 
 import (
+	"os"
+	"strconv"
 	"time"
 
 	cb "github.com/hyperledger/fabric-protos-go/common"
@@ -127,6 +129,13 @@ func (r *receiver) Ordered(msg *cb.Envelope) (messageBatches [][]*cb.Envelope, p
 func (r *receiver) Cut() []*cb.Envelope {
 	if r.pendingBatch != nil {
 		r.Metrics.BlockFillDuration.With("channel", r.ChannelID).Observe(time.Since(r.PendingBatchStartTime).Seconds())
+		// slp, _ := strconv.Atoi(os.Getenv("OrdererSleep"))
+		slp, ok := os.LookupEnv("OrdererSleep")
+		var ordererSleep int
+		if ok {
+			ordererSleep, _ = strconv.Atoi(slp)
+			time.Sleep(time.Duration(ordererSleep) * time.Millisecond)
+		}
 	}
 	r.PendingBatchStartTime = time.Time{}
 	batch := r.pendingBatch
