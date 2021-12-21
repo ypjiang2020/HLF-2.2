@@ -18,8 +18,10 @@ import (
 // validator validates a tx against the latest committed state
 // and preceding valid transactions with in the same block
 type validator struct {
-	db       *privacyenabledstate.DB
-	hashFunc rwsetutil.HashFunc
+	db           *privacyenabledstate.DB
+	hashFunc     rwsetutil.HashFunc
+	intra_aborts int
+	inter_aborts int
 }
 
 // preLoadCommittedVersionOfRSet loads committed version of all keys in each
@@ -80,6 +82,11 @@ func (v *validator) preLoadCommittedVersionOfRSet(blk *block) error {
 
 // validateAndPrepareBatch performs validation and prepares the batch for final writes
 func (v *validator) validateAndPrepareBatch(blk *block, doMVCCValidation bool) (*publicAndHashUpdates, error) {
+	v.intra_aborts = 0
+	v.inter_aborts = 0
+	defer func() {
+		logger.Infof("benchmark micro aborts: intra_aborts %d inter_aborts %d", v.intra_aborts, v.inter_aborts)
+	}()
 	// Check whether statedb implements BulkOptimizable interface. For now,
 	// only CouchDB implements BulkOptimizable to reduce the number of REST
 	// API calls from peer to CouchDB instance.
@@ -175,6 +182,7 @@ func (v *validator) validateReadSet(ns string, kvReads []*kvrwset.KVRead, update
 // or in the updates (by a preceding valid transaction in the current block)
 func (v *validator) validateKVRead(ns string, kvRead *kvrwset.KVRead, updates *privacyenabledstate.PubUpdateBatch) (bool, error) {
 	if updates.Exists(ns, kvRead.Key) {
+		v.intra_aborts += 1
 		return false, nil
 	}
 	committedVersion, err := v.db.GetVersion(ns, kvRead.Key)
@@ -187,6 +195,7 @@ func (v *validator) validateKVRead(ns string, kvRead *kvrwset.KVRead, updates *p
 	if !version.AreSame(committedVersion, rwsetutil.NewVersion(kvRead.Version)) {
 		logger.Debugf("Version mismatch for key [%s:%s]. Committed version = [%#v], Version in readSet [%#v]",
 			ns, kvRead.Key, committedVersion, kvRead.Version)
+		v.inter_aborts += 1
 		return false, nil
 	}
 	return true, nil
