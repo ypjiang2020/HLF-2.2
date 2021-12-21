@@ -35,10 +35,11 @@ type validator struct {
 	hashFunc rwsetutil.HashFunc
 
 	// benchmark
-	preread_success int
-	preread_fail    int
-	intra_aborts    int
-	inter_aborts    int
+	preread_success_intra int
+	preread_success_inter int
+	preread_fail          int
+	intra_aborts          int
+	inter_aborts          int
 }
 
 // preLoadCommittedVersionOfRSet loads committed version of all keys in each
@@ -100,11 +101,12 @@ func (v *validator) preLoadCommittedVersionOfRSet(blk *block) error {
 // validateAndPrepareBatch performs validation and prepares the batch for final writes
 func (v *validator) validateAndPrepareBatch(blk *block, doMVCCValidation bool) (*publicAndHashUpdates, error) {
 	v.preread_fail = 0
-	v.preread_success = 0
+	v.preread_success_intra = 0
+	v.preread_success_inter = 0
 	v.inter_aborts = 0
 	v.intra_aborts = 0
 	defer func() {
-		logger.Infof("benchmark micro aborts: intra_aborts %d inter_aborts %d prepread_success %d preread_fail %d", v.intra_aborts, v.inter_aborts, v.preread_success, v.preread_fail)
+		logger.Infof("benchmark micro aborts: intra_aborts %d inter_aborts %d preread_success_intra %d preread_success_inter %d preread_fail %d", v.intra_aborts, v.inter_aborts, v.preread_success_intra, v.preread_success_inter, v.preread_fail)
 
 	}()
 
@@ -213,7 +215,7 @@ func (v *validator) validateKVRead(ns string, kvRead *kvrwset.KVRead, updates *p
 		}
 		if kvRead.Txid == verval.Txid {
 			// log.Println("same with previous uncommitted key")
-			v.preread_success += 1
+			v.preread_success_intra += 1
 			return true, nil
 		} else {
 			// log.Println("not same with previous uncommitted key")
@@ -247,7 +249,7 @@ func (v *validator) validateKVRead(ns string, kvRead *kvrwset.KVRead, updates *p
 			log.Fatalln("please check versionedValue in validataeKVRead", err)
 		}
 		if version.Txid == kvRead.Txid {
-			v.preread_success += 1
+			v.preread_success_inter += 1
 			return true, nil
 		} else {
 			logger.Debugf("Version mismatch for key [%s:%s]. Committed version = [%#v], Version in readSet [%#v]",
