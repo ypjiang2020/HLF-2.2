@@ -8,6 +8,8 @@ package blockcutter
 
 import (
 	"log"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/Yunpeng-J/HLF-2.2/common/channelconfig"
@@ -198,6 +200,12 @@ func (r *receiver) Cut() []*cb.Envelope {
 	r.pendingBatchSizeBytes = 0
 	r.pendingBatch = make(map[string]*cb.Envelope)
 	// optimistic code end
+	slp, ok := os.LookupEnv("OrdererSleep")
+	var ordererSleep int
+	if ok {
+		ordererSleep, _ = strconv.Atoi(slp)
+		time.Sleep(time.Duration(ordererSleep) * time.Millisecond)
+	}
 	return batch
 }
 
