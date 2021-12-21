@@ -204,6 +204,7 @@ func (v *validator) validateReadSet(ns string, kvReads []*kvrwset.KVRead, update
 func (v *validator) validateKVRead(ns string, kvRead *kvrwset.KVRead, updates *privacyenabledstate.PubUpdateBatch) (bool, error) {
 	if updates.Exists(ns, kvRead.Key) {
 		// optimistic code begin
+		v.intra_aborts += 1
 		vv := updates.Get(ns, kvRead.Key)
 		var verval VerVal
 		err := json.Unmarshal(vv.Value, &verval)
@@ -217,7 +218,6 @@ func (v *validator) validateKVRead(ns string, kvRead *kvrwset.KVRead, updates *p
 		} else {
 			// log.Println("not same with previous uncommitted key")
 			v.preread_fail += 1
-			v.intra_aborts += 1
 			return false, nil
 		}
 		// return false, nil
@@ -240,6 +240,7 @@ func (v *validator) validateKVRead(ns string, kvRead *kvrwset.KVRead, updates *p
 		kvRead.Key, committedVersion, rwsetutil.NewVersion(kvRead.Version))
 	if !version.AreSame(committedVersion, rwsetutil.NewVersion(kvRead.Version)) {
 		// optimistic code begin
+		v.inter_aborts += 1
 		var version VerVal
 		err := json.Unmarshal(versionedValue.Value, &version)
 		if err != nil {
@@ -251,7 +252,6 @@ func (v *validator) validateKVRead(ns string, kvRead *kvrwset.KVRead, updates *p
 		} else {
 			logger.Debugf("Version mismatch for key [%s:%s]. Committed version = [%#v], Version in readSet [%#v]",
 				ns, kvRead.Key, committedVersion, kvRead.Version)
-			v.inter_aborts += 1
 			return false, nil
 		}
 		// logger.Debugf("Version mismatch for key [%s:%s]. Committed version = [%#v], Version in readSet [%#v]",
