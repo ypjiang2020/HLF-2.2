@@ -191,8 +191,8 @@ func (u *publicAndHashUpdates) applyWriteSetAndDeltaSet(
 				case float64:
 					tempRes := t_db_obj[k].(float64) + vv
 					t_delta_obj[k] = tempRes
-				case string:
-					log.Println("TODO string")
+					// case string:
+					// log.Println("TODO string")
 				}
 			}
 			verval.Val, err = json.Marshal(t_delta_obj)

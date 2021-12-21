@@ -343,8 +343,8 @@ func CalculateDeltaFromRWset(readSet []*kvrwset.KVRead, writeSet []*kvrwset.KVWr
 					flag = true
 					t_obj[k] = tempDelta
 				}
-			case string:
-				log.Println("TODO string")
+				// case string:
+				// log.Println("TODO string")
 			}
 		}
 		if flag {

@@ -119,6 +119,28 @@ func (v *validator) validateAndPrepareBatch(blk *block, doMVCCValidation bool) (
 			return nil, err
 		}
 	}
+	// // debug
+	// logger.Infof("\ndebug v4 blockid=%d txns=%d\n", blk.num, len(blk.txs))
+
+	// for _, tx := range blk.txs {
+	// 	temp := fmt.Sprintf("txid=%s idInBlk=%d\n", tx.id, tx.indexInBlock)
+	// 	for _, nsRWSSet := range tx.rwdset.NsRwdSets[1:] { // drop lifecycle
+	// 		temp += fmt.Sprintf("\tnamespace=%s\n", nsRWSSet.NameSpace)
+	// 		temp += fmt.Sprintf("\t\treads\n")
+	// 		for _, kvread := range nsRWSSet.KvRwdSet.Reads {
+	// 			temp += fmt.Sprintf("\t\t\tkey=%s version=%v, txid=%s\n", kvread.Key, kvread.Version, kvread.Txid)
+	// 		}
+	// 		temp += fmt.Sprintf("\t\twrites\n")
+	// 		for _, kvwrite := range nsRWSSet.KvRwdSet.Writes {
+	// 			temp += fmt.Sprintf("\t\t\tkey=%s\n", kvwrite.Key)
+	// 		}
+	// 		temp += fmt.Sprintf("\t\tdeltas\n")
+	// 		for _, kvdelta := range nsRWSSet.KvRwdSet.Deltas {
+	// 			temp += fmt.Sprintf("\t\t\tkey=%s txid=%s", kvdelta.Key, kvdelta.Txid)
+	// 		}
+	// 	}
+	// 	logger.Info(temp)
+	// }
 
 	updates := newPubAndHashUpdates()
 	for _, tx := range blk.txs {

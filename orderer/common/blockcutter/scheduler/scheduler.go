@@ -265,35 +265,42 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 			}
 
 			if len(found) == 0 {
-				// TODO: delta-read conflict
-				for j := 0; j < len(nodes); j++ {
-					if nodes[j] == nil {
-						// be nil because of the following merge
-						continue
-					}
-					for k := 0; k < (maxUniqueKeys / 64); k++ {
-						if ds[k]&nodes[j].readSet[k] != 0 {
-							found = append(found, j)
-							break
-						}
-					}
+				// // TODO: delta-read conflict
+				// for j := 0; j < len(nodes); j++ {
+				// 	if nodes[j] == nil {
+				// 		// be nil because of the following merge
+				// 		continue
+				// 	}
+				// 	for k := 0; k < (maxUniqueKeys / 64); k++ {
+				// 		if ds[k]&nodes[j].readSet[k] != 0 {
+				// 			found = append(found, j)
+				// 			break
+				// 		}
+				// 	}
+				// }
+				// if len(found) != 0 {
+				// 	// merge ndoes
+				// 	mergeNodes()
+				// } else {
+				// 	// new node
+				// 	// log.Println("debug v2 new node with txid", tx.txid)
+				// 	node := &Node{
+				// 		index:    -1,
+				// 		txids:    []string{tx.txid},
+				// 		readSet:  rs,
+				// 		writeSet: ws,
+				// 		deltaSet: ds,
+				// 	}
+				// 	nodes = append(nodes, node)
+				// }
+				node := &Node{
+					index:    -1,
+					txids:    []string{tx.txid},
+					readSet:  rs,
+					writeSet: ws,
+					deltaSet: ds,
 				}
-				if len(found) != 0 {
-					// merge ndoes
-					mergeNodes()
-				} else {
-					// new node
-					// log.Println("debug v2 new node with txid", tx.txid)
-					node := &Node{
-						index:    -1,
-						txids:    []string{tx.txid},
-						readSet:  rs,
-						writeSet: ws,
-						deltaSet: ds,
-					}
-					nodes = append(nodes, node)
-				}
-
+				nodes = append(nodes, node)
 			} else {
 				// merge nodes
 				mergeNodes()
