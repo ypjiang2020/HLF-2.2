@@ -33,6 +33,12 @@ type VerVal struct {
 type validator struct {
 	db       *privacyenabledstate.DB
 	hashFunc rwsetutil.HashFunc
+
+	// benchmark
+	preread_success int
+	preread_fail    int
+	intra_aborts    int
+	inter_aborts    int
 }
 
 // preLoadCommittedVersionOfRSet loads committed version of all keys in each
@@ -93,6 +99,15 @@ func (v *validator) preLoadCommittedVersionOfRSet(blk *block) error {
 
 // validateAndPrepareBatch performs validation and prepares the batch for final writes
 func (v *validator) validateAndPrepareBatch(blk *block, doMVCCValidation bool) (*publicAndHashUpdates, error) {
+	v.preread_fail = 0
+	v.preread_success = 0
+	v.inter_aborts = 0
+	v.intra_aborts = 0
+	defer func() {
+		logger.Infof("benchmark micro aborts: intra_aborts %d inter_aborts %d prepread_success %d preread_fail %d", v.intra_aborts, v.inter_aborts, v.preread_success, v.preread_fail)
+
+	}()
+
 	// Check whether statedb implements BulkOptimizable interface. For now,
 	// only CouchDB implements BulkOptimizable to reduce the number of REST
 	// API calls from peer to CouchDB instance.
@@ -197,9 +212,12 @@ func (v *validator) validateKVRead(ns string, kvRead *kvrwset.KVRead, updates *p
 		}
 		if kvRead.Txid == verval.Txid {
 			// log.Println("same with previous uncommitted key")
+			v.preread_success += 1
 			return true, nil
 		} else {
 			// log.Println("not same with previous uncommitted key")
+			v.preread_fail += 1
+			v.intra_aborts += 1
 			return false, nil
 		}
 		// return false, nil
@@ -207,6 +225,8 @@ func (v *validator) validateKVRead(ns string, kvRead *kvrwset.KVRead, updates *p
 	}
 	versionedValue, err := v.db.GetState(ns, kvRead.Key)
 	if err != nil {
+		// which case?
+		v.preread_fail += 1
 		return false, err
 	}
 	var committedVersion *version.Height
@@ -226,10 +246,12 @@ func (v *validator) validateKVRead(ns string, kvRead *kvrwset.KVRead, updates *p
 			log.Fatalln("please check versionedValue in validataeKVRead", err)
 		}
 		if version.Txid == kvRead.Txid {
+			v.preread_success += 1
 			return true, nil
 		} else {
 			logger.Debugf("Version mismatch for key [%s:%s]. Committed version = [%#v], Version in readSet [%#v]",
 				ns, kvRead.Key, committedVersion, kvRead.Version)
+			v.inter_aborts += 1
 			return false, nil
 		}
 		// logger.Debugf("Version mismatch for key [%s:%s]. Committed version = [%#v], Version in readSet [%#v]",
