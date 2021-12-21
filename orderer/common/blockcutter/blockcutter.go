@@ -204,7 +204,7 @@ func (r *receiver) Cut() []*cb.Envelope {
 	var ordererSleep int
 	if ok {
 		ordererSleep, _ = strconv.Atoi(slp)
-		time.Sleep(time.Duration(ordererSleep) * time.Millisecond)
+		time.Sleep(time.Duration(ordererSleep-r.scheduler.Process_blk_latency) * time.Millisecond)
 	}
 	return batch
 }

@@ -25,6 +25,8 @@ type Scheduler struct {
 	sessionFutureTxs map[string]*PriorityQueue
 	uniqueKeyMap     map[string]int
 	uniqueKeyCounter int
+
+	Process_blk_latency int
 }
 
 func NewScheduler() *Scheduler {
@@ -165,6 +167,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 	now := time.Now()
 	defer func() {
 		sec := time.Since(now).Milliseconds()
+		scheduler.Process_blk_latency = int(sec)
 		log.Printf("debug v3 ProcessBlk in %d ms\n", sec)
 		// clear scheduler
 		scheduler.sessionTxs = map[string][]*TxNode{}
