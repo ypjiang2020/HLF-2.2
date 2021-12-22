@@ -14,6 +14,7 @@ import (
 	commonledger "github.com/Yunpeng-J/HLF-2.2/common/ledger"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/rwsetutil"
+	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset"
 	"github.com/pkg/errors"
 )
 
@@ -50,7 +51,7 @@ func (s *txSimulator) UpdateReadSet(ns string, key string, txid string) {
 	s.rwsetBuilder.UpdateReadSet(ns, key, txid)
 }
 
-func (s *txSimulator) UpdateReadSetWithValue(ns string, key string, txid string, value[]byte) {
+func (s *txSimulator) UpdateReadSetWithValue(ns string, key string, txid string, value []byte) {
 	s.rwsetBuilder.UpdateReadSetWithValue(ns, key, txid, value)
 }
 
@@ -63,8 +64,12 @@ func (s *txSimulator) PreGetState(ns string, key string, session string) *ledger
 	return s.TempDB.Get(key, session)
 }
 
-func (s *txSimulator) Commit(txid string) {
-	s.TempDB.Commit(txid)
+func (s *txSimulator) Commit(txid string, rwdSetProto *rwset.TxReadWriteDeltaSet) {
+	rwdSet, err := rwsetutil.TxRwdSetFromProtoMsg(rwdSetProto)
+	if err != nil {
+		panic(fmt.Sprintf("debug v5 TxRwdSetFromProtoMsg failed %v", err))
+	}
+	s.TempDB.Commit(txid, rwdSet)
 }
 
 func (s *txSimulator) Rollback(txid string) {

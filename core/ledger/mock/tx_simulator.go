@@ -6,13 +6,15 @@ import (
 
 	ledgera "github.com/Yunpeng-J/HLF-2.2/common/ledger"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
+	"github.com/Yunpeng-J/fabric-protos-go/ledger/rwset"
 )
 
 type TxSimulator struct {
-	CommitStub        func(string)
+	CommitStub        func(string, *rwset.TxReadWriteDeltaSet)
 	commitMutex       sync.RWMutex
 	commitArgsForCall []struct {
 		arg1 string
+		arg2 *rwset.TxReadWriteDeltaSet
 	}
 	DeletePrivateDataStub        func(string, string, string) error
 	deletePrivateDataMutex       sync.RWMutex
@@ -429,16 +431,17 @@ type TxSimulator struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *TxSimulator) Commit(arg1 string) {
+func (fake *TxSimulator) Commit(arg1 string, arg2 *rwset.TxReadWriteDeltaSet) {
 	fake.commitMutex.Lock()
 	fake.commitArgsForCall = append(fake.commitArgsForCall, struct {
 		arg1 string
-	}{arg1})
+		arg2 *rwset.TxReadWriteDeltaSet
+	}{arg1, arg2})
 	stub := fake.CommitStub
-	fake.recordInvocation("Commit", []interface{}{arg1})
+	fake.recordInvocation("Commit", []interface{}{arg1, arg2})
 	fake.commitMutex.Unlock()
 	if stub != nil {
-		fake.CommitStub(arg1)
+		fake.CommitStub(arg1, arg2)
 	}
 }
 
@@ -448,17 +451,17 @@ func (fake *TxSimulator) CommitCallCount() int {
 	return len(fake.commitArgsForCall)
 }
 
-func (fake *TxSimulator) CommitCalls(stub func(string)) {
+func (fake *TxSimulator) CommitCalls(stub func(string, *rwset.TxReadWriteDeltaSet)) {
 	fake.commitMutex.Lock()
 	defer fake.commitMutex.Unlock()
 	fake.CommitStub = stub
 }
 
-func (fake *TxSimulator) CommitArgsForCall(i int) string {
+func (fake *TxSimulator) CommitArgsForCall(i int) (string, *rwset.TxReadWriteDeltaSet) {
 	fake.commitMutex.RLock()
 	defer fake.commitMutex.RUnlock()
 	argsForCall := fake.commitArgsForCall[i]
-	return argsForCall.arg1
+	return argsForCall.arg1, argsForCall.arg2
 }
 
 func (fake *TxSimulator) DeletePrivateData(arg1 string, arg2 string, arg3 string) error {

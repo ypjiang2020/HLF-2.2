@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
+	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/rwsetutil"
 )
 
 type TempDB struct {
@@ -28,20 +29,22 @@ func (ws *WriteSet) append(key string, val []byte) {
 }
 
 type SessionDB struct {
-	session   string
-	db        map[string][]byte    // key is key
-	writeSets map[string]*WriteSet // key is txid
+	session string
+	db      map[string][]byte // key is key
+	// writeSets map[string]*WriteSet // key is txid
+	tempdb *TempDB
 }
 
 func NewTempDB() *TempDB {
 	return newTempDB()
 }
 
-func newSessionDB(session string) *SessionDB {
+func newSessionDB(session string, tdb *TempDB) *SessionDB {
 	return &SessionDB{
-		session:   session,
-		db:        map[string][]byte{},
-		writeSets: map[string]*WriteSet{},
+		session: session,
+		db:      map[string][]byte{},
+		// writeSets: map[string]*WriteSet{},
+		tempdb: tdb,
 	}
 }
 
@@ -51,7 +54,6 @@ func (sdb *SessionDB) Contain(key string) bool {
 }
 
 func (sdb *SessionDB) Get(key string) *ledger.VersionedValue {
-	// TODO: do we need to read from writeSets?
 	val, ok := sdb.db[key]
 	if !ok {
 		return nil
@@ -66,10 +68,10 @@ func (sdb *SessionDB) Get(key string) *ledger.VersionedValue {
 }
 
 func (sdb *SessionDB) Put(txid, key string, val []byte) {
-	if _, ok := sdb.writeSets[txid]; !ok {
-		sdb.writeSets[txid] = &WriteSet{}
-	}
-	sdb.writeSets[txid].append(key, val)
+	// if _, ok := sdb.writeSets[txid]; !ok {
+	// 	sdb.writeSets[txid] = &WriteSet{}
+	// }
+	// sdb.writeSets[txid].append(key, val)
 }
 
 func (sdb *SessionDB) Delete(key string) {
@@ -77,29 +79,39 @@ func (sdb *SessionDB) Delete(key string) {
 }
 
 func (sdb *SessionDB) Rollback(txid string) {
-	delete(sdb.writeSets, txid)
+	// delete(sdb.writeSets, txid)
 }
 
-func (sdb *SessionDB) Commit(txid string) {
-	if _, ok := sdb.writeSets[txid]; !ok {
-		log.Fatalln("write set not found", txid)
+func (sdb *SessionDB) Commit(txid string, rwdSet *rwsetutil.TxRwdSet) {
+	session := GetSessionFromTxid(txid)
+	for _, rwd := range rwdSet.NsRwdSets {
+		if rwd.NameSpace == "smallbank" {
+			for _, kvwrite := range rwd.KvRwdSet.Writes {
+				sdb.db[kvwrite.Key] = kvwrite.Value
+				sdb.tempdb.KeySession[kvwrite.Key] = session
+			}
+			break
+		}
 	}
-	writeset := sdb.writeSets[txid]
-	cnt := len(writeset.keys)
-	for i := 0; i < cnt; i++ {
-		var val = writeset.vals[i]
-		// verval := &VersionedValue{
-		// 	Txid: txid,
-		// 	Val:  writeset.vals[i],
-		// }
-		// val, err := json.Marshal(verval)
-		// if err != nil {
-		// 	log.Fatalf("commit to session db, marshal %v", err)
-
-		// }
-		sdb.db[writeset.keys[i]] = val
-	}
-	delete(sdb.writeSets, txid)
+	// if _, ok := sdb.writeSets[txid]; !ok {
+	// 	log.Fatalln("write set not found", txid)
+	// }
+	// jyp TODO: filter rwset
+	// writeset := sdb.writeSets[txid]
+	// cnt := len(writeset.keys)
+	// for i := 0; i < cnt; i++ {
+	// 	var val = writeset.vals[i]
+	// 	// verval := &VersionedValue{
+	// 	// 	Txid: txid,
+	// 	// 	Val:  writeset.vals[i],
+	// 	// }
+	// 	// val, err := json.Marshal(verval)
+	// 	// if err != nil {
+	// 	// 	log.Fatalf("commit to session db, marshal %v", err)
+	// 	// }
+	// 	sdb.db[writeset.keys[i]] = val
+	// }
+	// delete(sdb.writeSets, txid)
 }
 
 func newTempDB() *TempDB {
@@ -117,7 +129,6 @@ func (tdb *TempDB) Get(key, session string) *ledger.VersionedValue {
 	tdb.mutex.Lock()
 	defer tdb.mutex.Unlock()
 	// if tdb.KeySession[key] != session {
-	// 	// obsolete
 	// 	// TODO: clean
 	// 	return nil
 	// }
@@ -130,23 +141,22 @@ func (tdb *TempDB) Get(key, session string) *ledger.VersionedValue {
 }
 
 func (tdb *TempDB) Put(key, txid string, val []byte) {
-	// val has already been encoded by marshaling (txid, ori_val)
-	session := GetSessionFromTxid(txid)
-	if session == "" {
-		return
-	}
-	tdb.mutex.Lock()
-	sdb, ok := tdb.Sessions[session]
-	tdb.KeySession[key] = session
-	if ok {
-		tdb.mutex.Unlock()
-		sdb.Put(txid, key, val)
-	} else {
-		db := newSessionDB(session)
-		tdb.Sessions[session] = db
-		tdb.mutex.Unlock()
-		db.Put(txid, key, val)
-	}
+	// // val has already been encoded by marshaling (txid, ori_val)
+	// session := GetSessionFromTxid(txid)
+	// if session == "" {
+	// 	return
+	// }
+	// tdb.mutex.Lock()
+	// sdb, ok := tdb.Sessions[session]
+	// if ok {
+	// 	tdb.mutex.Unlock()
+	// 	sdb.Put(txid, key, val)
+	// } else {
+	// 	db := newSessionDB(session)
+	// 	tdb.Sessions[session] = db
+	// 	tdb.mutex.Unlock()
+	// 	db.Put(txid, key, val)
+	// }
 }
 
 func (tdb *TempDB) Rollback(txid string) {
@@ -163,18 +173,21 @@ func (tdb *TempDB) Rollback(txid string) {
 		log.Fatalln("something is wrong with the Temp DB, please check it")
 	}
 }
-func (tdb *TempDB) Commit(txid string) {
+
+func (tdb *TempDB) Commit(txid string, rwdSet *rwsetutil.TxRwdSet) {
 	session := GetSessionFromTxid(txid)
 	if session == "" {
 		return
 	}
 	tdb.mutex.Lock()
 	sdb, ok := tdb.Sessions[session]
-	tdb.mutex.Unlock()
+	defer tdb.mutex.Unlock()
 	if ok {
-		sdb.Commit(txid)
+		sdb.Commit(txid, rwdSet)
 	} else {
-		log.Fatalln("something is wrong with the Temp DB, please check it")
+		sdb = newSessionDB(session, tdb)
+		tdb.Sessions[session] = sdb
+		sdb.Commit(txid, rwdSet)
 	}
 }
 
@@ -182,13 +195,14 @@ func (tdb *TempDB) Commit(txid string) {
 func (tdb *TempDB) Prune(keySession *map[string]string) {
 	// TODO: optimization
 	st := time.Now()
-	defer func(last int64) {
-		log.Printf("benchmark prune tempdb with %d keys in %d ms\n", len(*keySession), last)
-	}(time.Since(st).Milliseconds())
+	defer func() {
+		log.Printf("benchmark prune tempdb with %d keys in %d ms\n", len(*keySession), time.Since(st).Milliseconds())
+	}()
 	tdb.mutex.Lock()
 	defer tdb.mutex.Unlock()
 	for k, s := range *keySession {
 		tdb.KeySession[k] = s
+		// 80~100 ms
 		// for sname, sdb := range tdb.Sessions {
 		// 	if sname == s {
 		// 		continue
@@ -215,12 +229,12 @@ func (tdb *TempDB) String() string {
 			res += fmt.Sprintf("\t\tkey=%s; txid=%s, val=%s\n", key, verval.Txid, verval.Val)
 		}
 		res += fmt.Sprintf("\tuncommitdb:\n")
-		for txid, rws := range sessiondb.writeSets {
-			res += fmt.Sprintf("\t\ttxid=%s:\n", txid)
-			for i := 0; i < len(rws.keys); i++ {
-				res += fmt.Sprintf("\t\t\tkey=%s; val=%s\n", rws.keys[i], string(rws.vals[i]))
-			}
-		}
+		// for txid, rws := range sessiondb.writeSets {
+		// 	res += fmt.Sprintf("\t\ttxid=%s:\n", txid)
+		// 	for i := 0; i < len(rws.keys); i++ {
+		// 		res += fmt.Sprintf("\t\t\tkey=%s; val=%s\n", rws.keys[i], string(rws.vals[i]))
+		// 	}
+		// }
 	}
 	res += fmt.Sprintf("\n")
 	return res

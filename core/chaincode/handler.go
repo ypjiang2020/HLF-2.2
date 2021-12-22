@@ -26,7 +26,6 @@ import (
 	"github.com/Yunpeng-J/HLF-2.2/core/container/ccintf"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
 	"github.com/Yunpeng-J/HLF-2.2/core/scc"
-	"github.com/Yunpeng-J/fabric-chaincode-go/shim"
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
 	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
@@ -507,25 +506,25 @@ func (h *Handler) Notify(msg *pb.ChaincodeMessage) {
 		return
 	}
 
-	// optimistic code begin
-	var res pb.Response
-	err := proto.Unmarshal(msg.Payload, &res)
-	if err != nil {
-		log.Fatalln("transaction finished, notify, unmarshal response payload error", err)
-	}
-	if res.Status >= shim.ERRORTHRESHOLD {
-		// error happened, rollback
-		if tctx.TXSimulator != nil {
-			tctx.TXSimulator.Rollback(msg.Txid)
-		}
-	} else {
-		// TODO: how do we deal with nondeterminism?
-		// After we commit, clients may receive different endorsement results because of nondeterminism.
-		if tctx.TXSimulator != nil {
-			tctx.TXSimulator.Commit(msg.Txid)
-		}
-	}
-	// optimistic code end
+	// // optimistic code begin
+	// var res pb.Response
+	// err := proto.Unmarshal(msg.Payload, &res)
+	// if err != nil {
+	// 	log.Fatalln("transaction finished, notify, unmarshal response payload error", err)
+	// }
+	// if res.Status >= shim.ERRORTHRESHOLD {
+	// 	// error happened, rollback
+	// 	if tctx.TXSimulator != nil {
+	// 		tctx.TXSimulator.Rollback(msg.Txid)
+	// 	}
+	// } else {
+	// 	// TODO: how do we deal with nondeterminism?
+	// 	// After we commit, clients may receive different endorsement results because of nondeterminism.
+	// 	if tctx.TXSimulator != nil {
+	// 		tctx.TXSimulator.Commit(msg.Txid)
+	// 	}
+	// }
+	// // optimistic code end
 
 	chaincodeLogger.Debugf("[%s] notifying Txid:%s, channelID:%s", shorttxid(msg.Txid), msg.Txid, msg.ChannelId)
 	tctx.ResponseNotifier <- msg

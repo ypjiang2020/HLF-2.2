@@ -14,10 +14,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Yunpeng-J/fabric-chaincode-go/shim"
-	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/Yunpeng-J/fabric-protos-go/transientstore"
-	"github.com/golang/protobuf/proto"
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
 	"github.com/Yunpeng-J/HLF-2.2/common/util"
 	"github.com/Yunpeng-J/HLF-2.2/core/chaincode/lifecycle"
@@ -26,6 +22,10 @@ import (
 	"github.com/Yunpeng-J/HLF-2.2/internal/pkg/identity"
 	"github.com/Yunpeng-J/HLF-2.2/msp"
 	"github.com/Yunpeng-J/HLF-2.2/protoutil"
+	"github.com/Yunpeng-J/fabric-chaincode-go/shim"
+	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
+	"github.com/Yunpeng-J/fabric-protos-go/transientstore"
+	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )
@@ -230,7 +230,15 @@ func (e *Endorser) SimulateProposal(txParams *ccprovider.TransactionParams, chai
 		e.Metrics.SimulationFailure.With(meterLabels...).Add(1)
 		return nil, nil, nil, err
 	}
-
+	// optimistic code begin
+	if res.Status >= shim.ERRORTHRESHOLD {
+		txParams.TXSimulator.Rollback(txParams.TxID)
+	} else {
+		if simResult.PubSimulationResults != nil {
+			txParams.TXSimulator.Commit(txParams.TxID, simResult.PubSimulationResults)
+		}
+	}
+	// optimistic code end
 	if simResult.PvtSimulationResults != nil {
 		if chaincodeName == "lscc" {
 			// TODO: remove once we can store collection configuration outside of LSCC
