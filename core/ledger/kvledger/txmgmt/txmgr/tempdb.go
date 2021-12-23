@@ -160,18 +160,18 @@ func (tdb *TempDB) Put(key, txid string, val []byte) {
 }
 
 func (tdb *TempDB) Rollback(txid string) {
-	session := GetSessionFromTxid(txid)
-	if session == "" {
-		return
-	}
-	tdb.mutex.Lock()
-	sdb, ok := tdb.Sessions[session]
-	tdb.mutex.Unlock()
-	if ok {
-		sdb.Rollback(txid)
-	} else {
-		log.Fatalln("something is wrong with the Temp DB, please check it")
-	}
+	// session := GetSessionFromTxid(txid)
+	// if session == "" {
+	// 	return
+	// }
+	// tdb.mutex.Lock()
+	// sdb, ok := tdb.Sessions[session]
+	// tdb.mutex.Unlock()
+	// if ok {
+	// 	sdb.Rollback(txid)
+	// } else {
+	// 	log.Fatalln("something is wrong with the Temp DB, please check it")
+	// }
 }
 
 func (tdb *TempDB) Commit(txid string, rwdSet *rwsetutil.TxRwdSet) {
