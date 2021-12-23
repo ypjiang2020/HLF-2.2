@@ -7,10 +7,10 @@ SPDX-License-Identifier: Apache-2.0
 package etcdraft
 
 import (
-	"github.com/golang/protobuf/proto"
-	cb "github.com/Yunpeng-J/fabric-protos-go/common"
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
 	"github.com/Yunpeng-J/HLF-2.2/protoutil"
+	cb "github.com/Yunpeng-J/fabric-protos-go/common"
+	"github.com/golang/protobuf/proto"
 )
 
 // blockCreator holds number and hash of latest block
@@ -24,14 +24,16 @@ type blockCreator struct {
 
 func (bc *blockCreator) createNextBlock(envs []*cb.Envelope) *cb.Block {
 	data := &cb.BlockData{
-		Data: make([][]byte, len(envs)),
+		// Data: make([][]byte, len(envs)),
 	}
 
-	var err error
-	for i, env := range envs {
-		data.Data[i], err = proto.Marshal(env)
+	for _, env := range envs {
+		temp, err := proto.Marshal(env)
 		if err != nil {
-			bc.logger.Panicf("Could not marshal envelope: %s", err)
+			// bc.logger.Panicf("Could not marshal envelope: %s", err)
+			bc.logger.Infof("debug urgent: why nil")
+		} else {
+			data.Data = append(data.Data, temp)
 		}
 	}
 

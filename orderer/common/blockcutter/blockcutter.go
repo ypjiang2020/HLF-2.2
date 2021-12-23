@@ -156,7 +156,11 @@ func (r *receiver) Ordered(msg *cb.Envelope) (messageBatches [][]*cb.Envelope, p
 	}
 
 	logger.Debugf("Enqueuing message into batch")
-	r.ScheduleMsg(msg) // optimistic code
+	// optimistic code begin
+	if !r.ScheduleMsg(msg) {
+		pending = false
+		return
+	}
 	r.pendingBatchSizeBytes += messageSizeBytes
 	pending = true
 
