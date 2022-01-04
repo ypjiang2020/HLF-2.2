@@ -128,10 +128,10 @@ func (tdb *TempDB) Get(key, session string) *ledger.VersionedValue {
 	}
 	tdb.mutex.Lock()
 	defer tdb.mutex.Unlock()
-	// if tdb.KeySession[key] != session {
-	// 	// TODO: clean
-	// 	return nil
-	// }
+	if tdb.KeySession[key] != session {
+		// TODO: clean
+		return nil
+	}
 	sdb, ok := tdb.Sessions[session]
 	if ok {
 		return sdb.Get(key)
