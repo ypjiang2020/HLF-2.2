@@ -103,7 +103,7 @@ func (u *publicAndHashUpdates) applyWriteSet(
 			if keyops.isDelete() {
 				u.publicUpdates.Delete(ns, key, txHeight)
 			} else {
-				u.publicUpdates.PutValAndMetadata(ns, key, keyops.value, keyops.metadata, txHeight)
+				u.publicUpdates.PutValAndMetadata(ns, key, keyops.value, keyops.metadata, txHeight, false)
 			}
 		} else {
 			ns, coll, keyHash := compositeKey.ns, compositeKey.coll, []byte(compositeKey.key)
@@ -137,7 +137,7 @@ func (u *publicAndHashUpdates) applyWriteSetAndDeltaSet(
 			if keyops.isDelete() {
 				u.publicUpdates.Delete(ns, key, txHeight)
 			} else {
-				u.publicUpdates.PutValAndMetadata(ns, key, keyops.value, keyops.metadata, txHeight)
+				u.publicUpdates.PutValAndMetadata(ns, key, keyops.value, keyops.metadata, txHeight, false)
 			}
 		} else {
 			ns, coll, keyHash := compositeKey.ns, compositeKey.coll, []byte(compositeKey.key)
@@ -206,7 +206,7 @@ func (u *publicAndHashUpdates) applyWriteSetAndDeltaSet(
 			}
 			// TODO: check metadata
 			// log.Printf("optimistic merge delta %v", verval)
-			u.publicUpdates.Put(ns, key, bs, txHeight)
+			u.publicUpdates.Put(ns, key, bs, txHeight, true)
 		}
 	}
 	return nil
