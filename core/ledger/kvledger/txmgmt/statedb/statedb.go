@@ -164,11 +164,16 @@ func newNsUpdates() *nsUpdates {
 type UpdateBatch struct {
 	ContainsPostOrderWrites bool
 	Updates                 map[string]*nsUpdates
+	Deltas                 map[string]*nsUpdates // optimistic code
 }
 
 // NewUpdateBatch constructs an instance of a Batch
 func NewUpdateBatch() *UpdateBatch {
-	return &UpdateBatch{false, make(map[string]*nsUpdates)}
+	return &UpdateBatch{
+		ContainsPostOrderWrites: false,
+		Updates:                 make(map[string]*nsUpdates),
+		Deltas:                  make(map[string]*nsUpdates),
+	}
 }
 
 // Get returns the VersionedValue for the given namespace and key
@@ -185,22 +190,22 @@ func (batch *UpdateBatch) Get(ns string, key string) *VersionedValue {
 }
 
 // Put adds a key with value only. The metadata is assumed to be nil
-func (batch *UpdateBatch) Put(ns string, key string, value []byte, version *version.Height) {
-	batch.PutValAndMetadata(ns, key, value, nil, version)
+func (batch *UpdateBatch) Put(ns string, key string, value []byte, version *version.Height, delta bool) {
+	batch.PutValAndMetadata(ns, key, value, nil, version, delta)
 }
 
 // PutValAndMetadata adds a key with value and metadata
 // TODO introducing a new function to limit the refactoring. Later in a separate CR, the 'Put' function above should be removed
-func (batch *UpdateBatch) PutValAndMetadata(ns string, key string, value []byte, metadata []byte, version *version.Height) {
+func (batch *UpdateBatch) PutValAndMetadata(ns string, key string, value []byte, metadata []byte, version *version.Height, delta bool) {
 	if value == nil {
 		panic("Nil value not allowed. Instead call 'Delete' function")
 	}
-	batch.Update(ns, key, &VersionedValue{value, metadata, version})
+	batch.Update(ns, key, &VersionedValue{value, metadata, version}, delta)
 }
 
 // Delete deletes a Key and associated value
 func (batch *UpdateBatch) Delete(ns string, key string, version *version.Height) {
-	batch.Update(ns, key, &VersionedValue{nil, nil, version})
+	batch.Update(ns, key, &VersionedValue{nil, nil, version}, false)
 }
 
 // Exists checks whether the given key exists in the batch
@@ -225,8 +230,11 @@ func (batch *UpdateBatch) GetUpdatedNamespaces() []string {
 }
 
 // Update updates the batch with a latest entry for a namespace and a key
-func (batch *UpdateBatch) Update(ns string, key string, vv *VersionedValue) {
+func (batch *UpdateBatch) Update(ns string, key string, vv *VersionedValue, delta bool) {
 	batch.getOrCreateNsUpdates(ns).M[key] = vv
+	if delta {
+		batch.getOrCreateNsDeltas(ns).M[key] = vv
+	}
 }
 
 // GetUpdates returns all the updates for a namespace
@@ -254,7 +262,7 @@ func (batch *UpdateBatch) Merge(toMerge *UpdateBatch) {
 	batch.ContainsPostOrderWrites = batch.ContainsPostOrderWrites || toMerge.ContainsPostOrderWrites
 	for ns, nsUpdates := range toMerge.Updates {
 		for key, vv := range nsUpdates.M {
-			batch.Update(ns, key, vv)
+			batch.Update(ns, key, vv, false)
 		}
 	}
 }
@@ -264,6 +272,15 @@ func (batch *UpdateBatch) getOrCreateNsUpdates(ns string) *nsUpdates {
 	if nsUpdates == nil {
 		nsUpdates = newNsUpdates()
 		batch.Updates[ns] = nsUpdates
+	}
+	return nsUpdates
+}
+
+func (batch *UpdateBatch) getOrCreateNsDeltas(ns string) *nsUpdates {
+	nsUpdates := batch.Deltas[ns]
+	if nsUpdates == nil {
+		nsUpdates = newNsUpdates()
+		batch.Deltas[ns] = nsUpdates
 	}
 	return nsUpdates
 }

@@ -10,7 +10,6 @@ import (
 	"encoding/base64"
 	"strings"
 
-	"github.com/hyperledger/fabric-lib-go/healthz"
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
 	"github.com/Yunpeng-J/HLF-2.2/common/metrics"
 	"github.com/Yunpeng-J/HLF-2.2/core/common/ccprovider"
@@ -22,6 +21,7 @@ import (
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/statedb/statecouchdb"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/kvledger/txmgmt/statedb/stateleveldb"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/util"
+	"github.com/hyperledger/fabric-lib-go/healthz"
 	"github.com/pkg/errors"
 )
 
@@ -366,7 +366,7 @@ func addPvtUpdates(pubUpdateBatch *PubUpdateBatch, pvtUpdateBatch *PvtUpdateBatc
 	for ns, nsBatch := range pvtUpdateBatch.UpdateMap {
 		for _, coll := range nsBatch.GetCollectionNames() {
 			for key, vv := range nsBatch.GetUpdates(coll) {
-				pubUpdateBatch.Update(derivePvtDataNs(ns, coll), key, vv)
+				pubUpdateBatch.Update(derivePvtDataNs(ns, coll), key, vv, false)
 			}
 		}
 	}
@@ -379,7 +379,7 @@ func addHashedUpdates(pubUpdateBatch *PubUpdateBatch, hashedUpdateBatch *HashedU
 				if base64Key {
 					key = base64.StdEncoding.EncodeToString([]byte(key))
 				}
-				pubUpdateBatch.Update(deriveHashedDataNs(ns, coll), key, vv)
+				pubUpdateBatch.Update(deriveHashedDataNs(ns, coll), key, vv, false)
 			}
 		}
 	}
