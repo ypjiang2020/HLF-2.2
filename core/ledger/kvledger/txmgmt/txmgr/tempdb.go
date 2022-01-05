@@ -192,23 +192,23 @@ func (tdb *TempDB) Commit(txid string, rwdSet *rwsetutil.TxRwdSet) {
 }
 
 // Prune: delete all obsolete keys
-func (tdb *TempDB) Prune(keySession *map[string]string) {
+func (tdb *TempDB) Prune(deltaSet *map[string]*ledger.VersionedValue) {
 	// TODO: optimization
 	st := time.Now()
 	defer func() {
-		log.Printf("benchmark prune tempdb with %d keys in %d ms\n", len(*keySession), time.Since(st).Milliseconds())
+		log.Printf("benchmark prune tempdb with %d keys in %d ms\n", len(*deltaSet), time.Since(st).Milliseconds())
 	}()
 	tdb.mutex.Lock()
 	defer tdb.mutex.Unlock()
-	for k, s := range *keySession {
-		tdb.KeySession[k] = s
+	for k, s := range *deltaSet {
+		session := GetSessionFromTxid(s.Txid)
+		tdb.KeySession[k] = session
 		// 80~100 ms
-		// for sname, sdb := range tdb.Sessions {
-		// 	if sname == s {
-		// 		continue
-		// 	}
-		// 	sdb.Delete(k)
-		// }
+		for sname, sdb := range tdb.Sessions {
+			if sname != session {
+				sdb.Delete(k)
+			}
+		}
 	}
 }
 

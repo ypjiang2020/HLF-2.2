@@ -561,18 +561,18 @@ func (txmgr *LockBasedTxMgr) Commit() error {
 		return err
 	}
 	// optimistic code begin
-	keysession := make(map[string]string)
-	for _, data := range txmgr.current.batch.PubUpdates.Updates {
+	deltaSet := make(map[string]*ledger.VersionedValue)
+	for _, data := range txmgr.current.batch.PubUpdates.Deltas {
 		// log.Printf("debug namespace=%s", ns)
 		for k, v := range data.M {
 			var verval ledger.VersionedValue
 			err := json.Unmarshal(v.Value, &verval)
 			if err == nil {
-				keysession[k] = GetSessionFromTxid(verval.Txid)
+				deltaSet[k] = &verval
 			}
 		}
 	}
-	txmgr.tempdb.Prune(&keysession)
+	txmgr.tempdb.Prune(&deltaSet)
 	// optimistic code end
 
 	txmgr.commitRWLock.Unlock()
