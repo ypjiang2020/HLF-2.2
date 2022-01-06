@@ -1,6 +1,7 @@
 package scheduler
 
 import (
+	"fmt"
 	"log"
 	"sort"
 )
@@ -44,16 +45,23 @@ func (f *fvs) Run() (int32, []bool) {
 	sccGen := NewTarjanSCC(f.graph)
 	sccGen.SCC()
 
-	for _, scc := range sccGen.GetSCCs() {
+	for i, scc := range sccGen.GetSCCs() {
+		tempcc := fmt.Sprintf("debug v2 scc id %d member", i)
+		for _, vertex := range scc.Vertices {
+			tempcc += fmt.Sprintf(" %d", vertex)
+		}
+		log.Println(tempcc)
 		// for j, ok := range scc.Member {
 		// 	if ok {
 		// 		log.Println(j)
 		// 	}
 		// }
+
 		inv := f.BreakCycles(&scc)
 		for _, vertex := range scc.Vertices {
 			invalidVertices[vertex] = inv[vertex]
 		}
+
 	}
 	for i := 0; i < f.nvertices; i++ {
 		if invalidVertices[i] {
@@ -131,6 +139,10 @@ func (f *fvs) FindCyclesRecur(component *SCC, explore []bool, startV, currentV i
 			continue
 		} else if n == startV {
 			// found a cycle
+			// if len(*cycles) > 1000 {
+			// 	// TODO: deal with complete graph
+			// 	return false
+			// }
 			// log.Println("debug v3 trace findcycle", len(*cycles))
 			foundCycle = true
 			cycle := make([]int32, 0, len(*stack))

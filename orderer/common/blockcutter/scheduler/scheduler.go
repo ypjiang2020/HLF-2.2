@@ -318,13 +318,13 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 	log.Println("debug v3 build node in", time.Since(__temp).Milliseconds())
 	__temp = time.Now()
 
-	log.Println("debug v2 number of nodes", numOfNodes)
+	// log.Println("debug v2 number of nodes", numOfNodes)
 	// for i := 0; i < int(numOfNodes); i++ {
-	// 	log.Printf("debug v2: node %d contains:", i)
+	// 	ps := fmt.Sprintf("debug v2: node %d contains:", i)
 	// 	for j := 0; j < len(allNodes[i].txids); j++ {
-	// 		log.Printf(" %s", allNodes[i].txids[j])
+	// 		ps += fmt.Sprintf(" %s", allNodes[i].txids[j])
 	// 	}
-	// 	log.Println("")
+	// 	log.Println(ps)
 	// }
 	// build dependency graph
 	graph := make([][]int32, numOfNodes)
@@ -354,14 +354,14 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 	}
 	log.Println("debug v3 build graph in", time.Since(__temp).Milliseconds())
 	__temp = time.Now()
-	// log.Printf("debug v2 graph\n")
-	// for i := int32(0); i < numOfNodes; i++ {
-	// 	ps := fmt.Sprintf("debug v2 Node %d: ", i)
-	// 	for j := 0; j < len(graph[i]); j++ {
-	// 		ps = ps + fmt.Sprintf("%d ", graph[i][j])
-	// 	}
-	// 	log.Println(ps)
-	// }
+	log.Printf("debug v2 graph\n")
+	for i := int32(0); i < numOfNodes; i++ {
+		ps := fmt.Sprintf("debug v2 Node weight %d nodeid %d ", len(allNodes[i].txids), i)
+		for j := 0; j < len(graph[i]); j++ {
+			ps = ps + fmt.Sprintf("%d ", graph[i][j])
+		}
+		log.Println(ps)
+	}
 
 	// schedule
 	schedule, invSet := scheduler.getSchedule(&graph, &invgraph, &allNodes)
@@ -393,6 +393,13 @@ func (scheduler *Scheduler) getSchedule(graph *[][]int32, invgraph *[][]int32, a
 	dagGenerator := NewFVS(graph, allNodes)
 	invCount, invSet := dagGenerator.Run()
 	// log.Printf("debug v2 invalid ndoes: %v", invSet)
+	invtemp := "debug v2 Node invalid"
+	for i, ok := range invSet {
+		if ok {
+			invtemp += fmt.Sprintf(" %d", i)
+		}
+	}
+	log.Println(invtemp)
 	n := int32(len(*graph))
 	visited := make([]bool, n)
 	schedule := make([]int32, 0, n-invCount)
