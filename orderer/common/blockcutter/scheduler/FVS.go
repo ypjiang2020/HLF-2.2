@@ -193,70 +193,95 @@ func (f *fvs) Unblock(v int32, blocked []bool, blockedMap *[][]int32) {
 func (f *fvs) BreakCycles(component *SCC) []bool {
 	invalidVertices := make([]bool, f.nvertices)
 	// log.Println("debug v3 breakcycles 0")
-	circles, _, sumArray, _ := f.FindCycles(component)
+	// circles, _, sumArray, _ := f.FindCycles(component)
 	// log.Println("debug v3 breakcycles 1")
 
 	// phase 1
-	n := len(circles)
-	vis := make([]bool, n)
-	for i := 0; i < n; i++ {
-		if vis[i] == false {
-			vis[i] = true
-			min := int(1e9)
-			idx := -1
-			for j := 0; j < len(circles[i]); j++ {
-				if min > (*f.allNodes)[circles[i][j]].weight {
-					idx = int(circles[i][j])
-					min = (*f.allNodes)[circles[i][j]].weight
-				}
-			}
-			for j := 0; j < len(circles[i]); j++ {
-				(*f.allNodes)[circles[i][j]].weight -= min
-			}
-			invalidVertices[idx] = true
+	// n := len(circles)
+	// vis := make([]bool, n)
+	// for i := 0; i < n; i++ {
+	// 	if vis[i] == false {
+	// 		vis[i] = true
+	// 		min := int(1e9)
+	// 		idx := -1
+	// 		for j := 0; j < len(circles[i]); j++ {
+	// 			if min > (*f.allNodes)[circles[i][j]].weight {
+	// 				idx = int(circles[i][j])
+	// 				min = (*f.allNodes)[circles[i][j]].weight
+	// 			}
+	// 		}
+	// 		for j := 0; j < len(circles[i]); j++ {
+	// 			(*f.allNodes)[circles[i][j]].weight -= min
+	// 		}
+	// 		invalidVertices[idx] = true
 
-			for _, cid := range sumArray[idx] {
-				vis[cid] = true
-				// for _, cur := range circles[cid] {
-				// 		(*f.allNodes)[cur].weight -= min
-				// 	}
-			}
-		}
-	}
+	// 		for _, cid := range sumArray[idx] {
+	// 			vis[cid] = true
+	// 			// for _, cur := range circles[cid] {
+	// 			// 		(*f.allNodes)[cur].weight -= min
+	// 			// 	}
+	// 		}
+	// 	}
+	// }
 
 	// check circles
-	existCircle := func() bool {
-		var dfs func(cur int) bool
+	existCircle := func() []int {
 		vis := make([]int, f.nvertices)
-		dfs = func(cur int) bool {
+		var dfs func(cur int, stack []int) []int
+		dfs = func(cur int, stack []int) []int {
 			vis[cur] = 1
+			stack = append(stack, cur)
 			for _, v := range (*f.graph)[cur] {
 				if vis[v] == 1 {
-					return true
+					var i int
+					for i = 0; i < len(stack); i++ {
+						if stack[i] == int(v) {
+							break
+						}
+					}
+					return stack[i:]
 				}
 				if component.Member[v] && vis[v] == 0 && invalidVertices[v] == false {
-					if dfs(int(v)) == true {
-						return true
+					res := dfs(int(v), stack)
+					if len(res) > 0 {
+						return res
 					}
 				}
 			}
 			vis[cur] = 2
-			return false
+			return nil
 		}
 		for i := 0; i < len(component.Vertices); i++ {
 			id := component.Vertices[i]
 			if vis[id] == 0 && invalidVertices[id] == false {
-				if dfs(int(id)) == true {
+				stack := []int{}
+				res := dfs(int(id), stack)
+				if len(res) > 0 {
 					// found circle
-					return true
+					return res
 				}
 			}
 		}
-		return false
+		return nil
 	}
 	// debug
-	if existCircle() {
-		panic("debug v2 circle!!")
+	res := existCircle()
+	for len(res) > 0 {
+		minWeight := int(1e9)
+		minId := -1
+		for i := 0; i < len(res); i++ {
+			id := res[i]
+			if (*f.allNodes)[id].weight < minWeight {
+				minWeight = (*f.allNodes)[id].weight
+				minId = id
+			}
+		}
+		invalidVertices[minId] = true
+		for i := 0; i < len(res); i++ {
+			id := res[i]
+			(*f.allNodes)[id].weight -= minWeight
+		}
+		res = existCircle()
 	}
 
 	// sort deleted nodes by weight
@@ -279,7 +304,7 @@ func (f *fvs) BreakCycles(component *SCC) []bool {
 	// phase 2
 	for _, node := range deleted {
 		invalidVertices[node.idx] = false
-		if existCircle() {
+		if len(existCircle()) > 0 {
 			invalidVertices[node.idx] = true
 		} else {
 			log.Printf("debug v2 recover deleted node: %d", node.idx)
