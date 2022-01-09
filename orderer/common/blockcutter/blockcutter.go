@@ -90,6 +90,7 @@ func (r *receiver) ScheduleMsg(msg *cb.Envelope) bool {
 			r.pendingBatch[chdr.TxId] = msg
 			return true
 		} else {
+			log.Printf("debug v7 drop transaction %s", chdr.TxId)
 			return false
 		}
 	}
@@ -188,10 +189,17 @@ func (r *receiver) Cut() []*cb.Envelope {
 	st := time.Now()
 	schedule, invalid := r.scheduler.ProcessBlk()
 	r.Metrics.BlockScheduleDuration.With("channel", r.ChannelID).Observe(time.Since(st).Seconds())
+	log.Printf("debug v7 len_of_schedule %d len_of_invalid %d len_of_batching %d", len(schedule), len(invalid), len(r.pendingBatch))
 	for _, txId := range schedule {
+		if r.pendingBatch[txId] == nil {
+			log.Printf("debug v7 pendingbatch valid nil %s", txId)
+		}
 		batch = append(batch, r.pendingBatch[txId])
 	}
 	for _, txId := range invalid {
+		if r.pendingBatch[txId] == nil {
+			log.Printf("debug v7 pendingbatch invalid nil %s", txId)
+		}
 		batch = append(batch, r.pendingBatch[txId])
 	}
 	// debug

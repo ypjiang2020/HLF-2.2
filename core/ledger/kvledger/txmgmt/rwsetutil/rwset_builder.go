@@ -21,6 +21,7 @@ package rwsetutil
 import (
 	"encoding/json"
 	"log"
+	"math"
 
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
@@ -331,15 +332,15 @@ func CalculateDeltaFromRWset(readSet []*kvrwset.KVRead, writeSet []*kvrwset.KVWr
 		flag := false
 		for k, v := range t_obj {
 			switch vv := v.(type) {
-			case int:
-				tempDelta := vv - initial_map[ws.Key][k].(int)
-				if tempDelta > 0 {
+			case int64:
+				tempDelta := vv - initial_map[ws.Key][k].(int64)
+				if tempDelta >= 0 {
 					flag = true
 					t_obj[k] = tempDelta
 				}
 			case float64:
 				tempDelta := vv - initial_map[ws.Key][k].(float64)
-				if tempDelta > 0 {
+				if tempDelta > 0 || math.Abs(tempDelta) < 1e-6 {
 					flag = true
 					t_obj[k] = tempDelta
 				}

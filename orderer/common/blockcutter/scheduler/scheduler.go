@@ -252,6 +252,9 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 				for _, idx := range found {
 					cur := nodes[idx]
 					// merge
+					if cur == nil {
+						panic("debug v7 node is nil")
+					}
 					node.txids = append(node.txids, cur.txids...)
 					for k := 0; k < (maxUniqueKeys / 64); k++ {
 						node.readSet[k] |= cur.readSet[k]
