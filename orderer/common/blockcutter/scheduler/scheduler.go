@@ -357,14 +357,14 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 	}
 	log.Println("debug v3 build graph in", time.Since(__temp).Milliseconds())
 	__temp = time.Now()
-	log.Printf("debug v2 graph\n")
-	for i := int32(0); i < numOfNodes; i++ {
-		ps := fmt.Sprintf("debug v2 Node weight %d nodeid %d ", len(allNodes[i].txids), i)
-		for j := 0; j < len(graph[i]); j++ {
-			ps = ps + fmt.Sprintf("%d ", graph[i][j])
-		}
-		log.Println(ps)
-	}
+	// log.Printf("debug v2 graph\n")
+	// for i := int32(0); i < numOfNodes; i++ {
+	// 	ps := fmt.Sprintf("debug v2 Node weight %d nodeid %d ", len(allNodes[i].txids), i)
+	// 	for j := 0; j < len(graph[i]); j++ {
+	// 		ps = ps + fmt.Sprintf("%d ", graph[i][j])
+	// 	}
+	// 	log.Println(ps)
+	// }
 
 	// schedule
 	schedule, invSet := scheduler.getSchedule(&graph, &invgraph, &allNodes)

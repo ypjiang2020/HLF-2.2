@@ -1,7 +1,6 @@
 package scheduler
 
 import (
-	"fmt"
 	"log"
 	"sort"
 )
@@ -45,12 +44,12 @@ func (f *fvs) Run() (int32, []bool) {
 	sccGen := NewTarjanSCC(f.graph)
 	sccGen.SCC()
 
-	for i, scc := range sccGen.GetSCCs() {
-		tempcc := fmt.Sprintf("debug v2 scc id %d member", i)
-		for _, vertex := range scc.Vertices {
-			tempcc += fmt.Sprintf(" %d", vertex)
-		}
-		log.Println(tempcc)
+	for _, scc := range sccGen.GetSCCs() {
+		// tempcc := fmt.Sprintf("debug v2 scc id %d member", i)
+		// for _, vertex := range scc.Vertices {
+		// 	tempcc += fmt.Sprintf(" %d", vertex)
+		// }
+		// log.Println(tempcc)
 		// for j, ok := range scc.Member {
 		// 	if ok {
 		// 		log.Println(j)
