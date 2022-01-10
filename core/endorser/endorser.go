@@ -12,6 +12,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
@@ -109,7 +110,7 @@ type Endorser struct {
 
 	// optimistic code begin
 	// Txpool *TxPool
-	// contextManager     ContextManager
+	contextManager     *ContextManager
 
 	// optimistic code end
 }
@@ -123,13 +124,45 @@ func NewEndorser(pdd PrivateDataDistributor, cf ChannelFetcher, lmsp msp.Identit
 		Metrics:                mt,
 	}
 	// optimistic code begin
-	// endorser.Txpool = NewTxPool(endorser)
+	endorser.contextManager = NewContextManager()
+	go endorser.run()
 	// optimistic code end
 	return endorser
 }
 
-// call specified chaincode (system or user)
+func (e *Endorser) run() {
+	for {
+		ctx := e.contextManager.Get()
+		if ctx == nil {
+			time.Sleep(time.Duration(1)*time.Millisecond)
+			continue
+		}
+		ctx.response, ctx.event, ctx.err = e.callChaincode_ori(ctx.txParams, ctx.input, ctx.chaincodeName)
+		ctx.ch <- struct{}{}
+	}
+}
+
 func (e *Endorser) callChaincode(txParams *ccprovider.TransactionParams, input *pb.ChaincodeInput, chaincodeName string) (*pb.Response, *pb.ChaincodeEvent, error) {
+	temp := strings.Split(txParams.TxID, "_+=+_")
+	if len(temp) != 3 {
+		return e.callChaincode_ori(txParams, input, chaincodeName)
+	}
+	seq, err := strconv.Atoi(temp[0])
+	if err != nil {
+		panic(fmt.Sprintf("extract seq number from txid panic %v", err))
+	}
+	ctx := e.contextManager.Create(seq, txParams, input, chaincodeName)
+	select {
+	case <- ctx.ch:
+		return ctx.response, ctx.event, ctx.err
+	case <- time.After(time.Duration(20)*time.Millisecond):
+		e.contextManager.Delete(seq)
+		return nil, nil, fmt.Errorf("transaction %s timeout", txParams.TxID)
+	}
+}
+
+// call specified chaincode (system or user)
+func (e *Endorser) callChaincode_ori(txParams *ccprovider.TransactionParams, input *pb.ChaincodeInput, chaincodeName string) (*pb.Response, *pb.ChaincodeEvent, error) {
 	defer func(start time.Time) {
 		logger := endorserLogger.WithOptions(zap.AddCallerSkip(1))
 		logger = decorateLogger(logger, txParams)
