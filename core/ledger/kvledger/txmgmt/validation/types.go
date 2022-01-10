@@ -185,8 +185,8 @@ func (u *publicAndHashUpdates) applyWriteSetAndDeltaSet(
 			t_delta_obj, _ := delta_obj.(map[string]interface{})
 			for k, v := range t_delta_obj {
 				switch vv := v.(type) {
-				case int:
-					tempRes := t_db_obj[k].(int) + vv
+				case int64:
+					tempRes := t_db_obj[k].(int64) + vv
 					t_delta_obj[k] = tempRes
 				case float64:
 					tempRes := t_db_obj[k].(float64) + vv
