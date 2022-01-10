@@ -14,9 +14,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/Yunpeng-J/fabric-protos-go/common"
-	"github.com/Yunpeng-J/fabric-protos-go/peer"
-	"github.com/golang/protobuf/proto"
 	"github.com/Yunpeng-J/HLF-2.2/bccsp"
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
 	commonledger "github.com/Yunpeng-J/HLF-2.2/common/ledger"
@@ -34,6 +31,9 @@ import (
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger/pvtdatastorage"
 	"github.com/Yunpeng-J/HLF-2.2/internal/pkg/txflags"
 	"github.com/Yunpeng-J/HLF-2.2/protoutil"
+	"github.com/Yunpeng-J/fabric-protos-go/common"
+	"github.com/Yunpeng-J/fabric-protos-go/peer"
+	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
 )
 
