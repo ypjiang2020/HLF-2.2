@@ -168,7 +168,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 	defer func() {
 		sec := time.Since(now).Milliseconds()
 		scheduler.Process_blk_latency = int(sec)
-		log.Printf("debug v3 ProcessBlk in %d ms\n", sec)
+		log.Printf("benchmark ProcessBlk in %d ms\n", sec)
 		// clear scheduler
 		scheduler.sessionTxs = map[string][]*TxNode{}
 		scheduler.uniqueKeyCounter = 0
@@ -186,7 +186,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 	// sort sessionNames to guarantee determinism
 	sort.Strings(sessionNames)
 	// log.Println("debug v1 session names", sessionNames)
-	log.Println("debug v3", time.Since(now).Milliseconds())
+	// log.Println("debug v3", time.Since(now).Milliseconds())
 
 	__temp := time.Now()
 
@@ -318,10 +318,11 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 			}
 		}
 	}
-	log.Println("debug v3 build node in", time.Since(__temp).Milliseconds())
+	log.Printf("benchmark build node in %d ms", time.Since(__temp).Milliseconds())
 	__temp = time.Now()
 
-	// log.Println("debug v2 number of nodes", numOfNodes)
+	log.Println("benchmark number of nodes", numOfNodes)
+	log.Println("benchmark number of keys", scheduler.uniqueKeyCounter)
 	// for i := 0; i < int(numOfNodes); i++ {
 	// 	ps := fmt.Sprintf("debug v2: node %d contains:", i)
 	// 	for j := 0; j < len(allNodes[i].txids); j++ {
@@ -336,12 +337,13 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 		graph[i] = make([]int32, 0, numOfNodes)
 		invgraph[i] = make([]int32, 0, numOfNodes)
 	}
+	// log.Printf("benchmark allocate memory in %d ms", time.Since(__temp).Milliseconds())
 	for i := int32(0); i < numOfNodes; i++ {
 		for j := int32(0); j < numOfNodes; j++ {
 			if i == j {
 				continue
 			}
-			for k := 0; k < (maxUniqueKeys / 64); k++ {
+			for k := 0; k < (scheduler.uniqueKeyCounter / 64); k++ {
 				if allNodes[i].writeSet[k]&allNodes[j].readSet[k] != 0 {
 					graph[i] = append(graph[i], j)
 					invgraph[j] = append(invgraph[j], i)
@@ -355,7 +357,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 			}
 		}
 	}
-	log.Println("debug v3 build graph in", time.Since(__temp).Milliseconds())
+	log.Printf("benchmark build graph in %d ms", time.Since(__temp).Milliseconds())
 	__temp = time.Now()
 	// log.Printf("debug v2 graph\n")
 	// for i := int32(0); i < numOfNodes; i++ {
@@ -386,7 +388,7 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 			}
 		}
 	}
-	log.Println("debug v3 schedule in", time.Since(__temp).Milliseconds())
+	log.Printf("benchmark schedule in %d ms", time.Since(__temp).Milliseconds())
 
 	return result, invalidTxns
 }

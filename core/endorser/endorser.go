@@ -498,7 +498,9 @@ func (e *Endorser) ProcessProposalSuccessfullyOrError(up *UnpackedProposal) (*pb
 	}
 	if seq == 0 {
 		res, err := e.ProcessProposalSuccessfullyOrError_ori(up)
-		e.contextManager.SetNext(1, temp[1])
+		if temp[2][len(temp[2])-5:] != "#end#" { // adhoc
+			e.contextManager.SetNext(1, temp[1])
+		}
 		return res, err
 	}
 	ctx := e.contextManager.Create(seq, temp[1], up)
