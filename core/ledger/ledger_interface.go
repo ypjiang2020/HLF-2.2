@@ -322,7 +322,7 @@ type TxSimulator interface {
 	UpdateReadSet(namespace, key, txid string)
 	UpdateReadSetWithValue(namespace, key, txid string, value []byte)
 	PreSetState(namespace string, key string, value []byte) error
-	PreGetState(namespace string, key string, session string) *VersionedValue
+	PreGetState(namespace string, key string, session string) (*VersionedValue, []byte)
 	Commit(txid string, rwdSetProto *rwset.TxReadWriteDeltaSet)
 	Rollback(txid string)
 	// optimistic code end

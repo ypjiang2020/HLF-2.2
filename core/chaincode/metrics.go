@@ -50,6 +50,7 @@ var (
 		Name:         "shim_request_duration",
 		Help:         "The time to complete chaincode shim requests.",
 		LabelNames:   []string{"type", "channel", "chaincode", "success"},
+		Buckets:      []float64{0.000002, 0.000004, 0.000008, 0.000016, 0.000024, 0.000032, 0.00004, 0.000048, 0.000064, 0.0001, 0.001, 0.01},
 		StatsdFormat: "%{#fqname}.%{type}.%{channel}.%{chaincode}.%{success}",
 	}
 	executeTimeouts = metrics.CounterOpts{

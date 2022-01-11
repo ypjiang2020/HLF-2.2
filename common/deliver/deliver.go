@@ -13,9 +13,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/golang/protobuf/proto"
-	cb "github.com/Yunpeng-J/fabric-protos-go/common"
-	ab "github.com/Yunpeng-J/fabric-protos-go/orderer"
 	"github.com/Yunpeng-J/HLF-2.2/common/crypto"
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
 	"github.com/Yunpeng-J/HLF-2.2/common/ledger/blockledger"
@@ -23,6 +20,9 @@ import (
 	"github.com/Yunpeng-J/HLF-2.2/common/util"
 	"github.com/Yunpeng-J/HLF-2.2/internal/pkg/comm"
 	"github.com/Yunpeng-J/HLF-2.2/protoutil"
+	cb "github.com/Yunpeng-J/fabric-protos-go/common"
+	ab "github.com/Yunpeng-J/fabric-protos-go/orderer"
+	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
 )
 

@@ -106,6 +106,8 @@ func (b *RWSetBuilder) UpdateReadSet(ns string, key string, txid string) {
 func (b *RWSetBuilder) UpdateReadSetWithValue(ns string, key string, txid string, value []byte) {
 	nsPubRwBuilder := b.getOrCreateNsPubRwBuilder(ns)
 	if _, ok := nsPubRwBuilder.readMap[key]; !ok {
+		nsPubRwBuilder.readMap[key] = NewKVReadWithValue(key, nil, value)
+		nsPubRwBuilder.readMap[key].Txid = txid
 		return
 	}
 	nsPubRwBuilder.readMap[key].Txid = txid

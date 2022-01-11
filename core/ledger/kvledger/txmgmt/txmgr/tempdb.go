@@ -53,10 +53,10 @@ func (sdb *SessionDB) Contain(key string) bool {
 	return ok
 }
 
-func (sdb *SessionDB) Get(key string) *ledger.VersionedValue {
+func (sdb *SessionDB) Get(key string) (*ledger.VersionedValue, []byte) {
 	val, ok := sdb.db[key]
 	if !ok {
-		return nil
+		return nil, nil
 	}
 
 	versionedValue := &ledger.VersionedValue{}
@@ -64,7 +64,7 @@ func (sdb *SessionDB) Get(key string) *ledger.VersionedValue {
 	if err != nil {
 		log.Fatalln("get from session db,", key, versionedValue.Txid, err)
 	}
-	return versionedValue
+	return versionedValue, val
 }
 
 func (sdb *SessionDB) Put(txid, key string, val []byte) {
@@ -122,21 +122,21 @@ func newTempDB() *TempDB {
 	return res
 }
 
-func (tdb *TempDB) Get(key, session string) *ledger.VersionedValue {
+func (tdb *TempDB) Get(key, session string) (*ledger.VersionedValue, []byte) {
 	if session == "" {
-		return nil
+		return nil, nil
 	}
 	tdb.mutex.Lock()
 	defer tdb.mutex.Unlock()
 	if tdb.KeySession[key] != session {
 		// TODO: clean
-		return nil
+		return nil, nil
 	}
 	sdb, ok := tdb.Sessions[session]
 	if ok {
 		return sdb.Get(key)
 	} else {
-		return nil
+		return nil, nil
 	}
 }
 

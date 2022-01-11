@@ -302,7 +302,7 @@ type TxSimulator struct {
 		result1 *ledger.TxSimulationResults
 		result2 error
 	}
-	PreGetStateStub        func(string, string, string) *ledger.VersionedValue
+	PreGetStateStub        func(string, string, string) (*ledger.VersionedValue, []byte)
 	preGetStateMutex       sync.RWMutex
 	preGetStateArgsForCall []struct {
 		arg1 string
@@ -311,9 +311,11 @@ type TxSimulator struct {
 	}
 	preGetStateReturns struct {
 		result1 *ledger.VersionedValue
+		result2 []byte
 	}
 	preGetStateReturnsOnCall map[int]struct {
 		result1 *ledger.VersionedValue
+		result2 []byte
 	}
 	PreSetStateStub        func(string, string, []byte) error
 	preSetStateMutex       sync.RWMutex
@@ -1793,7 +1795,7 @@ func (fake *TxSimulator) GetTxSimulationResultsReturnsOnCall(i int, result1 *led
 	}{result1, result2}
 }
 
-func (fake *TxSimulator) PreGetState(arg1 string, arg2 string, arg3 string) *ledger.VersionedValue {
+func (fake *TxSimulator) PreGetState(arg1 string, arg2 string, arg3 string) (*ledger.VersionedValue, []byte) {
 	fake.preGetStateMutex.Lock()
 	ret, specificReturn := fake.preGetStateReturnsOnCall[len(fake.preGetStateArgsForCall)]
 	fake.preGetStateArgsForCall = append(fake.preGetStateArgsForCall, struct {
@@ -1809,9 +1811,9 @@ func (fake *TxSimulator) PreGetState(arg1 string, arg2 string, arg3 string) *led
 		return stub(arg1, arg2, arg3)
 	}
 	if specificReturn {
-		return ret.result1
+		return ret.result1, ret.result2
 	}
-	return fakeReturns.result1
+	return fakeReturns.result1, fakeReturns.result2
 }
 
 func (fake *TxSimulator) PreGetStateCallCount() int {
@@ -1820,7 +1822,7 @@ func (fake *TxSimulator) PreGetStateCallCount() int {
 	return len(fake.preGetStateArgsForCall)
 }
 
-func (fake *TxSimulator) PreGetStateCalls(stub func(string, string, string) *ledger.VersionedValue) {
+func (fake *TxSimulator) PreGetStateCalls(stub func(string, string, string) (*ledger.VersionedValue, []byte)) {
 	fake.preGetStateMutex.Lock()
 	defer fake.preGetStateMutex.Unlock()
 	fake.PreGetStateStub = stub
@@ -1833,27 +1835,30 @@ func (fake *TxSimulator) PreGetStateArgsForCall(i int) (string, string, string) 
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
-func (fake *TxSimulator) PreGetStateReturns(result1 *ledger.VersionedValue) {
+func (fake *TxSimulator) PreGetStateReturns(result1 *ledger.VersionedValue, result2 []byte) {
 	fake.preGetStateMutex.Lock()
 	defer fake.preGetStateMutex.Unlock()
 	fake.PreGetStateStub = nil
 	fake.preGetStateReturns = struct {
 		result1 *ledger.VersionedValue
-	}{result1}
+		result2 []byte
+	}{result1, result2}
 }
 
-func (fake *TxSimulator) PreGetStateReturnsOnCall(i int, result1 *ledger.VersionedValue) {
+func (fake *TxSimulator) PreGetStateReturnsOnCall(i int, result1 *ledger.VersionedValue, result2 []byte) {
 	fake.preGetStateMutex.Lock()
 	defer fake.preGetStateMutex.Unlock()
 	fake.PreGetStateStub = nil
 	if fake.preGetStateReturnsOnCall == nil {
 		fake.preGetStateReturnsOnCall = make(map[int]struct {
 			result1 *ledger.VersionedValue
+			result2 []byte
 		})
 	}
 	fake.preGetStateReturnsOnCall[i] = struct {
 		result1 *ledger.VersionedValue
-	}{result1}
+		result2 []byte
+	}{result1, result2}
 }
 
 func (fake *TxSimulator) PreSetState(arg1 string, arg2 string, arg3 []byte) error {

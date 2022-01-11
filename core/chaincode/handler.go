@@ -623,7 +623,7 @@ func (h *Handler) HandleGetState(msg *pb.ChaincodeMessage, txContext *Transactio
 
 	var resv []byte
 	var dbVal VersionedValue
-	var resp []byte
+	var payload []byte
 	namespaceID := txContext.NamespaceID
 	collection := getState.Collection
 	chaincodeLogger.Debugf("[%s] getting state for chaincode %s, key %s, channel %s", shorttxid(msg.Txid), namespaceID, getState.Key, txContext.ChannelID)
@@ -636,49 +636,41 @@ func (h *Handler) HandleGetState(msg *pb.ChaincodeMessage, txContext *Transactio
 			return nil, err
 		}
 		resv, err = txContext.TXSimulator.GetPrivateData(namespaceID, collection, getState.Key)
-	} else {
-		resv, err = txContext.TXSimulator.GetState(namespaceID, getState.Key)
-	}
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-	if resv == nil {
-		chaincodeLogger.Debugf("[%s] No state associated with key: %s. Sending %s with an empty payload", shorttxid(msg.Txid), getState.Key, pb.ChaincodeMessage_RESPONSE)
-	} else {
-		if isCollectionSet(collection) {
-			resp = resv
-		} else {
-			err := json.Unmarshal(resv, &dbVal)
-			if err != nil {
-				log.Fatalln("please check db value, unmarshal error", err)
-			}
-			resp = dbVal.Val
-
+		if err != nil {
+			return nil, errors.WithStack(err)
 		}
-	}
-
-	var payload []byte
-	if isCollectionSet(collection) {
-		payload = resp
+		if resv == nil {
+			chaincodeLogger.Debugf("[%s] No state associated with key: %s. Sending %s with an empty payload", shorttxid(msg.Txid), getState.Key, pb.ChaincodeMessage_RESPONSE)
+		} else {
+			payload = resv
+		}
 	} else {
-		// optimistic code begin
 		session := GetSessionFromTxid(msg.Txid)
 		// seq := strconv.Atoi(GetSessionFromTxid(msg.Txid))
-		tempVal := txContext.TXSimulator.PreGetState(namespaceID, getState.Key, session)
+		tempVal, bs := txContext.TXSimulator.PreGetState(namespaceID, getState.Key, session)
 		if tempVal == nil {
-			// choose dbVal
-			payload = resp
-			txContext.TXSimulator.UpdateReadSet(namespaceID, getState.Key, dbVal.Txid)
+			// log.Printf("debug v11 read from db")
+			resv, err = txContext.TXSimulator.GetState(namespaceID, getState.Key)
+			if err != nil {
+				return nil, errors.WithStack(err)
+			}
+			if resv == nil {
+				chaincodeLogger.Debugf("[%s] No state associated with key: %s. Sending %s with an empty payload", shorttxid(msg.Txid), getState.Key, pb.ChaincodeMessage_RESPONSE)
+			} else {
+				err := json.Unmarshal(resv, &dbVal)
+				if err != nil {
+					log.Fatalln("please check db value, unmarshal error", err)
+				}
+				payload = dbVal.Val
+				// choose dbVal
+				txContext.TXSimulator.UpdateReadSet(namespaceID, getState.Key, dbVal.Txid)
+			}
 		} else {
 			// choose tempVal
+			// log.Printf("debug v11 read from cache")
 			payload = tempVal.Val
-			bs, err := json.Marshal(tempVal)
-			if err != nil {
-				log.Fatalf("debug tag=0x234", err)
-			}
 			txContext.TXSimulator.UpdateReadSetWithValue(namespaceID, getState.Key, tempVal.Txid, bs)
 		}
-		// optimistic code end
 	}
 	// Send response msg back to chaincode. GetState will not trigger event
 	return &pb.ChaincodeMessage{Type: pb.ChaincodeMessage_RESPONSE, Payload: payload, Txid: msg.Txid, ChannelId: msg.ChannelId}, nil
@@ -1068,7 +1060,7 @@ func (h *Handler) HandlePutState(msg *pb.ChaincodeMessage, txContext *Transactio
 			log.Fatalln("please check versionedValue, putState error", err)
 		}
 		// put into tempdb
-		txContext.TXSimulator.PreSetState(putState.Key, msg.Txid, putState.Value)
+		// txContext.TXSimulator.PreSetState(putState.Key, msg.Txid, putState.Value)
 		// optimistic code end
 		err = txContext.TXSimulator.SetState(namespaceID, putState.Key, putState.Value)
 	}

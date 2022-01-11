@@ -60,7 +60,7 @@ func (s *txSimulator) PreSetState(key string, txid string, value []byte) error {
 	return nil
 }
 
-func (s *txSimulator) PreGetState(ns string, key string, session string) *ledger.VersionedValue {
+func (s *txSimulator) PreGetState(ns string, key string, session string) (*ledger.VersionedValue, []byte) {
 	return s.TempDB.Get(key, session)
 }
 
