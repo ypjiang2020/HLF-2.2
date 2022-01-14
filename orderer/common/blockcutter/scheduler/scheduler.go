@@ -253,7 +253,8 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 					cur := nodes[idx]
 					// merge
 					if cur == nil {
-						panic("debug v7 node is nil")
+						continue // found is a muptiset
+						// panic("debug v7 node is nil")
 					}
 					node.txids = append(node.txids, cur.txids...)
 					for k := 0; k < (maxUniqueKeys / 64); k++ {
