@@ -318,7 +318,7 @@ func (b *nsPubRwBuilder) CalculateDeltaFromRWset(readSet []*kvrwset.KVRead, writ
 		}
 		temp := strings.Split(ws.Key, "_")
 		if len(temp) == 2 {
-			shard, err := strconv.Atoi(temp[2])
+			shard, err := strconv.Atoi(temp[1])
 			if err != nil {
 				panic(err)
 			}
