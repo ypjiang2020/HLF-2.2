@@ -11,6 +11,9 @@ package txmgr
 import (
 	"bytes"
 	"encoding/json"
+	"os"
+	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
@@ -48,6 +51,7 @@ type LockBasedTxMgr struct {
 	current             *current
 	hashFunc            rwsetutil.HashFunc
 	tempdb              *TempDB
+	shardID             int
 }
 
 // pvtdataPurgeMgr wraps the actual purge manager and an additional flag 'usedOnce'
@@ -135,6 +139,12 @@ func NewLockBasedTxMgr(initializer *Initializer) (*LockBasedTxMgr, error) {
 		initializer.DB,
 		initializer.CustomTxProcessors,
 		initializer.HashFunc)
+	id, ok := os.LookupEnv("SHARDID")
+	if ok {
+		txmgr.shardID, _ = strconv.Atoi(id)
+	} else {
+		txmgr.shardID = -1
+	}
 	return txmgr, nil
 }
 
@@ -561,18 +571,28 @@ func (txmgr *LockBasedTxMgr) Commit() error {
 		return err
 	}
 	// optimistic code begin
-	deltaSet := make(map[string]*ledger.VersionedValue)
-	for _, data := range txmgr.current.batch.PubUpdates.Deltas {
+	crossShardSet := make(map[string]*ledger.VersionedValue)
+	for _, data := range txmgr.current.batch.PubUpdates.Updates {
 		// log.Printf("debug namespace=%s", ns)
 		for k, v := range data.M {
-			var verval ledger.VersionedValue
-			err := json.Unmarshal(v.Value, &verval)
-			if err == nil {
-				deltaSet[k] = &verval
+			temp := strings.Split(k, "_")
+			if len(temp) != 2 {
+				continue
+			}
+			shard, err:= strconv.Atoi(temp[1])
+			if err != nil {
+				panic(err)
+			}
+			if shard != txmgr.shardID {
+				var verval ledger.VersionedValue
+				err := json.Unmarshal(v.Value, &verval)
+				if err == nil {
+					crossShardSet[k] = &verval
+				}
 			}
 		}
 	}
-	txmgr.tempdb.Prune(&deltaSet)
+	txmgr.tempdb.Prune(&crossShardSet)
 	// optimistic code end
 
 	txmgr.commitRWLock.Unlock()

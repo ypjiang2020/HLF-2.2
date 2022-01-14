@@ -164,7 +164,6 @@ func newNsUpdates() *nsUpdates {
 type UpdateBatch struct {
 	ContainsPostOrderWrites bool
 	Updates                 map[string]*nsUpdates
-	Deltas                 map[string]*nsUpdates // optimistic code
 }
 
 // NewUpdateBatch constructs an instance of a Batch
@@ -172,7 +171,6 @@ func NewUpdateBatch() *UpdateBatch {
 	return &UpdateBatch{
 		ContainsPostOrderWrites: false,
 		Updates:                 make(map[string]*nsUpdates),
-		Deltas:                  make(map[string]*nsUpdates),
 	}
 }
 
@@ -232,9 +230,6 @@ func (batch *UpdateBatch) GetUpdatedNamespaces() []string {
 // Update updates the batch with a latest entry for a namespace and a key
 func (batch *UpdateBatch) Update(ns string, key string, vv *VersionedValue, delta bool) {
 	batch.getOrCreateNsUpdates(ns).M[key] = vv
-	if delta {
-		batch.getOrCreateNsDeltas(ns).M[key] = vv
-	}
 }
 
 // GetUpdates returns all the updates for a namespace
@@ -272,15 +267,6 @@ func (batch *UpdateBatch) getOrCreateNsUpdates(ns string) *nsUpdates {
 	if nsUpdates == nil {
 		nsUpdates = newNsUpdates()
 		batch.Updates[ns] = nsUpdates
-	}
-	return nsUpdates
-}
-
-func (batch *UpdateBatch) getOrCreateNsDeltas(ns string) *nsUpdates {
-	nsUpdates := batch.Deltas[ns]
-	if nsUpdates == nil {
-		nsUpdates = newNsUpdates()
-		batch.Deltas[ns] = nsUpdates
 	}
 	return nsUpdates
 }

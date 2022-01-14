@@ -22,6 +22,9 @@ import (
 	"encoding/json"
 	"log"
 	"math"
+	"os"
+	"strconv"
+	"strings"
 
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
 	"github.com/Yunpeng-J/HLF-2.2/core/ledger"
@@ -50,6 +53,7 @@ type nsPubRwBuilder struct {
 
 	// optimistic code begin
 	// analyzer *analyzer.Analyzer
+	shardID int
 	// optimistic code end
 }
 
@@ -281,7 +285,7 @@ func (b *nsPubRwBuilder) build() *NsRwSet {
 }
 
 // optimistic code begin
-func CalculateDeltaFromRWset(readSet []*kvrwset.KVRead, writeSet []*kvrwset.KVWrite) (delta []*kvrwset.KVDelta, rs []*kvrwset.KVRead, ws []*kvrwset.KVWrite) {
+func (b *nsPubRwBuilder) CalculateDeltaFromRWset(readSet []*kvrwset.KVRead, writeSet []*kvrwset.KVWrite) (delta []*kvrwset.KVDelta, rs []*kvrwset.KVRead, ws []*kvrwset.KVWrite) {
 	// process read set
 	initial_map := make(map[string]map[string]interface{})
 	for _, rs := range readSet {
@@ -312,6 +316,18 @@ func CalculateDeltaFromRWset(readSet []*kvrwset.KVRead, writeSet []*kvrwset.KVWr
 		if initial_map[ws.Key] == nil {
 			continue
 		}
+		temp := strings.Split(ws.Key, "_")
+		if len(temp) == 2 {
+			shard, err := strconv.Atoi(temp[2])
+			if err != nil {
+				panic(err)
+			}
+			if shard == b.shardID {
+				// access key within shard
+				continue
+			}
+		}
+
 		var payload []byte
 		var verval ledger.VersionedValue
 		err := json.Unmarshal(ws.Value, &verval)
@@ -438,7 +454,7 @@ func (b *nsPubRwBuilder) buildDelta() *NsRwdSet {
 
 	} else {
 		// log.Printf("build delta set for namespace %s", b.namespace)
-		deltaSet, readSet, writeSet := CalculateDeltaFromRWset(readSet, writeSet)
+		deltaSet, readSet, writeSet := b.CalculateDeltaFromRWset(readSet, writeSet)
 		// breakdown: disable CRDT
 		// var deltaSet []*kvrwset.KVWrite)
 		return &NsRwdSet{
@@ -540,7 +556,7 @@ func (b *RWSetBuilder) getOrCreateCollPvtRwBuilder(ns string, coll string) *coll
 }
 
 func newNsPubRwBuilder(namespace string) *nsPubRwBuilder {
-	return &nsPubRwBuilder{
+	res := &nsPubRwBuilder{
 		namespace,
 		make(map[string]*kvrwset.KVRead),
 		make(map[string]*kvrwset.KVWrite),
@@ -548,7 +564,13 @@ func newNsPubRwBuilder(namespace string) *nsPubRwBuilder {
 		make(map[rangeQueryKey]*kvrwset.RangeQueryInfo),
 		nil,
 		make(map[string]*collHashRwBuilder),
+		-1,
 	}
+	id, ok := os.LookupEnv("SHARDID")
+	if ok {
+		res.shardID, _ = strconv.Atoi(id)
+	}
+	return res
 }
 
 func newNsPvtRwBuilder(namespace string) *nsPvtRwBuilder {
