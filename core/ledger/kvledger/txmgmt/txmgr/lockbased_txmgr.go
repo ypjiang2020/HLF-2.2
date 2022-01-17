@@ -13,7 +13,6 @@ import (
 	"encoding/json"
 	"os"
 	"strconv"
-	"strings"
 	"sync"
 
 	"github.com/Yunpeng-J/HLF-2.2/common/flogging"
@@ -575,20 +574,10 @@ func (txmgr *LockBasedTxMgr) Commit() error {
 	for _, data := range txmgr.current.batch.PubUpdates.Updates {
 		// log.Printf("debug namespace=%s", ns)
 		for k, v := range data.M {
-			temp := strings.Split(k, "_")
-			if len(temp) != 2 {
-				continue
-			}
-			shard, err:= strconv.Atoi(temp[1])
-			if err != nil {
-				panic(err)
-			}
-			if shard != txmgr.shardID {
-				var verval ledger.VersionedValue
-				err := json.Unmarshal(v.Value, &verval)
-				if err == nil {
-					crossShardSet[k] = &verval
-				}
+			var verval ledger.VersionedValue
+			err := json.Unmarshal(v.Value, &verval)
+			if err == nil {
+				crossShardSet[k] = &verval
 			}
 		}
 	}
