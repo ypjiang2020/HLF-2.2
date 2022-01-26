@@ -165,7 +165,8 @@ func (r *receiver) Ordered(msg *cb.Envelope) (messageBatches [][]*cb.Envelope, p
 	r.pendingBatchSizeBytes += messageSizeBytes
 	pending = true
 
-	if uint32(len(r.pendingBatch)) >= batchSize.MaxMessageCount {
+	// if uint32(len(r.pendingBatch)) >= batchSize.MaxMessageCount {
+	if uint32(r.scheduler.Pending()) >= batchSize.MaxMessageCount {
 		logger.Debugf("Batch size met, cutting batch")
 		messageBatch := r.Cut()
 		messageBatches = append(messageBatches, messageBatch)
@@ -191,16 +192,18 @@ func (r *receiver) Cut() []*cb.Envelope {
 	r.Metrics.BlockScheduleDuration.With("channel", r.ChannelID).Observe(time.Since(st).Seconds())
 	// log.Printf("debug v7 len_of_schedule %d len_of_invalid %d len_of_batching %d", len(schedule), len(invalid), len(r.pendingBatch))
 	for _, txId := range schedule {
-		// if r.pendingBatch[txId] == nil {
-		// 	log.Printf("debug v7 pendingbatch valid nil %s", txId)
-		// }
+		if r.pendingBatch[txId] == nil {
+			log.Printf("debug v7 pendingbatch valid nil %s", txId)
+		}
 		batch = append(batch, r.pendingBatch[txId])
+		delete(r.pendingBatch, txId)
 	}
 	for _, txId := range invalid {
-		// if r.pendingBatch[txId] == nil {
-		// 	log.Printf("debug v7 pendingbatch invalid nil %s", txId)
-		// }
+		if r.pendingBatch[txId] == nil {
+			log.Printf("debug v7 pendingbatch invalid nil %s", txId)
+		}
 		batch = append(batch, r.pendingBatch[txId])
+		delete(r.pendingBatch, txId)
 	}
 	// debug
 	log.Printf("debug v1 length of invalid transactions %d, should be 0 in benign case\n", len(invalid))
@@ -209,8 +212,8 @@ func (r *receiver) Cut() []*cb.Envelope {
 	// }
 
 	// r.pendingBatch = nil
-	r.pendingBatchSizeBytes = 0
-	r.pendingBatch = make(map[string]*cb.Envelope)
+	r.pendingBatchSizeBytes = 0 // TODO: should not be 0 (we do not use this condition to cut)
+	// r.pendingBatch = make(map[string]*cb.Envelope)
 	// optimistic code end
 	slp, ok := os.LookupEnv("OrdererSleep")
 	var ordererSleep int

@@ -22,6 +22,7 @@ type Scheduler struct {
 	windowSize int
 
 	sessionTxs       map[string][]*TxNode
+	sessionNextSeq   map[string]int
 	sessionFutureTxs map[string]*PriorityQueue
 	uniqueKeyMap     map[string]int
 	uniqueKeyCounter int
@@ -39,8 +40,17 @@ func NewScheduler() *Scheduler {
 	return &Scheduler{
 		windowSize:       1024,
 		sessionTxs:       map[string][]*TxNode{},
+		sessionNextSeq:   map[string]int{},
 		sessionFutureTxs: map[string]*PriorityQueue{},
 	}
+}
+
+func (scheduler *Scheduler) Pending() int {
+	res := 0
+	for _, session := range scheduler.sessionTxs {
+		res += len(session)
+	}
+	return res
 }
 
 func (scheduler *Scheduler) parseAction(action *peer.ChaincodeAction) ([]uint64, []uint64, []uint64, []string, bool) {
@@ -141,23 +151,39 @@ func (scheduler *Scheduler) Schedule(action *peer.ChaincodeAction, txId string) 
 	if session == "unknown" {
 		scheduler.sessionTxs[session] = append(scheduler.sessionTxs[session], NewTxNode(seq, txId, action))
 		return true
-	}
-	// future transactions
-	if pq, ok := scheduler.sessionFutureTxs[session]; ok {
-		// window size
-		if pq.Len() == 0 || (*pq)[0].seq+scheduler.windowSize >= seq {
-			// log.Println("debug v1 append to future session", session, seq)
-			heap.Push(pq, NewTxNode(seq, txId, action))
-		} else {
-			// drop this transaction
-			// log.Println("debug v1 drop transaction, seq is too high", txId)
-			return false
-		}
 	} else {
-		// log.Println("debug v1 create heap, insert transaction", txId)
-		pq := PriorityQueue{}
-		heap.Push(&pq, NewTxNode(seq, txId, action))
-		scheduler.sessionFutureTxs[session] = &pq
+		_, ok := scheduler.sessionNextSeq[session]
+		if ok == false {
+			scheduler.sessionNextSeq[session] = 0
+		}
+		if scheduler.sessionNextSeq[session] == seq {
+			scheduler.sessionTxs[session] = append(scheduler.sessionTxs[session], NewTxNode(seq, txId, action))
+			last := seq + 1
+			curFuture := scheduler.sessionFutureTxs[session]
+			for (curFuture.Len() > 0) && ((*curFuture)[0].seq == last+1) {
+				scheduler.sessionTxs[session] = append(scheduler.sessionTxs[session], heap.Pop(curFuture).(*TxNode))
+				last += 1
+			}
+			scheduler.sessionNextSeq[session] = last + 1
+		} else {
+			// future transactions
+			if pq, ok := scheduler.sessionFutureTxs[session]; ok {
+				// window size
+				if pq.Len() == 0 || (*pq)[0].seq+scheduler.windowSize >= seq {
+					// log.Println("debug v1 append to future session", session, seq)
+					heap.Push(pq, NewTxNode(seq, txId, action))
+				} else {
+					// drop this transaction
+					// log.Println("debug v1 drop transaction, seq is too high", txId)
+					return false
+				}
+			} else {
+				// log.Println("debug v1 create heap, insert transaction", txId)
+				pq := PriorityQueue{}
+				heap.Push(&pq, NewTxNode(seq, txId, action))
+				scheduler.sessionFutureTxs[session] = &pq
+			}
+		}
 	}
 
 	return true
@@ -201,11 +227,15 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 			txs = append(txs, v)
 		}
 		if pq, ok := scheduler.sessionFutureTxs[sessionName]; ok {
-			for pq.Len() > 0 && (len(txs) == 0 || (*pq)[0].seq == txs[len(txs)-1].seq+1) {
+			next := scheduler.sessionNextSeq[sessionName]
+			for pq.Len() > 0 && next == (*pq)[0].seq {
+				log.Println("should not come here")
 				// log.Println("debug v1 length of pq", pq.Len(), (*pq)[0].seq)
 				txs = append(txs, heap.Pop(pq).(*TxNode))
+				next += 1
 				// log.Println("debug v1", txs[len(txs)-1].seq)
 			}
+			scheduler.sessionNextSeq[sessionName] = next
 			if pq.Len() == 0 {
 				delete(scheduler.sessionFutureTxs, sessionName)
 			}
