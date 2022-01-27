@@ -37,8 +37,13 @@ func NewScheduler() *Scheduler {
 		log.Println("debug v3")
 		maxUniqueKeys = 1024
 	}
+	windowSize, _ := strconv.Atoi(os.Getenv("windowSize"))
+	if windowSize == 0 {
+		log.Println("debug v3")
+		windowSize = 1024 * 12
+	}
 	return &Scheduler{
-		windowSize:       1024,
+		windowSize:       windowSize,
 		sessionTxs:       map[string][]*TxNode{},
 		sessionNextSeq:   map[string]int{},
 		sessionFutureTxs: map[string]*PriorityQueue{},
@@ -158,11 +163,13 @@ func (scheduler *Scheduler) Schedule(action *peer.ChaincodeAction, txId string) 
 		}
 		if scheduler.sessionNextSeq[session] == seq {
 			scheduler.sessionTxs[session] = append(scheduler.sessionTxs[session], NewTxNode(seq, txId, action))
-			last := seq + 1
-			curFuture := scheduler.sessionFutureTxs[session]
-			for (curFuture.Len() > 0) && ((*curFuture)[0].seq == last+1) {
-				scheduler.sessionTxs[session] = append(scheduler.sessionTxs[session], heap.Pop(curFuture).(*TxNode))
-				last += 1
+			last := seq
+			curFuture, ok := scheduler.sessionFutureTxs[session]
+			if ok {
+				for (curFuture.Len() > 0) && ((*curFuture)[0].seq == last+1) {
+					scheduler.sessionTxs[session] = append(scheduler.sessionTxs[session], heap.Pop(curFuture).(*TxNode))
+					last += 1
+				}
 			}
 			scheduler.sessionNextSeq[session] = last + 1
 		} else {
@@ -219,7 +226,13 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 	// build node (one node may contain multiple transactions)
 	var allNodes []*Node
 	numOfNodes := int32(0)
+	last := ""
 	for _, sessionName := range sessionNames {
+		if sessionName == last {
+			continue
+		}
+		last = sessionName
+
 		// for each session
 		var txs []*TxNode
 		var nodes []*Node
