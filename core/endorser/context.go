@@ -1,6 +1,8 @@
 package endorser
 
 import (
+	"container/heap"
+	"log"
 	"sync"
 
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
@@ -10,22 +12,25 @@ type TxContext struct {
 	proposal *UnpackedProposal
 	response *pb.ProposalResponse
 	err      error
+	seq      int
 	session  string
 	ch       chan struct{}
 }
 
 type ContextManager struct {
 	mutex    sync.Mutex
-	contexts map[int]*TxContext
+	contexts *PriorityQueue
 	session  string
 	nextSeq  int
+	ch       chan *TxContext
 }
 
 func NewContextManager() *ContextManager {
 	return &ContextManager{
 		mutex:    sync.Mutex{},
-		contexts: map[int]*TxContext{},
+		contexts: &PriorityQueue{},
 		nextSeq:  0,
+		ch:       make(chan *TxContext, 100000),
 	}
 }
 
@@ -34,6 +39,7 @@ func contextId(channelID, txID string) string {
 }
 
 func (c *ContextManager) SetNext(seq int, session string) {
+	log.Println("debug v17 set context", seq, session)
 	c.mutex.Lock()
 	c.nextSeq = seq
 	c.session = session
@@ -41,37 +47,88 @@ func (c *ContextManager) SetNext(seq int, session string) {
 }
 
 func (c *ContextManager) Create(seq int, session string, up *UnpackedProposal) *TxContext {
-	// log.Printf("debug v10 context create %d", seq)
+	log.Printf("debug v18 context create %d", seq)
+	var ctx *TxContext
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
-	ctx := &TxContext{
-		proposal: up,
-		response: nil,
-		err:      nil,
-		session:  session,
-		ch:       make(chan struct{}),
+	if seq == c.nextSeq {
+		ctx = &TxContext{
+			seq:      seq,
+			proposal: up,
+			response: nil,
+			err:      nil,
+			session:  session,
+			ch:       make(chan struct{}),
+		}
+		c.ch <- ctx
+		c.nextSeq += 1
+		for c.contexts.Len() > 0 && (*c.contexts)[0].seq == c.nextSeq {
+			c.ch <- heap.Pop(c.contexts).(*TxContext)
+			c.nextSeq += 1
+		}
+		// log.Printf("debug v17 update context 1 next %d", c.nextSeq)
+
+	} else {
+		ctx = &TxContext{
+			seq:      seq,
+			proposal: up,
+			response: nil,
+			err:      nil,
+			session:  session,
+			ch:       make(chan struct{}),
+		}
+		heap.Push(c.contexts, ctx)
+		if c.contexts.Len() > 0 && (*c.contexts)[0].seq == c.nextSeq {
+			for c.contexts.Len() > 0 && (*c.contexts)[0].seq == c.nextSeq {
+				c.ch <- heap.Pop(c.contexts).(*TxContext)
+				c.nextSeq += 1
+			}
+		} else {
+			log.Printf("debug v17 next %d head %d receive %d", c.nextSeq, (*c.contexts)[0].seq, seq)
+
+		}
 	}
-	c.contexts[seq] = ctx
 	return ctx
 }
 
 func (c *ContextManager) Get() *TxContext {
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
-	if ctx, ok := c.contexts[c.nextSeq]; ok && ctx.session == c.session {
-		// log.Printf("debug v10 context get %d", c.nextSeq)
-		c.nextSeq += 1
-		return ctx
-	}
-	return nil
+	res := <-c.ch
+	// log.Printf("debug v17 get context %d %s", res.seq, res.session)
+	return res
 }
 
 func (c *ContextManager) Delete(seq int) {
-	c.mutex.Lock()
-	delete(c.contexts, seq)
-	// log.Printf("debug v10 context delete %d", seq)
-	c.mutex.Unlock()
+
 }
+
 func (c *ContextManager) Close() {
 	// TODO
+}
+
+type PriorityQueue []*TxContext
+
+func (pq PriorityQueue) Len() int {
+	return len(pq)
+}
+
+func (pq PriorityQueue) Less(i, j int) bool {
+	return pq[i].seq < pq[j].seq
+}
+
+func (pq PriorityQueue) Swap(i, j int) {
+	pq[i], pq[j] = pq[j], pq[i]
+}
+
+func (pq *PriorityQueue) Push(x interface{}) {
+	item := x.(*TxContext)
+	*pq = append(*pq, item)
+}
+
+func (pq *PriorityQueue) Pop() interface{} {
+	old := *pq
+	n := len(old)
+	item := old[n-1]
+	old[n-1] = nil // avoid memory leak
+	*pq = old[0 : n-1]
+	return item
 }

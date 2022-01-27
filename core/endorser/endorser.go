@@ -133,10 +133,10 @@ func NewEndorser(pdd PrivateDataDistributor, cf ChannelFetcher, lmsp msp.Identit
 func (e *Endorser) run() {
 	for {
 		ctx := e.contextManager.Get()
-		if ctx == nil {
-			time.Sleep(time.Duration(1) * time.Millisecond)
-			continue
-		}
+		// if ctx == nil {
+		// 	time.Sleep(time.Duration(1) * time.Millisecond)
+		// 	continue
+		// }
 		ctx.response, ctx.err = e.ProcessProposalSuccessfullyOrError_ori(ctx.proposal)
 		ctx.ch <- struct{}{}
 	}
@@ -508,7 +508,7 @@ func (e *Endorser) ProcessProposalSuccessfullyOrError(up *UnpackedProposal) (*pb
 	case <-ctx.ch:
 		e.contextManager.Delete(seq)
 		return ctx.response, ctx.err
-	case <-time.After(time.Duration(10) * time.Second):
+	case <-time.After(time.Duration(30) * time.Second):
 		e.contextManager.Delete(seq)
 		return nil, fmt.Errorf("transaction %s timeout", txid)
 	}

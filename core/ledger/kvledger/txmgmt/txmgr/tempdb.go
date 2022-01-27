@@ -204,10 +204,10 @@ func (tdb *TempDB) Prune(deltaSet *map[string]*ledger.VersionedValue) {
 		session := GetSessionFromTxid(s.Txid)
 		tdb.KeySession[k] = session
 		// 80~100 ms
-		for sname, sdb := range tdb.Sessions {
-			if sname != session {
-				sdb.Delete(k)
-			}
+		for _, sdb := range tdb.Sessions {
+			// if sname != session {
+			sdb.Delete(k)
+			// }
 		}
 	}
 }
