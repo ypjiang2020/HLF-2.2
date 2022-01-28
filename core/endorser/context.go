@@ -4,6 +4,7 @@ import (
 	"container/heap"
 	"log"
 	"sync"
+	"time"
 
 	pb "github.com/Yunpeng-J/fabric-protos-go/peer"
 )
@@ -47,7 +48,7 @@ func (c *ContextManager) SetNext(seq int, session string) {
 }
 
 func (c *ContextManager) Create(seq int, session string, up *UnpackedProposal) *TxContext {
-	log.Printf("debug v18 context create %d", seq)
+	// log.Printf("debug v18 context create %d", seq)
 	var ctx *TxContext
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -68,7 +69,7 @@ func (c *ContextManager) Create(seq int, session string, up *UnpackedProposal) *
 		}
 		// log.Printf("debug v17 update context 1 next %d", c.nextSeq)
 
-	} else {
+	} else if seq > c.nextSeq || seq < 100 { // adhoc
 		ctx = &TxContext{
 			seq:      seq,
 			proposal: up,
@@ -83,18 +84,36 @@ func (c *ContextManager) Create(seq int, session string, up *UnpackedProposal) *
 				c.ch <- heap.Pop(c.contexts).(*TxContext)
 				c.nextSeq += 1
 			}
-		} else {
-			log.Printf("debug v17 next %d head %d receive %d", c.nextSeq, (*c.contexts)[0].seq, seq)
-
+			// 		} else {
+			// 			log.Printf("debug v17 next %d head %d receive %d", c.nextSeq, (*c.contexts)[0].seq, seq)
+			//
 		}
+	} else {
+		log.Printf("debug v17 drop stale txn %d cur %d", seq, c.nextSeq)
 	}
 	return ctx
 }
 
 func (c *ContextManager) Get() *TxContext {
-	res := <-c.ch
-	// log.Printf("debug v17 get context %d %s", res.seq, res.session)
-	return res
+	var res *TxContext
+	for {
+		select {
+		case res = <-c.ch:
+			// log.Printf("debug v17 get context %d %s", res.seq, res.session)
+			return res
+		case <-time.After(time.Duration(1) * time.Second):
+			c.mutex.Lock()
+			if c.contexts.Len() > 0 {
+				res = heap.Pop(c.contexts).(*TxContext)
+				log.Printf("debug v19 update context from %d to %d", c.nextSeq, res.seq+1)
+				c.nextSeq = res.seq + 1
+			}
+			c.mutex.Unlock()
+			if res != nil {
+				return res
+			}
+		}
+	}
 }
 
 func (c *ContextManager) Delete(seq int) {

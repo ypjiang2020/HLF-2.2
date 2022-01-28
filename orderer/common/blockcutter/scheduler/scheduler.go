@@ -172,7 +172,7 @@ func (scheduler *Scheduler) Schedule(action *peer.ChaincodeAction, txId string) 
 				}
 			}
 			scheduler.sessionNextSeq[session] = last + 1
-		} else {
+		} else if scheduler.sessionNextSeq[session] < seq {
 			// future transactions
 			if pq, ok := scheduler.sessionFutureTxs[session]; ok {
 				// window size
@@ -190,6 +190,9 @@ func (scheduler *Scheduler) Schedule(action *peer.ChaincodeAction, txId string) 
 				heap.Push(&pq, NewTxNode(seq, txId, action))
 				scheduler.sessionFutureTxs[session] = &pq
 			}
+		} else {
+			log.Printf("debug v17 drop stale transaction %d in orderer", seq)
+
 		}
 	}
 
@@ -241,8 +244,12 @@ func (scheduler *Scheduler) ProcessBlk() (result []string, invalidTxns []string)
 		}
 		if pq, ok := scheduler.sessionFutureTxs[sessionName]; ok {
 			next := scheduler.sessionNextSeq[sessionName]
+			if pq.Len() > 64 && next < (*pq)[0].seq { // adhoc
+				log.Printf("debug v17 drop transactions from %d to %d", next, (*pq)[0].seq)
+				next = (*pq)[0].seq
+			}
 			for pq.Len() > 0 && next == (*pq)[0].seq {
-				log.Println("should not come here")
+				// log.Println("should not come here")
 				// log.Println("debug v1 length of pq", pq.Len(), (*pq)[0].seq)
 				txs = append(txs, heap.Pop(pq).(*TxNode))
 				next += 1
