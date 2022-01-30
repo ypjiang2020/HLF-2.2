@@ -668,6 +668,8 @@ func (h *Handler) HandleGetState(msg *pb.ChaincodeMessage, txContext *Transactio
 		} else {
 			// choose tempVal
 			// log.Printf("debug v11 read from cache")
+			// txContext.TXSimulator.PreGetState(namespaceID, getState.Key, session)
+			// txContext.TXSimulator.GetState(namespaceID, getState.Key)
 			payload = tempVal.Val
 			txContext.TXSimulator.UpdateReadSetWithValue(namespaceID, getState.Key, tempVal.Txid, bs)
 		}

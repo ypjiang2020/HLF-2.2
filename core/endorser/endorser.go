@@ -504,14 +504,17 @@ func (e *Endorser) ProcessProposalSuccessfullyOrError(up *UnpackedProposal) (*pb
 		return res, err
 	}
 	ctx := e.contextManager.Create(seq, temp[1], up)
-	select {
-	case <-ctx.ch:
-		e.contextManager.Delete(seq)
-		return ctx.response, ctx.err
-	case <-time.After(time.Duration(30) * time.Second):
-		e.contextManager.Delete(seq)
-		return nil, fmt.Errorf("transaction %s timeout", txid)
+	if ctx != nil {
+		select {
+		case <-ctx.ch:
+			e.contextManager.Delete(seq)
+			return ctx.response, ctx.err
+		case <-time.After(time.Duration(30) * time.Second):
+			e.contextManager.Delete(seq)
+			return nil, fmt.Errorf("transaction %s timeout", txid)
+		}
 	}
+	return nil, fmt.Errorf("drop transaction %s", txid)
 }
 
 func (e *Endorser) ProcessProposalSuccessfullyOrError_ori(up *UnpackedProposal) (*pb.ProposalResponse, error) {
