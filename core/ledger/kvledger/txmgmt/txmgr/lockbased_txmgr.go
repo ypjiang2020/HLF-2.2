@@ -562,7 +562,7 @@ func (txmgr *LockBasedTxMgr) Commit() error {
 	}
 	// optimistic code begin
 	deltaSet := make(map[string]*ledger.VersionedValue)
-	for _, data := range txmgr.current.batch.PubUpdates.Deltas {
+	for _, data := range txmgr.current.batch.PubUpdates.Updates {
 		// log.Printf("debug namespace=%s", ns)
 		for k, v := range data.M {
 			var verval ledger.VersionedValue

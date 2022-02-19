@@ -200,16 +200,19 @@ func (tdb *TempDB) Prune(deltaSet *map[string]*ledger.VersionedValue) {
 	}()
 	tdb.mutex.Lock()
 	defer tdb.mutex.Unlock()
-	for k, s := range *deltaSet {
-		session := GetSessionFromTxid(s.Txid)
-		tdb.KeySession[k] = session
-		// 80~100 ms
-		for _, sdb := range tdb.Sessions {
-			// if sname != session {
-			sdb.Delete(k)
-			// }
-		}
+	for sname, _ := range tdb.Sessions {
+		delete(tdb.Sessions, sname)
 	}
+	// for k, s := range *deltaSet {
+	// 	session := GetSessionFromTxid(s.Txid)
+	// 	tdb.KeySession[k] = session
+	// 	// 80~100 ms
+	// 	for sname, sdb := range tdb.Sessions {
+	// 		if sname != session {
+	// 			sdb.Delete(k)
+	// 		}
+	// 	}
+	// }
 }
 
 func (tdb *TempDB) String() string {
